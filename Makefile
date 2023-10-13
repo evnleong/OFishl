@@ -15,23 +15,14 @@ utop:
 
 test:
 	OCAMLRUNPARAM=b dune exec test/main.exe
-
-chat:
-	OCAMLRUNPARAM=b dune exec bin/main.exe
-
-check:
-	@bash check.sh
-
-finalcheck:
-	@bash check.sh final
-
+	
 zip:
-	rm -f ngrams.zip
-	zip -r ngrams.zip . -x@exclude.lst
+	rm -f game.zip
+	zip -r game.zip . -x@exclude.lst
 
 clean:
 	dune clean
-	rm -f ngrams.zip
+	rm -f game.zip
 
 doc:
 	dune build @doc
