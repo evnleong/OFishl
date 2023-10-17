@@ -1,2 +1,4 @@
 (library
- (name brb))
+ (name game)
+ (libraries ounit2)
+ (wrapped false))
