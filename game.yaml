@@ -21,4 +21,7 @@ git-repo: "https://github.coecis.cornell.edu/epl44/3110_final_project"
 demo-video-url: ""
 # Write a short, attention-grabbing description of your project.
 desc: >
-  Our project is an interactive aquarium terminal-based game. 
+  Run your own aquarium with our interactive terminal based game. Our 
+  project allows a player to simulate the day to day of owning an aquarium. Buy 
+  and raise different types of marine animals from a goldfish to a pufferfish and 
+  even a shark! Use revenue from your aquarium to feed your fish and buy more tanks.
