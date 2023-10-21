@@ -11,7 +11,7 @@ code:
 	! dune build --watch
 
 utop:
-	OCAMLRUNPARAM=b dune utop src
+	OCAMLRUNPARAM=b dune utop lib
 
 test:
 	OCAMLRUNPARAM=b dune exec test/main.exe
