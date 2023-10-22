@@ -1,11 +1,10 @@
 
 (*not currently used*)
-type color = Red | Blue | Orange | Grey | Yellow
-type species = Goldfish | Pufferfish | Shark
+type color = Red | Blue 
 
 type fish = {
   name : string;
-  species : species;
+  species : string;
   color : string;
   age : int
 }
@@ -18,11 +17,13 @@ type tank = {
     capacity : int 
     }
 
+(**Given a tank type, creates a new empty tank with a capacity of 10*)
 let new_tank (t : tank_type) : tank = { 
   tank_type = t; 
   fish_list = []; 
   capacity = 10 }
 
+(**Given a fish and tank, adds the fish to the tank's fish list and updates the remaining capacity*)
 let add_fish (f : fish) (t : tank) : tank = {
   tank_type = t.tank_type;
   fish_list = f :: t.fish_list;
@@ -52,35 +53,65 @@ let rec age_list (lst : fish list) : fish list =
 type player_state = {
   round : int;
   money : int;
-  tanks : tank list;
+  tank : tank;
   max_rounds : int;
 }
 
+(**Starts a new game instance with i rounds. A player starts with $100 and one nursery tank*)
 let start_game (i:int) : player_state = {
   round = 1;
   money = 100;
-  tanks = [new_tank Nursery];
+  tank = new_tank Nursery;
   max_rounds = i
 }
 
-let get_money (g:player_state): int = g.money
+(**Given a player state and a fish, adds the fish to the player state's tank*)
+let add_fish_game (g:player_state) (f: fish) : player_state = {
+  round = g.round;
+  money = g.money;
+  tank = add_fish f g.tank;
+  max_rounds = g.max_rounds
+}
 
-let game_status (g:player_state) : string = 
-  ("Day " ^(string_of_int g.round)^": \nYou have $" ^ (string_of_int (g.money)) ^ ".")
+(**Updates player state's round number and tank ages after one round*)
+let end_of_round (g:player_state) : player_state = {
+  round = g.round+1;
+  money = g.money;
+  tank = update_tank_ages g.tank;
+  max_rounds = g.max_rounds
+}
 
-let fish_bio (f:fish) : string = "Your fish's name is " ^ (f.name) ^ " and it's color is " ^ (f.color) 
+(**Prints a fish's name, speies, and age. Helper function for print_fish_list*)
+let fish_bio (f:fish) : string = "  "^(f.name) ^ "       " ^ (f.species)^ "       "^(string_of_int f.age)^"\n"
 
-let make_fish (n:string) (sp:species) (color:string): fish = {
+(**Prints a fish_list using fish_bio. Helper function for print_tank*)
+let rec print_fish_list (lst:fish list) : string = 
+  match lst with
+  | [] -> ""
+  | h :: t -> fish_bio h ^"\n"^ print_fish_list t
+
+let print_tank (t:tank) : string = 
+  "Tank Contents:\n Name:       Species:      Age:\n"^print_fish_list (List.rev t.fish_list )
+
+(**Initialize a round by printing the current round and currency*)
+let start_round_print (g:player_state) : string = 
+  "Day " ^(string_of_int g.round)^"\nYou have $" ^ (string_of_int (g.money)) ^ ".\n"
+
+(**End of round string with a players fish in a table*)
+let end_round_print (g:player_state) : string = print_tank g.tank
+let cost (g:player_state) (cost:int) :player_state = {
+  round = g.round;
+  money = g.money-cost;
+  tank = g.tank;
+  max_rounds = g.max_rounds
+}
+let make_fish (n:string) (sp:string) (color:string): fish = {
   name =n;
   species =sp;
   color = color;
   age = 0;
 }
 
-let goldfish (n:string) : fish = make_fish n Goldfish "orange"
-
-let get_name (f:fish ): string = f.name
-
-let get_color (f:fish) : string = f.color
-
-let get_round (g:player_state): int = g.round
+let goldfish (n:string) : fish = make_fish n "Goldfish" "orange"
+let pufferfish (n:string) : fish = make_fish n "Pufferfish" "yellow"
+let shark (n:string) : fish = make_fish n "Shark" "grey"
