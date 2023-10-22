@@ -1,4 +1,0 @@
-(library
- (name game)
- (libraries ounit2)
- (wrapped false))
