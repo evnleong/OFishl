@@ -1,21 +1,14 @@
 
-(*not currently used*)
-type color = Red | Blue 
-
-type fish = {
-  name : string;
-  species : string;
-  color : string;
-  age : int
-}
+type fish = { name : string;
+species : string;
+color : string;
+age : int}
 
 type tank_type = Nursery | AdultTank
 
-type tank = { 
-    tank_type : tank_type; 
-    fish_list : fish list; 
-    capacity : int 
-    }
+type tank= {tank_type : tank_type; 
+fish_list : fish list; 
+capacity : int }
 
 (**Given a tank type, creates a new empty tank with a capacity of 10*)
 let new_tank (t : tank_type) : tank = { 
@@ -81,7 +74,7 @@ let end_of_round (g:player_state) : player_state = {
   max_rounds = g.max_rounds
 }
 
-(**Prints a fish's name, speies, and age. Helper function for print_fish_list*)
+(**Prints a fish's name, species, and age. Helper function for print_fish_list*)
 let fish_bio (f:fish) : string = "  "^(f.name) ^ "       " ^ (f.species)^ "       "^(string_of_int f.age)^"\n"
 
 (**Prints a fish_list using fish_bio. Helper function for print_tank*)
@@ -93,9 +86,11 @@ let rec print_fish_list (lst:fish list) : string =
 let print_tank (t:tank) : string = 
   "Tank Contents:\n Name:       Species:      Age:\n"^print_fish_list (List.rev t.fish_list )
 
+let print_playermoney (g:player_state):int = g.money
+
 (**Initialize a round by printing the current round and currency*)
 let start_round_print (g:player_state) : string = 
-  "Day " ^(string_of_int g.round)^"\nYou have $" ^ (string_of_int (g.money)) ^ ".\n"
+  "Day " ^(string_of_int g.round)^"\nYou currently have $" ^ (string_of_int (g.money)) ^ ".\n"
 
 (**End of round string with a players fish in a table*)
 let end_round_print (g:player_state) : string = print_tank g.tank

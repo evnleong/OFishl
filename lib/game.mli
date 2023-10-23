@@ -1,5 +1,3 @@
-type color
- 
 type fish
 type tank
 type tank_type
@@ -19,6 +17,7 @@ val end_of_round : player_state -> player_state
 val fish_bio : fish -> string
 val print_fish_list : fish list -> string
 val print_tank : tank -> string
+val print_playermoney : player_state -> int
 val make_fish : string -> string -> string -> fish
 val goldfish : string -> fish
 val pufferfish : string -> fish
