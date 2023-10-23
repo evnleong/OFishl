@@ -18,20 +18,20 @@ type player_state = {
   max_rounds : int;
 }
 
-(**Given a tank type, creates a new empty tank with a capacity of 10*)
+(** Given a tank type, creates a new empty tank with a capacity of 10. *)
 let new_tank (t : tank_type) : tank = { 
   tank_type = t; 
   fish_list = []; 
   capacity = 10 }
 
-(**Given a fish and tank, adds the fish to the tank's fish list and updates the remaining capacity*)
+(** Given a fish and tank, adds the fish to the tank's fish list and updates the remaining capacity. *)
 let add_fish (f : fish) (t : tank) : tank = {
   tank_type = t.tank_type;
   fish_list = f :: t.fish_list;
   capacity = t.capacity - 1;
 }
 
-(**Given a fish and an integer i, adds i to the fish's age*)
+(** Given a fish and an integer i, adds i to the fish's age. *)
 let age_fish (f : fish) (i : int) : fish = {
     name = f.name;
     color = f.color;
@@ -77,11 +77,11 @@ let feed_tank (t : tank) : tank = {
 let feed_game (g : player_state) : player_state = 
   { g with tank = (feed_tank g.tank ) }
 
-(**Given a list of fish, updates each the age of each fish by one round*)
+(** Given a list of fish, updates each the age of each fish by one round. *)
 let rec age_list (lst : fish list) : fish list =
   match lst with [] -> lst | h :: t -> age_fish h 1 :: age_list t
 
- (**Given a tank, updates the age of every fish in the tank by one round*)
+ (** Given a tank, updates the age of every fish in the tank by one round. *)
  let update_tank_ages (t : tank) : tank =
   {
     tank_type = t.tank_type;
@@ -89,7 +89,7 @@ let rec age_list (lst : fish list) : fish list =
     capacity = t.capacity;
   }
 
-(**Starts a new game instance with i rounds. A player starts with $100 and one nursery tank*)
+(** Starts a new game instance with i rounds. A player starts with $100 and one nursery tank. *)
 let start_game (i : int) : player_state = {
   round = 1;
   money = 100;
@@ -97,17 +97,17 @@ let start_game (i : int) : player_state = {
   max_rounds = i
 }
 
-(**Given a player state and a fish, adds the fish to the player state's tank*)
-let add_fish_game (g:player_state) (f: fish) : player_state = {
+(** Given a player state and a fish, adds the fish to the player state's tank. *)
+let add_fish_game (g : player_state) (f : fish) : player_state = {
   round = g.round;
   money = g.money;
   tank = add_fish f g.tank;
   max_rounds = g.max_rounds
 }
 
-(**Updates player state's round number and tank ages after one round*)
+(** Updates player state's round number and tank ages after one round. *)
 let end_of_round (g:player_state) : player_state = {
-  round = g.round+1;
+  round = g.round + 1;
   money = g.money;
   tank = update_tank_ages g.tank;
   max_rounds = g.max_rounds
@@ -129,21 +129,21 @@ let print_tank (t:tank) : string =
 
 let print_playermoney (g:player_state):int = g.money
 
-(**Initialize a round by printing the current round and currency*)
+(** Initialize a round by printing the current round and currency. *)
 let start_round_print (g:player_state) : string = 
   "Day " ^(string_of_int g.round)^"\nYou currently have $" ^ (string_of_int (g.money)) ^ "."
 
-(**End of round string with a players fish in a table*)
+(** End of round string with a players fish in a table. *)
 let end_round_print (g:player_state) : string = print_tank g.tank
 let cost (g : player_state) (cost : int) : player_state = {
   round = g.round;
-  money = g.money-cost;
+  money = g.money - cost;
   tank = g.tank;
   max_rounds = g.max_rounds
 }
 let make_fish (n:string) (sp:string) (color:string): fish = {
   name = n;
-  species =sp;
+  species = sp;
   color = color;
   age = 0;
   hunger = 20;
