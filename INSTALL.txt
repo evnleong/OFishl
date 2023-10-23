@@ -12,8 +12,7 @@ For Windows:
 	 Run 'unzip game.zip' to extract the zip file.
 
 Game Setup: 
-6. Now that the game files are installed, navigate to the game folder by typing 'cd 3110_final_project' in terminal.
-7. Our project makes use of the ANSITerminal library. Install it using the command "opam install ANSITerminal".
-8. Run 'make build' in terminal to build the game.
-9. To run the game, type 'make play'.
+6. Our project makes use of the ANSITerminal library. Install it using the command "opam install ANSITerminal".
+7. Run 'make build' in terminal to build the game.
+8. To run the game, type 'make play'.
 
