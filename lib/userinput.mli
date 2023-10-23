@@ -1,3 +1,3 @@
-type input = Buy | View_Tanks | Wallet | Goldfish | Pufferfish | Shark
+type input = Buy | View_Tanks | Wallet | Feed | Goldfish | Pufferfish | Shark
 
 val parse_input : string -> input

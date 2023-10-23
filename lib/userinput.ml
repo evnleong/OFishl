@@ -1,4 +1,4 @@
-type input = Buy | View_Tanks | Wallet | Goldfish | Pufferfish | Shark
+type input = Buy | View_Tanks | Wallet | Feed | Goldfish | Pufferfish | Shark
 
 exception Invalid
 
@@ -7,11 +7,12 @@ let parse_input prompt =
   | x -> (
       match x with
       | [] -> raise Invalid
-      | [ "Buy" ] -> Buy
-      | [ "Tanks" ] -> View_Tanks
-      | [ "Wallet" ] -> Wallet
-      | [ "Goldfish" ] -> Goldfish
-      | [ "Pufferfish" ] -> Pufferfish
-      | [ "Shark" ] -> Shark
+      | [ "BUY" ] -> Buy
+      | [ "TANKS" ] -> View_Tanks
+      | [ "WALLET" ] -> Wallet
+      | [ "GOLDFISH" ] -> Goldfish
+      | [ "PUFFERFISH" ] -> Pufferfish
+      | [ "SHARK" ] -> Shark
+      | [ "FEED" ] -> Feed
       | [ _ ] -> raise Invalid
       | _ -> raise Invalid)

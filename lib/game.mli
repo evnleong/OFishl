@@ -22,3 +22,9 @@ val make_fish : string -> string -> string -> fish
 val goldfish : string -> fish
 val pufferfish : string -> fish
 val shark : string -> fish
+val hunger_fish : fish -> int -> fish
+val hunger_list : fish list -> fish list 
+val feed_fish : fish -> int -> fish 
+val feed_list : fish list -> fish list 
+val feed_tank : tank -> tank 
+val feed_game : player_state -> player_state 
