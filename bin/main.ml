@@ -58,7 +58,7 @@ let rec action num_actions (g : Game.player_state) : Game.player_state =
           action num_actions g
         | _ ->
           print_endline "Give a name for your new fish >";
-          action num_actions (updategame g (user_prompt ()) response)
+          action (num_actions - 1) (updategame g (user_prompt ()) response)
         end
     | View_Tanks ->
         print_endline (Game.end_round_print g);
