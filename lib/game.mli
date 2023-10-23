@@ -1,9 +1,8 @@
 type fish
 type tank
-type tank_type
 type player_state
 
-val new_tank : tank_type -> tank
+val new_tank : string -> tank
 val add_fish : fish -> tank -> tank
 val age_fish : fish -> int -> fish
 val age_list : fish list -> fish list
@@ -23,8 +22,8 @@ val goldfish : string -> fish
 val pufferfish : string -> fish
 val shark : string -> fish
 val hunger_fish : fish -> int -> fish
-val hunger_list : fish list -> fish list 
-val feed_fish : fish -> int -> fish 
-val feed_list : fish list -> fish list 
-val feed_tank : tank -> tank 
-val feed_game : player_state -> player_state 
+val hunger_list : fish list -> fish list
+val feed_fish : fish -> int -> fish
+val feed_list : fish list -> fish list
+val feed_tank : tank -> tank
+val feed_game : player_state -> player_state
