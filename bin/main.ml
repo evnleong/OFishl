@@ -12,7 +12,7 @@ let () =
      Be careful: each day you have a limited amount of actions you can take! \n\n\
      Start Game:\n"
 
-(* Create a new game w/ 3 rounds,g represents current game state. *)
+(* Create a new game w/ 3 rounds, g represents current game state. *)
 let g = Game.start_game 3
 let user_prompt () = read_line ()
 let command string = string |> String.uppercase_ascii |> parse_input
@@ -24,7 +24,7 @@ let _ = print_endline (Game.start_round_print g)
 let updatehelper g c f = 
   Game.cost (Game.add_fish_game g f) c
 
-(* Helper for num_actions. *)
+(* Helper for action. *)
 let updategame g name response = 
   match response with
   | Pufferfish -> name |> Game.pufferfish |> updatehelper g 4
