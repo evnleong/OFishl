@@ -14,7 +14,7 @@ utop:
 	OCAMLRUNPARAM=b dune utop lib
 
 test:
-	OCAMLRUNPARAM=b dune exec test/main.exe
+	OCAMLRUNPARAM=b dune exec test/tests.exe
 
 play: 
 	OCAMLRUNPARAM=b dune exec bin/main.exe
