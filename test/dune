@@ -1,2 +1,3 @@
 (test
- (name tests))
+ (name tests)
+ (libraries ounit2 final_project))
