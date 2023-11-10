@@ -1,2 +1,4 @@
 (library
- (name final_project))
+ (name final_project)
+ (public_name final_project)
+ (libraries str))
