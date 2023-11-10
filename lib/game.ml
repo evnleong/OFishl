@@ -1,5 +1,3 @@
-open Array 
-
 (** Type representing fish species *)
 type fish_species = Goldfish | Pufferfish | Shark 
 
@@ -25,16 +23,11 @@ type player_state = { mutable round : int; mutable money : int;
 let make_fish (species : fish_species) (food : fish_food) : fish =
     { species = species; num = 0; age_sum = 0; health = 0; food = food }
 
-(* Values representing new fish populations *)
-let goldfish = make_fish Goldfish Pellet
-let pufferfish = make_fish Pufferfish Pellet
-let shark = make_fish Shark Fish 
-
-(** Sets a tank to an empty tank *)
+(** Sets a tank to an empty tank with new fish populations *)
 let set_tank (t : tank) : unit = 
-  t.(0) <- goldfish;
-  t.(1) <- pufferfish;
-  t.(2) <- shark
+  t.(0) <- make_fish Goldfish Pellet;
+  t.(1) <- make_fish Pufferfish Pellet;
+  t.(2) <- make_fish Shark Fish
 
 (* Returns position of fish species in tank array *)
 let fish_pos (s : fish_species ) : int = 
