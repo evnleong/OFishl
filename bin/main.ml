@@ -1,16 +1,39 @@
 (* Opening Modules in lib. *)
-(*open Final_project*)
-(*open Userinput*)
+open Final_project
+open Userinput
 
-(* Test terminal output. *)
+let user_prompt () = read_line ()
+let command string = string |> String.uppercase_ascii |> parse_input
+
+let rec action num_actions (g : Game.player_state) : unit =
+  try
+    if num_actions = 0 then raise Exit
+    else
+      ANSITerminal.print_string [ ANSITerminal.cyan ]
+        ("\n What would you like to do today? \n You currently have "
+       ^ string_of_int num_actions
+       ^ " action(s) left today. \n\
+         \ Type (Buy, Tanks, Wallet, Feed) or Ctrl +C to Exit  \n");
+    let response = command (user_prompt ()) in
+    match response with
+    | Buy ->
+        Game.add_fish_game g Game.goldfishspecies 4;
+        Game.print_fish g;
+        action (num_actions - 1) g
+    (* Add other cases *)
+    | _ -> ()
+  with Exit -> ()
+
 let () =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "Build your own aquarium! Start the game with $100, use \n\
-     it to buy more fish and tanks. Give your aquatic friends cute names and \
-     watch them grow.\n\
+     it to buy more fish and tanks.\n\
      Each round simulates one day, the game ends after 3 rounds\n\n\
      Be careful: each day you have a limited amount of actions you can take! \n\n\
-     Start Game:\n"
+     Start Game:\n";
+  let game = Game.start_game 3 in
+  Game.set_game game;
+  action 4 game
 
 (* Create a new game w/ 3 rounds, g represents current game state. *)
 (*let g = Game.start_game 3
