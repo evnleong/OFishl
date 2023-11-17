@@ -1,71 +1,82 @@
-open Array
-
 type fish_species = Goldfish | Pufferfish | Shark
 
-(** Type representing fish foods *)
+(** Type representing fish foods. *)
 type fish_food = Fish | Pellet
 
 type fish = {
   species : fish_species;
   mutable num : int;
   mutable age_sum : int;
-  mutable health : int;
+  mutable health : float;
   food : fish_food;
 }
+(** Type representing a population of fish. *)
 
-(* Total number of fish species *)
+(* Total number of fish species. *)
 let num_species = 3
 
-type tank = fish array
-(** Type representing a tank of fish *)
+(* Number by which health of a fish population decreases each round. *)
+let health_points = ~-.5.
 
-type player_state = {
+type tank = fish array
+(** Type representing a tank of fish. *)
+
+type game_state = {
   mutable round : int;
   mutable money : int;
   mutable tank : tank;
   max_rounds : int;
 }
-(** Type representing current game state *)
+(** Type representing current game state. *)
 
-(** Creates a custom new fish population *)
+(** Creates a custom new fish population. *)
 let make_fish (species : fish_species) (food : fish_food) : fish =
-  { species; num = 0; age_sum = 0; health = 0; food }
+  { species; num = 0; age_sum = 0; health = 100.; food }
 
-(* Values representing new fish populations *)
+(* Example values representing new fish populations. *)
 let goldfish = make_fish Goldfish Pellet
 let pufferfish = make_fish Pufferfish Pellet
 let shark = make_fish Shark Fish
 let goldfishspecies = Goldfish
 let pufferfishspecies = Pufferfish
-let sharkspecies = Shark
+let sharkspecies = Shark 
 
+(** Sets tank t to the empty tank. *)
 let set_tank (t : tank) : unit =
   t.(0) <- make_fish Goldfish Pellet;
   t.(1) <- make_fish Pufferfish Pellet;
   t.(2) <- make_fish Shark Fish
 
-(* Returns position of fish species in tank array *)
+(* Returns position of fish species in tank array. *)
 let fish_pos (s : fish_species) : int =
   match s with Goldfish -> 0 | Pufferfish -> 1 | Shark -> 2
 
-(** Given a fish population, updates the age sum *)
+(** Ages a fish population f by one round. In effect, f's age sum increases
+    by the number of fish in f. *)
 let age_fish (f : fish) : unit = f.age_sum <- f.age_sum + f.num
 
-(** Given a tank, updates the age of every fish in the tank by one round *)
+(** Ages every fish population in a tank by one round. *)
 let age_tank (t : tank) : unit =
   for x = 0 to Array.length t do
     age_fish t.(x)
   done
 
-(** Given a fish and an integer i, adds i to the fish's health *)
-let health_fish (f : fish) (i : int) : unit = f.health <- f.health + i
+(** Adds i to the health of a fish population. *)
+let health_fish (f : fish) (i : float) : unit = f.health <- f.health +. i
 
-(** Updates health of a given species of fish in a tank *)
-let health_tank (t : tank) (s : fish_species) (i : int) : unit =
+(** Adds i to the health of fish population with species s in tank t. *)
+let health_tank_species (t : tank) (s : fish_species) (i : float) : unit =
   let pos = fish_pos s in
   health_fish t.(pos) i
 
-let start_game (i : int) : player_state =
+(** Adds i to the health of every fish population in tank t. *)
+let health_tank (t : tank) (i : float): unit = 
+  for x = 0 to Array.length t do 
+    health_fish t.(x) i 
+  done
+
+(** Initializes a new game state. *)
+let start_game (i : int) : game_state =
   {
     round = 1;
     money = 100;
@@ -73,24 +84,40 @@ let start_game (i : int) : player_state =
     max_rounds = i;
   }
 
-let set_game (g : player_state) : unit = set_tank g.tank
+(** Sets tank in game state g to the empty tank. *)
+let set_game (g : game_state) : unit = set_tank g.tank
 
-(** Adds n to fish population f *)
+(** Adds n to fish population f. *)
 let add_fish (f : fish) (n : int) : unit = f.num <- f.num + n
 
-(** Adds n to fish population of species s in tank t *)
+(** Adds n to fish population of species s in tank t. *)
 let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
   let pos = fish_pos s in
   add_fish t.(pos) n
 
-(** Adds n to fish population of species s in player state's tank *)
-let add_fish_game (g : player_state) (s : fish_species) (n : int) : unit =
+(** Adds n fish to fish population of species s in game state g. *)
+let add_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
   add_fish_tank g.tank s n
 
-(** Updates player state's round number and tank ages after one round. *)
-let end_of_round (g : player_state) : unit =
+(** Feeds n pellets to a fish population f. In effect, f's health increases 
+    by n/N, where N is the number of fish in the population. *)
+let feed_fish (f : fish) (n : int) : unit = 
+  health_fish f (float_of_int n /. (float_of_int f.num))
+
+(** Feeds n pellets to fish population of species s in tank t. *)
+let feed_fish_tank (t : tank) (s : fish_species) (n : int) : unit = 
+  let pos = fish_pos s in
+  feed_fish t.(pos) n
+
+(** Feeds n pellets to fish population of species s in game state g. *)
+let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit = 
+  feed_fish_tank g.tank s n
+
+(** Updates game state g's round, fish population ages by one round. *)
+let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
-  age_tank g.tank
+  age_tank g.tank; 
+  health_tank g.tank health_points
 
 (* CHANGE IMPLEMENTATION OF FUNCTIONS BELOW *)
 
@@ -105,7 +132,7 @@ let body = ref ""
 
 let header = ref ""
 
-let print_fish (pstate : player_state) =
+let print_fish (pstate : game_state) =
   let playertank = pstate.tank in
   let body = ref "" in
   for i = 0 to num_species - 1 do
@@ -131,14 +158,14 @@ let print_fish (pstate : player_state) =
    \ Species:      # of Fish:      Age Score:      Health Level: \n"
    ^ print_fish_list (List.rev t.fish_list) *)
 
-let print_playermoney (g : player_state) : int = g.money
+let print_playermoney (g : game_state) : int = g.money
 
 (** Initialize a round by printing the current round and currency. *)
-let start_round_print (g : player_state) : string =
+let start_round_print (g : game_state) : string =
   "Day " ^ string_of_int g.round ^ "\nYou currently have $"
   ^ string_of_int g.money ^ "."
 
 (** End of round string with a players fish in a table. *)
-(* let end_round_print (g : player_state) : string = print_tank g.tank *)
+(* let end_round_print (g : game_state) : string = print_tank g.tank *)
 
-let cost (g : player_state) (cost : int) : unit = g.money <- g.money - cost
+let cost (g : game_state) (cost : int) : unit = g.money <- g.money - cost

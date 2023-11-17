@@ -3,9 +3,10 @@ open Final_project
 open Userinput
 
 let user_prompt () = read_line ()
+
 let command string = string |> String.uppercase_ascii |> parse_input
 
-let rec action num_actions (g : Game.player_state) : unit =
+let rec action num_actions (g : Game.game_state) : unit =
   try
     if num_actions = 0 then raise Exit
     else
@@ -56,7 +57,7 @@ let () =
     | _ -> failwith "Invalid"
 
   (* Continously prompt user until invalid option entered or out of actions. *)
-  let rec action num_actions (g : Game.player_state) : Game.player_state =
+  let rec action num_actions (g : Game.game_state) : Game.game_state =
     try
       if num_actions = 0 then raise Exit
       else
