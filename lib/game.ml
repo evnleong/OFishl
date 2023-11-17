@@ -76,7 +76,8 @@ let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
   let pos = fish_pos s in
   add_fish t.(pos) n
 
-(** Adds n fish to fish population of species s in game state g. *)
+(** Adds n fish to fish population of species s in game state g. Subtracts
+    cost of the fish from g's money. *)
 let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
   add_fish_tank g.tank s n; cost g (price_fish s n)
 
@@ -119,7 +120,8 @@ let feed_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
   let pos = fish_pos s in
   feed_fish t.(pos) n
 
-(** Feeds n pellets to fish population of species s in game state g. *)
+(** Feeds n pellets to fish population of species s in game state g. Subtracts
+    cost of fish from g's money. *)
 let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit = 
   feed_fish_tank g.tank s n; cost g n
 
