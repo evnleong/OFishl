@@ -20,11 +20,12 @@ let parse_species (prompt : string) : Game.fish_species =
   | _ -> Huh 
 
 let parse_species_int (prompt : string) : Game.fish_species * int = 
-  let lst = String.split_on_char ' ' prompt |> List.filter (fun s -> s <> "" && s <> " ") in
+  let lst = prompt |> String.uppercase_ascii |> String.split_on_char ' ' 
+    |> List.filter (fun s -> s <> "" && s <> " ") in
   if List.length lst <> 2 then (Huh, 0)
-  else match Stdlib.int_of_string_opt (List.nth lst 2) with 
+  else match Stdlib.int_of_string_opt (List.nth lst 1) with 
     | None -> (Huh, 0)
-    | Some n -> begin match parse_species (List.nth lst 1) with 
+    | Some n -> begin match parse_species (List.nth lst 0) with 
       | Huh -> (Huh, 0)
       | x -> (x, n)
     end

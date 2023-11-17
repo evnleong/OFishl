@@ -5,7 +5,7 @@ open Userinput
 (** Message for erroneous user inputs. *)
 let dunno () = print_endline "Oops, we didn't catch that."
 
-(** Buy fish. ADD TO THE INSTRUCTIONS: COST PER FISH *)
+(** Buy fish. *)
 let rec buy (num_actions : int) (g : Game.game_state) : unit =
   print_endline
     "\n\
@@ -64,10 +64,8 @@ and action num_actions (g : Game.game_state) : unit =
     | Dunno ->
         dunno ();
         action num_actions g
-    | _ -> ()
   with Exit ->
-    print_endline "Invalid Option or Out of Moves";
-    g
+    print_endline "Invalid Option or Out of Moves"
 
 let () =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
