@@ -6,27 +6,39 @@ open Userinput
 let dunno () = print_endline "Oops, we didn't catch that."
 
 (** Buy fish. ADD TO THE INSTRUCTIONS: COST PER FISH *)
-let rec buy (num_actions : int) (g : Game.game_state) : unit = 
-  print_endline "\n Buy a number of fish of a species. For example, \n 
-  to add 10 golfish to your tank, type \"Goldfish 10\". Price per fish: \n
-  golfish $5, pufferfish $10, shark $20.";
+let rec buy (num_actions : int) (g : Game.game_state) : unit =
+  print_endline
+    "\n\
+    \ Buy a number of fish of a species. For example, \n\
+    \ \n\
+    \  to add 10 golfish to your tank, type \"Goldfish 10\". Price per fish: \n\n\
+    \  golfish $5, pufferfish $10, shark $20.";
 
-  match parse_species_int (read_line ()) with 
-  | (s, n) -> 
-    if s = Huh then (dunno (); (action num_actions g)) 
-    else Game.buy_fish_game g s n; action (num_actions - 1) g
+  match parse_species_int (read_line ()) with
+  | s, n ->
+      if s = Huh then (
+        dunno ();
+        action num_actions g)
+      else Game.buy_fish_game g s n;
+      action (num_actions - 1) g
 
 (** Feed n pellets to fish population of species s. *)
-and feed (num_actions : int) (g : Game.game_state) : unit = 
-  print_endline "\n Feed pellets to a species in your tank. For example, \n
-  to feed the goldfish in your tank 10 pellets, type \"Goldfish 10\". \n
-  One pellet costs $1, and if a species  has N fish, then it takes \n 
-  N pellets to increase its health by one point.";
+and feed (num_actions : int) (g : Game.game_state) : unit =
+  print_endline
+    "\n\
+    \ Feed pellets to a species in your tank. For example, \n\n\
+    \  to feed the goldfish in your tank 10 pellets, type \"Goldfish 10\". \n\n\
+    \  One pellet costs $1, and if a species  has N fish, then it takes \n\
+    \ \n\
+    \  N pellets to increase its health by one point.";
 
-  match parse_species_int (read_line ()) with 
-  | (s, n) -> 
-    if s = Huh then (dunno (); (action num_actions g)) 
-    else Game.feed_fish_game g s n; action (num_actions - 1) g
+  match parse_species_int (read_line ()) with
+  | s, n ->
+      if s = Huh then (
+        dunno ();
+        action num_actions g)
+      else Game.feed_fish_game g s n;
+      action (num_actions - 1) g
 
 and action num_actions (g : Game.game_state) : unit =
   try
@@ -36,20 +48,26 @@ and action num_actions (g : Game.game_state) : unit =
         ("\n What would you like to do today? \n You currently have "
        ^ string_of_int num_actions
        ^ " action(s) left today. \n\
-         \ Type (Buy, Feed, Tanks, Wallet, Instructions) or Ctrl +C to Exit  \n");
+         \ Type (Buy, Feed, Tanks, Wallet, Instructions) or Ctrl +C to Exit  \n"
+        );
     let response = parse_input (read_line ()) in
-      match response with
-      | Buy -> buy num_actions g
-      | Feed -> feed num_actions g
-      | View_Tanks -> print_endline (Game.end_round_print g); action num_actions g
-      | Wallet -> 
+    match response with
+    | Buy -> buy num_actions g
+    | Feed -> feed num_actions g
+    | View_Tanks ->
+        Game.print_fish g;
+        action num_actions g
+    | Wallet ->
         print_endline ("You have $" ^ string_of_int (Game.print_playermoney g));
         action num_actions g
-      | Instructions -> failwith "UNIMPLEMENTED"
-      | Dunno -> dunno (); action num_actions g
-      | _ -> ()
-  with Exit -> print_endline "Invalid Option or Out of Moves"; g
-
+    | Instructions -> failwith "UNIMPLEMENTED"
+    | Dunno ->
+        dunno ();
+        action num_actions g
+    | _ -> ()
+  with Exit ->
+    print_endline "Invalid Option or Out of Moves";
+    g
 
 let () =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -61,7 +79,6 @@ let () =
   let game = Game.start_game 3 in
   Game.set_game game;
   action 4 game
-
 
 (* OLD CODE BELOW *)
 
