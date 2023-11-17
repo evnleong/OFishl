@@ -1,4 +1,4 @@
-type fish_species = Goldfish | Pufferfish | Shark
+type fish_species = Goldfish | Pufferfish | Shark | Huh
 
 (** Type representing fish foods. *)
 type fish_food = Fish | Pellet
@@ -36,13 +36,12 @@ type game_state = {
 let make_fish (species : fish_species) (food : fish_food) : fish =
   { species; num = 0; age_sum = 0; health = 100.; food }
 
-(* Example values representing new fish populations. *)
-let goldfish = make_fish Goldfish Pellet
-let pufferfish = make_fish Pufferfish Pellet
-let shark = make_fish Shark Fish
-let goldfishspecies = Goldfish
-let pufferfishspecies = Pufferfish
-let sharkspecies = Shark 
+(** Cost of buying n fish of a species *)
+let price_fish (species : fish_species) (n : int) : int = match species with 
+| Goldfish -> 5 * n
+| Pufferfish -> 10 * n
+| Shark -> 20 * n
+| Huh -> 0
 
 (** Sets tank t to the empty tank. *)
 let set_tank (t : tank) : unit =
@@ -52,7 +51,7 @@ let set_tank (t : tank) : unit =
 
 (* Returns position of fish population of species s in tank array. *)
 let fish_pos (s : fish_species) : int =
-  match s with Goldfish -> 0 | Pufferfish -> 1 | Shark -> 2
+  match s with Goldfish -> 0 | Pufferfish -> 1 | Shark -> 2 | Huh -> failwith "Invalid"
 
 (** Initializes a new game state. *)
 let start_game (i : int) : game_state =
@@ -66,6 +65,9 @@ let start_game (i : int) : game_state =
 (** Sets tank in game state g to the empty tank. *)
 let set_game (g : game_state) : unit = set_tank g.tank
 
+(** Subtracts cost from game state g's money. *)
+let cost (g : game_state) (cost : int) : unit = g.money <- g.money - cost
+
 (** Adds n to fish population f. *)
 let add_fish (f : fish) (n : int) : unit = f.num <- f.num + n
 
@@ -75,8 +77,8 @@ let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
   add_fish t.(pos) n
 
 (** Adds n fish to fish population of species s in game state g. *)
-let add_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
-  add_fish_tank g.tank s n
+let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
+  add_fish_tank g.tank s n; cost g (price_fish s n)
 
 (** Ages a fish population f by one round. In effect, f's age sum increases
     by the number of fish in f. *)
@@ -88,7 +90,7 @@ let age_tank (t : tank) : unit =
     age_fish t.(x)
   done
 
-(** Adds i to the health of a fish population. *)
+(** Adds i to the health of fish population f. *)
 let health_fish (f : fish) (i : float) : unit = f.health <- f.health +. i
 
 (** Adds i to the health of fish population of species s in tank t. *)
@@ -119,16 +121,13 @@ let feed_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
 
 (** Feeds n pellets to fish population of species s in game state g. *)
 let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit = 
-  feed_fish_tank g.tank s n
+  feed_fish_tank g.tank s n; cost g n
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
   age_tank g.tank; 
   health_tank g.tank health_points
-
-(** Subtracts cost from game state g's money. *)
-let cost (g : game_state) (cost : int) : unit = g.money <- g.money - cost
 
 (* CHANGE IMPLEMENTATION OF FUNCTIONS BELOW *)
 
@@ -137,6 +136,7 @@ let string_of_fish_species (s : fish_species) : string =
   | Goldfish -> "Goldfish"
   | Pufferfish -> "Pufferfish"
   | Shark -> "Shark"
+  | Huh -> "Huh"
 
 (** Prints a fish's name, species, and age. Helper function for print_fish_list. *)
 let body = ref ""
