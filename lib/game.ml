@@ -15,8 +15,11 @@ type fish = {
 (* Total number of fish species. *)
 let num_species = 3
 
-(* Number by which health of a fish population decreases each round. *)
+(* Amount by which health of a fish population decreases each round. *)
 let health_points = ~-.5.
+
+(* Amount by which health a fish population increases with medicine. *)
+let med_boost = 30.
 
 type tank = fish array
 (** Type representing a tank of fish. *)
@@ -47,33 +50,9 @@ let set_tank (t : tank) : unit =
   t.(1) <- make_fish Pufferfish Pellet;
   t.(2) <- make_fish Shark Fish
 
-(* Returns position of fish species in tank array. *)
+(* Returns position of fish population of species s in tank array. *)
 let fish_pos (s : fish_species) : int =
   match s with Goldfish -> 0 | Pufferfish -> 1 | Shark -> 2
-
-(** Ages a fish population f by one round. In effect, f's age sum increases
-    by the number of fish in f. *)
-let age_fish (f : fish) : unit = f.age_sum <- f.age_sum + f.num
-
-(** Ages every fish population in a tank by one round. *)
-let age_tank (t : tank) : unit =
-  for x = 0 to Array.length t do
-    age_fish t.(x)
-  done
-
-(** Adds i to the health of a fish population. *)
-let health_fish (f : fish) (i : float) : unit = f.health <- f.health +. i
-
-(** Adds i to the health of fish population with species s in tank t. *)
-let health_tank_species (t : tank) (s : fish_species) (i : float) : unit =
-  let pos = fish_pos s in
-  health_fish t.(pos) i
-
-(** Adds i to the health of every fish population in tank t. *)
-let health_tank (t : tank) (i : float): unit = 
-  for x = 0 to Array.length t do 
-    health_fish t.(x) i 
-  done
 
 (** Initializes a new game state. *)
 let start_game (i : int) : game_state =
@@ -99,6 +78,35 @@ let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
 let add_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
   add_fish_tank g.tank s n
 
+(** Ages a fish population f by one round. In effect, f's age sum increases
+    by the number of fish in f. *)
+let age_fish (f : fish) : unit = f.age_sum <- f.age_sum + f.num
+
+(** Ages every fish population in a tank by one round. *)
+let age_tank (t : tank) : unit =
+  for x = 0 to Array.length t do
+    age_fish t.(x)
+  done
+
+(** Adds i to the health of a fish population. *)
+let health_fish (f : fish) (i : float) : unit = f.health <- f.health +. i
+
+(** Adds i to the health of fish population of species s in tank t. *)
+let health_tank_species (t : tank) (s : fish_species) (i : float) : unit =
+  let pos = fish_pos s in
+  health_fish t.(pos) i
+
+(** Adds i to the health of every fish population in tank t. *)
+let health_tank (t : tank) (i : float): unit = 
+  for x = 0 to Array.length t do 
+    health_fish t.(x) i 
+  done
+
+(** Feeds medicine to fish population of species s in tank t. In effect, 
+    the health of the population gets boosted by med_boost. *)
+let medicine (t : tank) (s : fish_species) : unit = 
+  health_tank_species t s med_boost 
+
 (** Feeds n pellets to a fish population f. In effect, f's health increases 
     by n/N, where N is the number of fish in the population. *)
 let feed_fish (f : fish) (n : int) : unit = 
@@ -118,6 +126,9 @@ let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
   age_tank g.tank; 
   health_tank g.tank health_points
+
+(** Subtracts cost from game state g's money. *)
+let cost (g : game_state) (cost : int) : unit = g.money <- g.money - cost
 
 (* CHANGE IMPLEMENTATION OF FUNCTIONS BELOW *)
 
@@ -167,5 +178,3 @@ let start_round_print (g : game_state) : string =
 
 (** End of round string with a players fish in a table. *)
 (* let end_round_print (g : game_state) : string = print_tank g.tank *)
-
-let cost (g : game_state) (cost : int) : unit = g.money <- g.money - cost

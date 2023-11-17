@@ -20,6 +20,7 @@ val health_fish : fish -> float -> unit
 val make_fish : fish_species -> fish_food -> fish
 val health_tank_species : tank -> fish_species -> float -> unit
 val health_tank : tank -> float -> unit
+val medicine : tank -> fish_species -> unit
 
 val start_game : int -> game_state
 (** Returns a new player state instance with n rounds. A player starts with $100 and 
