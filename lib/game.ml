@@ -21,12 +21,18 @@ let health_points = ~-.5.
 (* Amount by which health a fish population increases with medicine. *)
 let med_boost = 30.
 
+(* Cost of a medicine boost. *)
+let med_cost = 50.
+
+(* Cost of a single food pellet. *)
+let pellet_cost = 0.5
+
 type tank = fish array
 (** Type representing a tank of fish. *)
 
 type game_state = {
   mutable round : int;
-  mutable money : int;
+  mutable money : float;
   mutable tank : tank;
   max_rounds : int;
 }
@@ -37,11 +43,13 @@ let make_fish (species : fish_species) (food : fish_food) : fish =
   { species; num = 0; age_sum = 0; health = 100.; food }
 
 (** Cost of buying n fish of a species *)
-let price_fish (species : fish_species) (n : int) : int = match species with 
-| Goldfish -> 5 * n
-| Pufferfish -> 10 * n
-| Shark -> 20 * n
-| Huh -> 0
+let price_fish (species : fish_species) (n : int) : float = 
+  let m = float_of_int n in 
+  match species with 
+  | Goldfish -> 5. *. m
+  | Pufferfish -> 10. *. m
+  | Shark -> 20. *. m
+  | Huh -> failwith "Invalid"
 
 (** Sets tank t to the empty tank. *)
 let set_tank (t : tank) : unit =
@@ -57,7 +65,7 @@ let fish_pos (s : fish_species) : int =
 let start_game (i : int) : game_state =
   {
     round = 1;
-    money = 100;
+    money = 100.;
     tank = Array.make num_species (make_fish Goldfish Pellet);
     max_rounds = i;
   }
@@ -66,7 +74,7 @@ let start_game (i : int) : game_state =
 let set_game (g : game_state) : unit = set_tank g.tank
 
 (** Subtracts cost from game state g's money. *)
-let cost (g : game_state) (cost : int) : unit = g.money <- g.money - cost
+let cost (g : game_state) (c : float) : unit = g.money <- g.money -. c
 
 (** Adds n to fish population f. *)
 let add_fish (f : fish) (n : int) : unit = f.num <- f.num + n
@@ -105,10 +113,12 @@ let health_tank (t : tank) (i : float): unit =
     health_fish t.(x) i 
   done
 
-(** Feeds medicine to fish population of species s in tank t. In effect, 
-    the health of the population gets boosted by med_boost. *)
-let medicine (t : tank) (s : fish_species) : unit = 
-  health_tank_species t s med_boost 
+(** Feeds medicine to fish population of species s in game g. In effect, 
+    the health of the population gets boosted by med_boost, and med_cost
+    is subtracted from g's money. *)
+let med_game_species (g : game_state) (s : fish_species) : unit = 
+  health_tank_species g.tank s med_boost;
+  cost g med_cost
 
 (** Feeds n pellets to a fish population f. In effect, f's health increases 
     by n/N, where N is the number of fish in the population. *)
@@ -123,7 +133,8 @@ let feed_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
 (** Feeds n pellets to fish population of species s in game state g. Subtracts
     cost of fish from g's money. *)
 let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit = 
-  feed_fish_tank g.tank s n; cost g n
+  let m = float_of_int n in 
+  feed_fish_tank g.tank s n; cost g (m *. pellet_cost)
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
@@ -171,12 +182,12 @@ let print_fish (pstate : game_state) =
    \ Species:      # of Fish:      Age Score:      Health Level: \n"
    ^ print_fish_list (List.rev t.fish_list) *)
 
-let print_playermoney (g : game_state) : int = g.money
+let get_playermoney (g : game_state) : float = g.money
 
 (** Initialize a round by printing the current round and currency. *)
 let start_round_print (g : game_state) : string =
   "Day " ^ string_of_int g.round ^ "\nYou currently have $"
-  ^ string_of_int g.money ^ "."
+  ^ string_of_float g.money ^ "."
 
 (** End of round string with a players fish in a table. *)
 (* let end_round_print (g : game_state) : string = print_tank g.tank *)

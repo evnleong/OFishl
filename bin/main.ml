@@ -10,8 +10,7 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
   print_endline
     "\n\
     \ Buy a number of fish of a species. For example, \n\
-    \ \n\
-    \  to add 10 golfish to your tank, type \"Goldfish 10\". Price per fish: \n\n\
+    \  to add 10 golfish to your tank, type \"Goldfish 10\". Price per fish: \n\
     \  golfish $5, pufferfish $10, shark $20.";
 
   match parse_species_int (read_line ()) with
@@ -22,14 +21,13 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
       else Game.buy_fish_game g s n;
       action (num_actions - 1) g
 
-(** Feed n pellets to fish population of species s. *)
+(** Feed n pellets to fish population. *)
 and feed (num_actions : int) (g : Game.game_state) : unit =
   print_endline
     "\n\
-    \ Feed pellets to a species in your tank. For example, \n\n\
-    \  to feed the goldfish in your tank 10 pellets, type \"Goldfish 10\". \n\n\
-    \  One pellet costs $1, and if a species  has N fish, then it takes \n\
-    \ \n\
+    \ Feed pellets to a species in your tank. For example, \n\
+    \  to feed the goldfish in your tank 10 pellets, type \"Goldfish 10\". \n\
+    \  One pellet costs $0.5, and if a species  has N fish, then it takes \n\
     \  N pellets to increase its health by one point.";
 
   match parse_species_int (read_line ()) with
@@ -40,6 +38,19 @@ and feed (num_actions : int) (g : Game.game_state) : unit =
       else Game.feed_fish_game g s n;
       action (num_actions - 1) g
 
+(** Give medicine to a fish population. *)
+and medicine (num_actions : int) (g : Game.game_state) : unit = 
+  print_endline 
+    "\n\
+    \ Give medicine to a species in your tank to boost its health by 30 points.
+    \ For example, to give medicine to the goldfish in your tank, type 
+    \ \"Goldfish\". Medicine has a flat price of $50.";
+  
+  match (read_line () |> parse_species) with 
+  | Huh -> dunno (); action num_actions g
+  | s -> Game.med_game_species g s; action (num_actions - 1) g
+
+
 and action num_actions (g : Game.game_state) : unit =
   try
     if num_actions = 0 then raise Exit
@@ -48,17 +59,18 @@ and action num_actions (g : Game.game_state) : unit =
         ("\n What would you like to do today? \n You currently have "
        ^ string_of_int num_actions
        ^ " action(s) left today. \n\
-         \ Type (Buy, Feed, Tanks, Wallet, Instructions) or Ctrl +C to Exit  \n"
+         \ Type (Buy, Feed, Medicine, Tanks, Wallet, Instructions) or Ctrl +C to Exit  \n"
         );
     let response = parse_input (read_line ()) in
     match response with
     | Buy -> buy num_actions g
     | Feed -> feed num_actions g
+    | Medicine -> medicine num_actions g
     | View_Tanks ->
         Game.print_fish g;
         action num_actions g
     | Wallet ->
-        print_endline ("You have $" ^ string_of_int (Game.print_playermoney g));
+        print_endline ("You have $" ^ string_of_float (Game.get_playermoney g));
         action num_actions g
     | Instructions -> failwith "UNIMPLEMENTED"
     | Dunno ->
@@ -113,7 +125,7 @@ let () =
       let response = command (user_prompt ()) in
       match response with
       | Wallet ->
-          print_endline ("you have $" ^ string_of_int (Game.print_playermoney g));
+          print_endline ("you have $" ^ string_of_float (Game.print_playermoney g));
           action num_actions g
       | Buy ->
           print_endline
