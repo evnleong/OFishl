@@ -141,10 +141,14 @@ let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
   let m = float_of_int n in
   feed_fish_tank g.tank s n;
   cost g (m *. pellet_cost)
-
+let earnings (g:game_state) : float = 
+  float_of_int g.tank.(0).age_sum *. 0.5 +.
+  float_of_int g.tank.(1).age_sum *. 1. +.
+  float_of_int g.tank.(2).age_sum *. 3.
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
+  g.money <- g.money +. earnings g;
   age_tank g.tank;
   health_tank g.tank health_points
 

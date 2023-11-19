@@ -36,6 +36,7 @@ val start_round_print : game_state -> string
 
 (* val end_round_print : game_state -> string *)
 val cost : game_state -> float -> unit
+val earnings : game_state -> float
 val end_of_round : game_state -> unit
 val print_fish : game_state -> unit
 val get_max_rounds : game_state -> int
