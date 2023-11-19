@@ -141,10 +141,12 @@ let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
   let m = float_of_int n in
   feed_fish_tank g.tank s n;
   cost g (m *. pellet_cost)
-let earnings (g:game_state) : float = 
-  float_of_int g.tank.(0).age_sum *. 0.5 +.
-  float_of_int g.tank.(1).age_sum *. 1. +.
-  float_of_int g.tank.(2).age_sum *. 3.
+
+let earnings (g : game_state) : float =
+  (float_of_int g.tank.(0).age_sum *. 0.5)
+  +. (float_of_int g.tank.(1).age_sum *. 1.)
+  +. (float_of_int g.tank.(2).age_sum *. 3.)
+
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
@@ -162,9 +164,6 @@ let string_of_fish_species (s : fish_species) : string =
   | Huh -> "Huh"
 
 (** Prints a fish's name, species, and age. Helper function for print_fish_list. *)
-let body = ref ""
-
-let header = ref ""
 
 let print_fish (pstate : game_state) =
   let playertank = pstate.tank in

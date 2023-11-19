@@ -8,10 +8,13 @@ let dunno () = print_endline "Oops, we didn't catch that."
 (** Buy fish. *)
 let rec buy (num_actions : int) (g : Game.game_state) : unit =
   print_endline
-    "\n\
-    \ Buy a number of fish of a species. For example, \n\
-    \  to add 10 golfish to your tank, type \"Goldfish 10\". Price per fish: \n\
-    \  golfish $5, pufferfish $10, shark $20.";
+    ("\n \n     You currently have $"
+    ^ string_of_float (Game.get_playermoney g)
+    ^ "\n\
+      \  Buy a number of fish of a species. For example, \n\
+      \  to add 10 golfish to your tank, type \"Goldfish 10\". \n\
+      \  Price per fish: \n\
+      \  golfish $5, pufferfish $10, shark $20.");
 
   match parse_species_int (read_line ()) with
   | s, n ->
