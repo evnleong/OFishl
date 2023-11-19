@@ -1,5 +1,8 @@
-type fish_species = Goldfish | Pufferfish | Shark | Huh
-(** Type representing fish species *)
+type fish_species =
+  | Goldfish
+  | Pufferfish
+  | Shark
+  | Huh  (** Type representing fish species *)
 
 type fish_food
 
@@ -11,7 +14,7 @@ type tank
 type game_state
 
 val add_fish : fish -> int -> unit
-val price_fish : fish_species -> int -> float 
+val price_fish : fish_species -> int -> float
 val age_fish : fish -> unit
 val age_tank : tank -> unit
 val health_fish : fish -> float -> unit
@@ -20,7 +23,6 @@ val health_tank_species : tank -> fish_species -> float -> unit
 val health_tank : tank -> float -> unit
 val med_game_species : game_state -> fish_species -> unit
 val feed_fish_game : game_state -> fish_species -> int -> unit
-
 
 val start_game : int -> game_state
 (** Returns a new player state instance with n rounds. A player starts with $100 and 
@@ -36,6 +38,7 @@ val start_round_print : game_state -> string
 val cost : game_state -> float -> unit
 val end_of_round : game_state -> unit
 val print_fish : game_state -> unit
+val get_max_rounds : game_state -> int
 
 (* val print_fish_list : fish list -> string *)
 (* val print_tank : tank -> string *)

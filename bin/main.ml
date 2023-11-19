@@ -39,17 +39,20 @@ and feed (num_actions : int) (g : Game.game_state) : unit =
       action (num_actions - 1) g
 
 (** Give medicine to a fish population. *)
-and medicine (num_actions : int) (g : Game.game_state) : unit = 
-  print_endline 
+and medicine (num_actions : int) (g : Game.game_state) : unit =
+  print_endline
     "\n\
-    \ Give medicine to a species in your tank to boost its health by 30 points.
-    \ For example, to give medicine to the goldfish in your tank, type 
-    \ \"Goldfish\". Medicine has a flat price of $50.";
-  
-  match (read_line () |> parse_species) with 
-  | Huh -> dunno (); action num_actions g
-  | s -> Game.med_game_species g s; action (num_actions - 1) g
+    \ Give medicine to a species in your tank to boost its health by 30 points.\n\
+    \     For example, to give medicine to the goldfish in your tank, type \n\
+    \     \"Goldfish\". Medicine has a flat price of $50.";
 
+  match read_line () |> parse_species with
+  | Huh ->
+      dunno ();
+      action num_actions g
+  | s ->
+      Game.med_game_species g s;
+      action (num_actions - 1) g
 
 and action num_actions (g : Game.game_state) : unit =
   try
@@ -59,8 +62,8 @@ and action num_actions (g : Game.game_state) : unit =
         ("\n What would you like to do today? \n You currently have "
        ^ string_of_int num_actions
        ^ " action(s) left today. \n\
-         \ Type (Buy, Feed, Medicine, Tanks, Wallet, Instructions) or Ctrl +C to Exit  \n"
-        );
+         \ Type (Buy, Feed, Medicine, Tanks, Wallet, Instructions) or Ctrl +C \
+          to Exit  \n");
     let response = parse_input (read_line ()) in
     match response with
     | Buy -> buy num_actions g
@@ -76,8 +79,7 @@ and action num_actions (g : Game.game_state) : unit =
     | Dunno ->
         dunno ();
         action num_actions g
-  with Exit ->
-    print_endline "Invalid Option or Out of Moves"
+  with Exit -> print_endline "Next day...."
 
 let () =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -88,7 +90,13 @@ let () =
      Start Game:\n";
   let game = Game.start_game 3 in
   Game.set_game game;
-  action 4 game
+  for i = 1 to Game.get_max_rounds game do
+    print_endline ("Starting round:" ^ string_of_int i);
+    action 2 game
+  done;
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+    "\n Thanks for playing! \n Here's your game summary: \n";
+  Game.print_fish game
 
 (* OLD CODE BELOW *)
 
