@@ -63,10 +63,11 @@ and action num_actions (g : Game.game_state) : unit =
     else
       ANSITerminal.print_string [ ANSITerminal.cyan ]
         ("\n What would you like to do today? \n You currently have "
-       ^ string_of_int num_actions
-       ^ " action(s) left today. \n\
-         \ Type (Buy, Feed, Medicine, Tanks, Wallet, Instructions) or Ctrl +C \
-          to Exit  \n");
+       ^ string_of_int num_actions ^ " action(s) left today and $"
+        ^ string_of_float (Game.get_playermoney g)
+        ^ "  \n\
+          \ Type (Buy, Feed, Medicine, Tanks, Wallet, Instructions) or Ctrl +C \
+           to Exit  \n");
     let response = parse_input (read_line ()) in
     match response with
     | Buy -> buy num_actions g
