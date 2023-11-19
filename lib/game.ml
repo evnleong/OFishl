@@ -1,5 +1,12 @@
 type fish_species = Goldfish | Pufferfish | Shark | Huh
 
+let string_of_fish_species (s : fish_species) : string =
+  match s with
+  | Goldfish -> "Goldfish"
+  | Pufferfish -> "Pufferfish"
+  | Shark -> "Shark"
+  | Huh -> "Huh"
+
 (** Type representing fish foods. *)
 type fish_food = Fish | Pellet
 
@@ -147,23 +154,35 @@ let earnings (g : game_state) : float =
   +. (float_of_int g.tank.(1).age_sum *. 1.)
   +. (float_of_int g.tank.(2).age_sum *. 3.)
 
+(**Remind the player when a species needs to be fed*)
+let health_reminder (g : game_state) : unit =
+  for i = 0 to num_species - 1 do
+    if g.tank.(i).health < 20. then
+      print_endline
+        ("Your" ^ string_of_fish_species g.tank.(i).species ^ "is hungry!")
+    else ()
+  done
+
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
   g.money <- g.money +. earnings g;
   age_tank g.tank;
-  health_tank g.tank health_points
+  health_tank g.tank health_points;
+  health_reminder g
 
 (* CHANGE IMPLEMENTATION OF FUNCTIONS BELOW *)
 
-let string_of_fish_species (s : fish_species) : string =
-  match s with
-  | Goldfish -> "Goldfish"
-  | Pufferfish -> "Pufferfish"
-  | Shark -> "Shark"
-  | Huh -> "Huh"
-
-(** Prints a fish's name, species, and age. Helper function for print_fish_list. *)
+(**Summarizes the health of a player's fish*)
+let health_statement (g : game_state) =
+  let playertank = g.tank in
+  let body = ref "" in
+  let header = ref "" in
+  for i = 0 to num_species - 1 do
+    body := !body ^ "           " ^ string_of_float playertank.(i).health;
+    header := !header ^ "      " ^ string_of_fish_species playertank.(i).species
+  done;
+  print_endline ("Health:       " ^ !body)
 
 let print_fish (pstate : game_state) =
   let playertank = pstate.tank in
