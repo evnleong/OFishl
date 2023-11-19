@@ -98,8 +98,10 @@ let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
 (** Adds n fish to fish population of species s in game state g. Subtracts
     cost of the fish from g's money. *)
 let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
-  add_fish_tank g.tank s n;
-  cost g (price_fish s n)
+  let not_broke = price_fish s n < g.money in
+  if not_broke then add_fish_tank g.tank s n
+  else print_endline "You do not have enough money.";
+  if not_broke then cost g (price_fish s n)
 
 (** Ages a fish population f by one round. In effect, f's age sum increases
     by the number of fish in f. *)
