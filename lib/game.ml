@@ -43,8 +43,8 @@ let med_cost = 50.
 (* Cost of a single food pellet. *)
 let pellet_cost = 0.1
 
+(* Type representing a tank of fish. *)
 type tank = fish array
-(** Type representing a tank of fish. *)
 
 type game_state = {
   mutable round : int;
@@ -56,9 +56,16 @@ type game_state = {
 
 (** Creates a custom new fish population. *)
 let make_fish (species : fish_species) (food : fish_food) (growth_rate : float)
-  (death_rate : float) : fish =
-  { species; num = 0; age_sum = 0; health = 100.; food; growth_rate; 
-    death_rate}
+    (death_rate : float) : fish =
+  {
+    species;
+    num = 0;
+    age_sum = 0;
+    health = 100.;
+    food;
+    growth_rate;
+    death_rate;
+  }
 
 (** Cost of buying n fish of a species *)
 let price_fish (species : fish_species) (n : int) : float =
@@ -96,11 +103,12 @@ let start_game (i : int) : game_state =
 let set_game (g : game_state) : unit = set_tank g.tank
 
 (** Checks whether a fish popuation is extinct. *)
-let get_extinct (f : fish) : bool = (f.num = 0)
+let get_extinct (f : fish) : bool = f.num = 0
 
 (** Checks whether species s is extinct in game g. *)
-let species_extinct (g : game_state) (s : fish_species) : bool = 
-  let pos = fish_pos s in get_extinct g.tank.(pos)
+let species_extinct (g : game_state) (s : fish_species) : bool =
+  let pos = fish_pos s in
+  get_extinct g.tank.(pos)
 
 (** Subtracts cost from game state g's money. *)
 let cost (g : game_state) (c : float) : unit = g.money <- g.money -. c
@@ -114,8 +122,8 @@ let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
   add_fish t.(pos) n
 
 (** Checks if player does not have enough money to buy fish. *)
-let buy_broke (g : game_state) (s : fish_species) (n : int) : bool = 
-  price_fish s n > g.money 
+let buy_broke (g : game_state) (s : fish_species) (n : int) : bool =
+  price_fish s n > g.money
 
 (** Adds n fish to fish population of species s in game state g. Subtracts
     cost of the fish from g's money. *)
@@ -148,8 +156,7 @@ let health_tank (t : tank) (i : float) : unit =
   done
 
 (** Checks if player does not have enough money to buy medicine. *)
-let med_broke (g : game_state) : bool = 
-  med_cost > g.money 
+let med_broke (g : game_state) : bool = med_cost > g.money
 
 (** Feeds medicine to fish population of species s in game g. In effect, 
     the health of the population gets boosted by med_boost, and med_cost
@@ -176,17 +183,17 @@ let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
   cost g (m *. pellet_cost)
 
 (** Checks if player has enough money to feed fish. *)
-let feed_broke (g : game_state) (n : int) : bool = 
+let feed_broke (g : game_state) (n : int) : bool =
   let m = float_of_int n in
-  g.money < (m *. pellet_cost)
+  g.money < m *. pellet_cost
 
 (** Checks if a fish is a predator. *)
-let predator_fish (f : fish) : bool = (f.food = Fish)
+let predator_fish (f : fish) : bool = f.food = Fish
 
 (** Checks if species s in game g is a predator. *)
-let predator_species (g : game_state) (s : fish_species) : bool = 
-  let pos = fish_pos s in 
-  predator_fish g.tank.(pos) 
+let predator_species (g : game_state) (s : fish_species) : bool =
+  let pos = fish_pos s in
+  predator_fish g.tank.(pos)
 
 let earnings (g : game_state) : float =
   (float_of_int g.tank.(0).num *. 1.)
@@ -198,28 +205,31 @@ let health_reminder (g : game_state) : unit =
   for i = 0 to num_species - 1 do
     if g.tank.(i).health < 20. then
       print_endline
-        ("Your" 
-        ^ (g.tank.(i).species |> string_of_fish_species |> String.lowercase_ascii)
+        ("Your"
+        ^ (g.tank.(i).species |> string_of_fish_species
+         |> String.lowercase_ascii)
         ^ "are hungry!")
     else ()
   done
 
 (** Updates count of a fish population. *)
-let growth_fish (f : fish) : unit = 
+let growth_fish (f : fish) : unit =
   if f.health <= 0. || f.num <= 0 then (
-    print_endline ("Your " ^ (f.species |> plural_species |> String.lowercase_ascii) 
+    print_endline
+      ("Your "
+      ^ (f.species |> plural_species |> String.lowercase_ascii)
       ^ " have gone extinct.");
     f.num <- 0;
     f.health <- 100.)
-  else if f.health < 50. then 
-    f.num <- (float_of_int f.num) *. f.death_rate |> Float.to_int
-  else if f.health > 80. then 
-    f.num <- (float_of_int f.num) *. f.growth_rate |> Float.to_int
+  else if f.health < 50. then
+    f.num <- float_of_int f.num *. f.death_rate |> Float.to_int
+  else if f.health > 80. then
+    f.num <- float_of_int f.num *. f.growth_rate |> Float.to_int
   else ()
 
 (** Updates count of each fish population in a tank. *)
-let growth_tank (t : tank) : unit = 
-  for i = 0 to num_species - 1 do 
+let growth_tank (t : tank) : unit =
+  for i = 0 to num_species - 1 do
     if t.(i).num > 0 then growth_fish t.(i)
   done
 
@@ -227,9 +237,10 @@ let growth_tank (t : tank) : unit =
 let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
   g.money <- g.money +. earnings g;
-  print_endline 
-    ("\n  You earned $" ^ string_of_float (earnings g) ^ " today." 
-    ^ "\n  Next day....");
+  print_endline
+    ("\n  You earned $"
+    ^ string_of_float (earnings g)
+    ^ " today." ^ "\n  Next day....");
   age_tank g.tank;
   if g.round > 0 then growth_tank g.tank;
   health_tank g.tank health_points;
@@ -249,8 +260,8 @@ let health_statement (g : game_state) =
   print_endline ("Health:       " ^ !body)
 
 (** Returns 0 if f has no fish, otherwise returns f's health. *)
-let string_of_health (f : fish) : string = 
-  if f.num = 0 then "0" else string_of_float f.health 
+let string_of_health (f : fish) : string =
+  if f.num = 0 then "0" else string_of_float f.health
 
 let print_fish (pstate : game_state) =
   let playertank = pstate.tank in
@@ -289,6 +300,3 @@ let get_max_rounds (g : game_state) : int = g.max_rounds
 let start_round_print (g : game_state) : string =
   "Day " ^ string_of_int g.round ^ "\nYou currently have $"
   ^ string_of_float g.money ^ "."
-
-(** End of round string with a players fish in a table. *)
-(* let end_round_print (g : game_state) : string = print_tank g.tank *)
