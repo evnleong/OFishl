@@ -84,6 +84,14 @@ let start_game (i : int) : game_state =
 (** Sets tank in game state g to the empty tank. *)
 let set_game (g : game_state) : unit = set_tank g.tank
 
+(** Checks a fish population is alive. *)
+let fish_alive (f : fish) : bool = f.num > 0
+
+(** Checks that species s is alive in game g. *)
+let species_alive (g : game_state) (s : fish_species) : bool = 
+  let pos = fish_pos s in 
+  fish_alive g.tank.(pos)
+
 (** Subtracts cost from game state g's money. *)
 let cost (g : game_state) (c : float) : unit = g.money <- g.money -. c
 
@@ -95,13 +103,15 @@ let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
   let pos = fish_pos s in
   add_fish t.(pos) n
 
+(** Checks if player does not have enough money to buy fish. *)
+let buy_broke (g : game_state) (s : fish_species) (n : int) : bool = 
+  price_fish s n > g.money 
+
 (** Adds n fish to fish population of species s in game state g. Subtracts
     cost of the fish from g's money. *)
 let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
-  let not_broke = price_fish s n < g.money in
-  if not_broke then add_fish_tank g.tank s n
-  else print_endline "You do not have enough money.";
-  if not_broke then cost g (price_fish s n)
+  add_fish_tank g.tank s n;
+  cost g (price_fish s n)
 
 (** Ages a fish population f by one round. In effect, f's age sum increases
     by the number of fish in f. *)
@@ -109,7 +119,7 @@ let age_fish (f : fish) : unit = f.age_sum <- f.age_sum + f.num
 
 (** Ages every fish population in a tank by one round. *)
 let age_tank (t : tank) : unit =
-  for x = 0 to Array.length t do
+  for x = 0 to (Array.length t) - 1 do
     age_fish t.(x)
   done
 
@@ -123,9 +133,13 @@ let health_tank_species (t : tank) (s : fish_species) (i : float) : unit =
 
 (** Adds i to the health of every fish population in tank t. *)
 let health_tank (t : tank) (i : float) : unit =
-  for x = 0 to Array.length t do
+  for x = 0 to (Array.length t) - 1 do
     health_fish t.(x) i
   done
+
+(** Checks if player does not have enough money to buy medicine. *)
+let med_broke (g : game_state) : bool = 
+  med_cost > g.money 
 
 (** Feeds medicine to fish population of species s in game g. In effect, 
     the health of the population gets boosted by med_boost, and med_cost
@@ -151,17 +165,32 @@ let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
   feed_fish_tank g.tank s n;
   cost g (m *. pellet_cost)
 
+(** Checks if player has enough money to feed fish. *)
+let feed_broke (g : game_state) (n : int) : bool = 
+  let m = float_of_int n in
+  g.money < (m *. pellet_cost)
+
+(** Checks if a fish is a predator. *)
+let predator_fish (f : fish) : bool = (f.food = Fish)
+
+(** Checks if species s in game g is a predator. *)
+let predator_species (g : game_state) (s : fish_species) : bool = 
+  let pos = fish_pos s in 
+  predator_fish g.tank.(pos) 
+
 let earnings (g : game_state) : float =
   (float_of_int g.tank.(0).age_sum *. 0.5)
   +. (float_of_int g.tank.(1).age_sum *. 1.)
   +. (float_of_int g.tank.(2).age_sum *. 3.)
 
-(**Remind the player when a species needs to be fed*)
+(** Remind the player when a species needs to be fed. *)
 let health_reminder (g : game_state) : unit =
   for i = 0 to num_species - 1 do
     if g.tank.(i).health < 20. then
       print_endline
-        ("Your" ^ string_of_fish_species g.tank.(i).species ^ "is hungry!")
+        ("Your" 
+        ^ (g.tank.(i).species |> string_of_fish_species |> String.lowercase_ascii)
+        ^ "are hungry!")
     else ()
   done
 
@@ -169,6 +198,9 @@ let health_reminder (g : game_state) : unit =
 let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
   g.money <- g.money +. earnings g;
+  print_endline 
+    ("\n  You earned $" ^ string_of_float (earnings g) ^ " today." 
+    ^ "\n  Next day....");
   age_tank g.tank;
   health_tank g.tank health_points;
   health_reminder g
@@ -195,8 +227,8 @@ let print_fish (pstate : game_state) =
     header := !header ^ "      " ^ string_of_fish_species playertank.(i).species
   done;
 
-  print_endline ("Species:    " ^ !header);
-  print_endline ("Species Count:" ^ !body)
+  print_endline ("\n Species:    " ^ !header);
+  print_endline (" Species Count:" ^ !body)
 
 (* pstate.tank |> Array.iter (fun f -> print_string (string_of_int f.num)) *)
 (*

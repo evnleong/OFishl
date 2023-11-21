@@ -42,6 +42,12 @@ val end_of_round : game_state -> unit
 val health_statement : game_state -> unit
 val print_fish : game_state -> unit
 val get_max_rounds : game_state -> int
+val buy_broke : game_state -> fish_species -> int -> bool
+val med_broke : game_state -> bool
+val species_alive : game_state -> fish_species -> bool
+val string_of_fish_species : fish_species -> string
+val feed_broke : game_state -> int -> bool
+val predator_species : game_state -> fish_species -> bool
 
 (* val print_fish_list : fish list -> string *)
 (* val print_tank : tank -> string *)
