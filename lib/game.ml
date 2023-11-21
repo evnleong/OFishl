@@ -1,18 +1,29 @@
-type fish_species = Goldfish | Pufferfish | Shark | Huh
+type fish_species = Goldfish | Anemone | Clownfish 
+  | Remora | Lancetfish | Shark | Huh 
+
+(* Pufferfish *)
 
 let string_of_fish_species (s : fish_species) : string =
   match s with
   | Goldfish -> "Goldfish"
-  | Pufferfish -> "Pufferfish"
+  | Anemone -> "Anemone"
+  | Clownfish -> "Clownfish"
+  | Remora -> "Remora"
+  | Lancetfish -> "Lancetfish"
   | Shark -> "Shark"
   | Huh -> "Huh"
 
 let plural_species (s : fish_species) : string =
   match s with
   | Goldfish -> "Goldfish"
-  | Pufferfish -> "Pufferfish"
+  | Anemone -> "Anemones"
+  | Clownfish -> "Clownfish"
+  | Remora -> "Remorae"
   | Shark -> "Sharks"
+  | Lancetfish -> "Lancetfish"
   | Huh -> "Huh"
+
+(*   | Pufferfish -> "Pufferfish" *)
 
 (** Type representing fish foods. *)
 type fish_food = Fish | Pellet
@@ -29,7 +40,7 @@ type fish = {
 (** Type representing a population of fish. *)
 
 (* Total number of fish species excluding Huh. *)
-let num_species = 3
+let num_species = 6
 
 (* Amount by which health of a fish population decreases each round. *)
 let health_points = ~-.5.
@@ -54,41 +65,56 @@ type game_state = {
 }
 (** Type representing current game state. *)
 
-(** Creates a custom new fish population. *)
+(** Creates a custom empty fish population. *)
 let make_fish (species : fish_species) (food : fish_food) (growth_rate : float)
     (death_rate : float) : fish =
   {
     species;
     num = 0;
     age_sum = 0;
-    health = 100.;
+    health = 0.;
     food;
     growth_rate;
     death_rate;
   }
 
-(** Cost of buying n fish of a species *)
+(** Cost of buying n fish of a species. *)
 let price_fish (species : fish_species) (n : int) : float =
   let m = float_of_int n in
   match species with
-  | Goldfish -> 5. *. m
-  | Pufferfish -> 10. *. m
+  | Goldfish -> 2. *. m
+  | Anemone -> 5. *. m
+  | Clownfish -> 12. *. m
+  | Remora -> 8. *. m
+  | Lancetfish -> 15. *. m
   | Shark -> 20. *. m
   | Huh -> failwith "Invalid"
 
-(** Sets tank t to the empty tank. *)
-let set_tank (t : tank) : unit =
-  t.(0) <- make_fish Goldfish Pellet 1.3 0.6;
-  t.(1) <- make_fish Pufferfish Pellet 1.2 0.7;
-  t.(2) <- make_fish Shark Fish 1.1 0.9
+(*  | Pufferfish -> 10. *. m *)
 
 (* Returns position of fish population of species s in tank array. *)
 let fish_pos (s : fish_species) : int =
   match s with
   | Goldfish -> 0
-  | Pufferfish -> 1
-  | Shark -> 2
+  | Anemone -> 1
+  | Clownfish -> 2
+  | Remora -> 3
+  | Lancetfish -> 4
+  | Shark -> 5
   | Huh -> failwith "Invalid"
+
+(*   | Pufferfish -> 2 *)
+
+(** Sets tank t to the empty tank. *)
+let set_tank (t : tank) : unit =
+  t.(fish_pos Goldfish) <- make_fish Goldfish Pellet 1.4 0.6;
+  t.(fish_pos Anemone) <- make_fish Anemone Pellet 1.3 0.7;
+  t.(fish_pos Clownfish) <- make_fish Clownfish Pellet 1.2 0.7;
+  t.(fish_pos Remora) <- make_fish Remora Pellet 1.3 0.8;
+  t.(fish_pos Lancetfish) <- make_fish Lancetfish Fish 1.2 0.9; 
+  t.(fish_pos Shark) <- make_fish Shark Fish 1.1 0.9
+
+(* t.(fish_pos Pufferfish) <- make_fish Pufferfish Pellet 1.3 0.7; *)
 
 (** Initializes a new game state. *)
 let start_game (i : int) : game_state =
@@ -103,15 +129,29 @@ let start_game (i : int) : game_state =
 let set_game (g : game_state) : unit = set_tank g.tank
 
 (** Checks whether a fish popuation is extinct. *)
-let get_extinct (f : fish) : bool = f.num = 0
+let extinct (f : fish) : bool = f.num = 0
 
-(** Checks whether species s is extinct in game g. *)
+(** Checks whether species s in game g is extinct. *)
 let species_extinct (g : game_state) (s : fish_species) : bool =
-  let pos = fish_pos s in
-  get_extinct g.tank.(pos)
+  let pos = fish_pos s in 
+  extinct g.tank.(pos)
 
 (** Subtracts cost from game state g's money. *)
 let cost (g : game_state) (c : float) : unit = g.money <- g.money -. c
+
+(** Adds i to the health of fish population f. *)
+let health_fish (f : fish) (i : float) : unit = f.health <- f.health +. i
+
+(** Adds i to the health of fish population of species s in tank t. *)
+let health_tank_species (t : tank) (s : fish_species) (i : float) : unit =
+  let pos = fish_pos s in
+  health_fish t.(pos) i
+
+(** Adds i to the health of every fish population in tank t. *)
+let health_tank (t : tank) (i : float) : unit =
+  for x = 0 to num_species - 1 do
+    if t.(x).num > 0 then health_fish t.(x) i
+  done
 
 (** Adds n to fish population f. *)
 let add_fish (f : fish) (n : int) : unit = f.num <- f.num + n
@@ -119,7 +159,9 @@ let add_fish (f : fish) (n : int) : unit = f.num <- f.num + n
 (** Adds n to fish population of species s in tank t. *)
 let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
   let pos = fish_pos s in
-  add_fish t.(pos) n
+  if extinct t.(pos) then (
+    add_fish t.(pos) n; health_fish t.(pos) 100.)
+  else add_fish t.(pos) n
 
 (** Checks if player does not have enough money to buy fish. *)
 let buy_broke (g : game_state) (s : fish_species) (n : int) : bool =
@@ -139,20 +181,6 @@ let age_fish (f : fish) : unit = f.age_sum <- f.age_sum + f.num
 let age_tank (t : tank) : unit =
   for x = 0 to num_species - 1 do
     if t.(x).num > 0 then age_fish t.(x)
-  done
-
-(** Adds i to the health of fish population f. *)
-let health_fish (f : fish) (i : float) : unit = f.health <- f.health +. i
-
-(** Adds i to the health of fish population of species s in tank t. *)
-let health_tank_species (t : tank) (s : fish_species) (i : float) : unit =
-  let pos = fish_pos s in
-  health_fish t.(pos) i
-
-(** Adds i to the health of every fish population in tank t. *)
-let health_tank (t : tank) (i : float) : unit =
-  for x = 0 to num_species - 1 do
-    if t.(x).num > 0 then health_fish t.(x) i
   done
 
 (** Checks if player does not have enough money to buy medicine. *)
@@ -196,19 +224,24 @@ let predator_species (g : game_state) (s : fish_species) : bool =
   predator_fish g.tank.(pos)
 
 let earnings (g : game_state) : float =
-  (float_of_int g.tank.(0).num *. 1.)
-  +. (float_of_int g.tank.(1).num *. 5.)
-  +. (float_of_int g.tank.(2).num *. 10.)
+  (float_of_int g.tank.(fish_pos Goldfish).num *. 1.)
+  +. (float_of_int g.tank.(fish_pos Anemone).num *. 3.)
+  +. (float_of_int g.tank.(fish_pos Clownfish).num *. 12.)
+  +. (float_of_int g.tank.(fish_pos Remora).num *. 5.)
+  +. (float_of_int g.tank.(fish_pos Lancetfish).num *. 20.)
+  +. (float_of_int g.tank.(fish_pos Shark).num *. 30.)
+
+(* +. (float_of_int g.tank.(fish_pos Pufferfish).num *. 8.) *)
 
 (** Remind the player when a species needs to be fed. *)
 let health_reminder (g : game_state) : unit =
   for i = 0 to num_species - 1 do
-    if g.tank.(i).health < 20. then
+    if g.tank.(i).health < 20. && not (extinct g.tank.(i)) then
       print_endline
-        ("Your"
+        ("Your "
         ^ (g.tank.(i).species |> string_of_fish_species
          |> String.lowercase_ascii)
-        ^ "are hungry!")
+        ^ " are hungry!")
     else ()
   done
 
@@ -233,6 +266,31 @@ let growth_tank (t : tank) : unit =
     if t.(i).num > 0 then growth_fish t.(i)
   done
 
+(** Gives health boost to anemone and clownfish populations in tank t if 
+    both  are not empty. *)
+  let anemone_clownfish (t : tank) : unit = 
+    let a = fish_pos Anemone in
+    let c = fish_pos Clownfish in
+
+    match (extinct t.(a), extinct t.(c)) with 
+    | false, false -> health_fish t.(a) 2.; health_fish t.(c) 2.;
+    | _ -> ()
+
+(** Gives health boost to shark and remora populations in tank t if 
+    both are not empty. *)
+  let remora_shark (t : tank) : unit = 
+    let r = fish_pos Remora in
+    let s = fish_pos Shark in
+
+    match (extinct t.(r), extinct t.(s)) with 
+    | false, false -> health_fish t.(r) 2.; health_fish t.(s) 2.;
+    | _ -> ()
+
+(** Gives health boost to symbiotic fish species in tank t. 
+    Symbiotic pairings: anemone and clownfish; remora and shark. *)
+let symbiosis (t : tank) : unit = 
+  anemone_clownfish t; remora_shark t
+
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   g.round <- g.round + 1;
@@ -242,8 +300,9 @@ let end_of_round (g : game_state) : unit =
     ^ string_of_float (earnings g)
     ^ " today." ^ "\n  Next day....");
   age_tank g.tank;
-  if g.round > 0 then growth_tank g.tank;
+  if g.round > 1 then growth_tank g.tank;
   health_tank g.tank health_points;
+  symbiosis g.tank; 
   health_reminder g
 
 (* CHANGE IMPLEMENTATION OF FUNCTIONS BELOW *)
@@ -259,10 +318,6 @@ let health_statement (g : game_state) =
   done;
   print_endline ("Health:       " ^ !body)
 
-(** Returns 0 if f has no fish, otherwise returns f's health. *)
-let string_of_health (f : fish) : string =
-  if f.num = 0 then "0" else string_of_float f.health
-
 let print_fish (pstate : game_state) =
   let playertank = pstate.tank in
   let body1 = ref "" in
@@ -270,8 +325,8 @@ let print_fish (pstate : game_state) =
   let header = ref "" in
   for i = 0 to num_species - 1 do
     body1 := !body1 ^ "             " ^ string_of_int playertank.(i).num;
-    body2 := !body2 ^ "            " ^ string_of_health playertank.(i);
-    header := !header ^ "      " ^ string_of_fish_species playertank.(i).species
+    body2 := !body2 ^ "            " ^ string_of_float playertank.(i).health;
+    header := !header ^ "       " ^ string_of_fish_species playertank.(i).species
   done;
 
   print_endline ("\n Species: " ^ !header);

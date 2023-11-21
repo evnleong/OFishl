@@ -13,7 +13,8 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
     ^ "\n\
       \  Buy some fish of a species to add to your tank. \n\
       \  Example: To buy 10 goldfish, type \"Goldfish 10\". \n\
-      \  Price per fish: Goldfish $5, Pufferfish $10, Shark $20.");
+      \  Price per fish: Goldfish $2, Anemone $5, Remora $8, \n\
+      \  Clownfish $12, Lancetfish $15, Shark $20.");
 
   match parse_species_int (read_line ()) with
   | s, n ->

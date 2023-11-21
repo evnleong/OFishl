@@ -1,4 +1,5 @@
-type input = Buy | Feed | Medicine | View_Tanks | Wallet | Instructions | Pass | Dunno
+type input = Buy | Feed | Medicine | View_Tanks | Wallet 
+  | Instructions | Pass | Dunno
 
 let parse (prompt : string) : string list = 
   prompt |> String.uppercase_ascii |> String.split_on_char ' ' 
@@ -21,17 +22,27 @@ let parse_input (prompt : string) : input =
 let parse_species (prompt : string) : Game.fish_species = 
   match parse prompt with 
   | [ "GOLDFISH" ] -> Goldfish 
-  | [ "PUFFERFISH" ] -> Pufferfish 
+  | [ "ANEMONE" ] -> Anemone
+  | [ "CLOWNFISH" ] -> Clownfish
+  | [ "REMORA" ] -> Remora
+  | [ "LANCETFISH" ] -> Lancetfish
   | [ "SHARK" ] -> Shark 
   | _ -> Huh
+
+(* | [ "PUFFERFISH" ] -> Pufferfish *)
 
 (** Converts parsed string to value of type fish_species. *)
 let parse_species_str (prompt : string) : Game.fish_species = 
   match prompt with 
   | "GOLDFISH" -> Goldfish
-  | "PUFFERFISH" -> Pufferfish
+  | "ANEMONE" -> Anemone
+  | "CLOWNFISH" -> Clownfish
+  | "REMORA" -> Remora
+  | "LANCETFISH" -> Lancetfish
   | "SHARK" -> Shark
   | _ -> Huh 
+
+(* | "PUFFERFISH" -> Pufferfish *)
 
 let parse_species_int (prompt : string) : Game.fish_species * int = 
   let lst = parse prompt in

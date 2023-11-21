@@ -1,8 +1,13 @@
 type fish_species =
-  | Goldfish
-  | Pufferfish
-  | Shark
+  | Goldfish 
+  | Anemone 
+  | Clownfish
+  | Remora
+  | Lancetfish
+  | Shark 
   | Huh  (** Type representing the game's fish species *)
+
+(* Pufferfish *)
 
 type fish_food
 (** Type representing the type of fish food available*)
