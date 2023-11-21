@@ -7,8 +7,6 @@ type fish_species =
   | Shark 
   | Huh  (** Type representing the game's fish species *)
 
-(* Pufferfish *)
-
 type fish_food
 (** Type representing the type of fish food available*)
 

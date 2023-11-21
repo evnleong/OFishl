@@ -1,8 +1,6 @@
 type fish_species = Goldfish | Anemone | Clownfish 
   | Remora | Lancetfish | Shark | Huh 
 
-(* Pufferfish *)
-
 let string_of_fish_species (s : fish_species) : string =
   match s with
   | Goldfish -> "Goldfish"
@@ -23,8 +21,6 @@ let plural_species (s : fish_species) : string =
   | Lancetfish -> "Lancetfish"
   | Huh -> "Huh"
 
-(*   | Pufferfish -> "Pufferfish" *)
-
 (** Type representing fish foods. *)
 type fish_food = Fish | Pellet
 
@@ -41,15 +37,6 @@ type fish = {
 
 (* Total number of fish species excluding Huh. *)
 let num_species = 6
-
-(* Amount by which health of a fish population decreases each round. *)
-let health_points = ~-.5.
-
-(* Amount by which health a fish population increases with medicine. *)
-let med_boost = 30.
-
-(* Cost of a medicine boost. *)
-let med_cost = 50.
 
 (* Cost of a single food pellet. *)
 let pellet_cost = 0.1
@@ -90,8 +77,6 @@ let price_fish (species : fish_species) (n : int) : float =
   | Shark -> 20. *. m
   | Huh -> failwith "Invalid"
 
-(*  | Pufferfish -> 10. *. m *)
-
 (* Returns position of fish population of species s in tank array. *)
 let fish_pos (s : fish_species) : int =
   match s with
@@ -103,18 +88,14 @@ let fish_pos (s : fish_species) : int =
   | Shark -> 5
   | Huh -> failwith "Invalid"
 
-(*   | Pufferfish -> 2 *)
-
 (** Sets tank t to the empty tank. *)
 let set_tank (t : tank) : unit =
   t.(fish_pos Goldfish) <- make_fish Goldfish Pellet 1.4 0.6;
   t.(fish_pos Anemone) <- make_fish Anemone Pellet 1.3 0.7;
   t.(fish_pos Clownfish) <- make_fish Clownfish Pellet 1.2 0.7;
   t.(fish_pos Remora) <- make_fish Remora Pellet 1.3 0.8;
-  t.(fish_pos Lancetfish) <- make_fish Lancetfish Fish 1.2 0.9; 
+  t.(fish_pos Lancetfish) <- make_fish Lancetfish Fish 1.1 0.9; 
   t.(fish_pos Shark) <- make_fish Shark Fish 1.1 0.9
-
-(* t.(fish_pos Pufferfish) <- make_fish Pufferfish Pellet 1.3 0.7; *)
 
 (** Initializes a new game state. *)
 let start_game (i : int) : game_state =
@@ -184,14 +165,14 @@ let age_tank (t : tank) : unit =
   done
 
 (** Checks if player does not have enough money to buy medicine. *)
-let med_broke (g : game_state) : bool = med_cost > g.money
+let med_broke (g : game_state) : bool = 50. > g.money
 
 (** Feeds medicine to fish population of species s in game g. In effect, 
-    the health of the population gets boosted by med_boost, and med_cost
+    the health of the population gets boosted by 30, and 50
     is subtracted from g's money. *)
 let med_game_species (g : game_state) (s : fish_species) : unit =
-  health_tank_species g.tank s med_boost;
-  cost g med_cost
+  health_tank_species g.tank s 30.; 
+  cost g 50.
 
 (** Feeds n pellets to a fish population f. In effect, f's health increases 
     by n/N, where N is the number of fish in the population. *)
@@ -255,9 +236,9 @@ let growth_fish (f : fish) : unit =
     f.num <- 0;
     f.health <- 100.)
   else if f.health < 50. then
-    f.num <- float_of_int f.num *. f.death_rate |> Float.to_int
+    f.num <- float_of_int f.num *. f.death_rate |> Float.floor |> Float.to_int
   else if f.health > 80. then
-    f.num <- float_of_int f.num *. f.growth_rate |> Float.to_int
+    f.num <- float_of_int f.num *. f.growth_rate |> Float.ceil |> Float.to_int
   else ()
 
 (** Updates count of each fish population in a tank. *)
@@ -301,7 +282,7 @@ let end_of_round (g : game_state) : unit =
     ^ " today." ^ "\n  Next day....");
   age_tank g.tank;
   if g.round > 1 then growth_tank g.tank;
-  health_tank g.tank health_points;
+  health_tank g.tank ~-.5.;
   symbiosis g.tank; 
   health_reminder g
 
