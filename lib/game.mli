@@ -18,7 +18,6 @@ val price_fish : fish_species -> int -> float
 val age_fish : fish -> unit
 val age_tank : tank -> unit
 val health_fish : fish -> float -> unit
-val make_fish : fish_species -> fish_food -> fish
 val health_tank_species : tank -> fish_species -> float -> unit
 val health_tank : tank -> float -> unit
 val med_game_species : game_state -> fish_species -> unit
@@ -44,10 +43,11 @@ val print_fish : game_state -> unit
 val get_max_rounds : game_state -> int
 val buy_broke : game_state -> fish_species -> int -> bool
 val med_broke : game_state -> bool
-val species_alive : game_state -> fish_species -> bool
+val species_extinct : game_state -> fish_species -> bool
 val string_of_fish_species : fish_species -> string
 val feed_broke : game_state -> int -> bool
 val predator_species : game_state -> fish_species -> bool
+val plural_species : fish_species -> string
 
 (* val print_fish_list : fish list -> string *)
 (* val print_tank : tank -> string *)

@@ -1,4 +1,4 @@
-type input = Buy | Feed | Medicine | View_Tanks | Wallet | Instructions | Dunno
+type input = Buy | Feed | Medicine | View_Tanks | Wallet | Instructions | Pass | Dunno
 
 let parse (prompt : string) : string list = 
   prompt |> String.uppercase_ascii |> String.split_on_char ' ' 
@@ -14,6 +14,7 @@ let parse_input (prompt : string) : input =
     | [ "TANKS" ] -> View_Tanks
     | [ "WALLET" ] -> Wallet
     | [ "INSTRUCTIONS" ] -> Instructions
+    | [ "PASS" ] -> Pass
     | _ -> Dunno )
 
 (** Converts string to value of type fish_species. *)

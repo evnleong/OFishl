@@ -1,4 +1,4 @@
-type input = Buy | Feed | Medicine | View_Tanks | Wallet | Instructions | Dunno
+type input = Buy | Feed | Medicine | View_Tanks | Wallet | Instructions | Pass | Dunno
 
 val parse : string -> string list 
 
