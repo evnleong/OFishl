@@ -39,14 +39,17 @@ and feed (num_actions : int) (g : Game.game_state) : unit =
       if s = Huh then (
         dunno ();
         action num_actions g)
-      else if (Game.predator_species g s) then 
-        print_endline "\n  This species does not eat pellets."
-      else if not (Game.species_alive g s) then print_endline (
-        "\n  You do not have any " 
+      else if (Game.predator_species g s) then (
+        print_endline "\n  This species does not eat pellets.";
+        action num_actions g)
+      else if not (Game.species_alive g s) then (
+        print_endline ("\n  You do not have any " 
         ^ (s |> Game.string_of_fish_species |> String.lowercase_ascii)
-        ^ " in your tank.")
-      else if (Game.feed_broke g n) then 
-        print_endline "\n  You do not have enough money."
+        ^ " in your tank."); 
+        action num_actions g)
+      else if (Game.feed_broke g n) then (
+        print_endline "\n  You do not have enough money.";
+        action num_actions g)
       else
         Game.feed_fish_game g s n;
         action (num_actions - 1) g
@@ -64,10 +67,11 @@ and medicine (num_actions : int) (g : Game.game_state) : unit =
       dunno ();
       action num_actions g
   | s ->
-      if not (Game.species_alive g s) then 
+      if not (Game.species_alive g s) then (
         print_endline ("\n  You do not have any " 
         ^ (s |> Game.string_of_fish_species |> String.lowercase_ascii)
-        ^ " in your tank.")
+        ^ " in your tank.");
+        action num_actions g)
       else if (Game.med_broke g) then (
         print_endline "\n  You do not have enough money.";
         action num_actions g)
