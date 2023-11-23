@@ -24,12 +24,12 @@ let parse_species (prompt : string) : Game.fish_species =
   | [ "GOLDFISH" ] -> Goldfish 
   | [ "ANEMONE" ] -> Anemone
   | [ "CLOWNFISH" ] -> Clownfish
+  | [ "TURTLE" ] -> Turtle
   | [ "REMORA" ] -> Remora
-  | [ "LANCETFISH" ] -> Lancetfish
   | [ "SHARK" ] -> Shark 
   | _ -> Huh
 
-(* | [ "PUFFERFISH" ] -> Pufferfish *)
+(*   | [ "LANCETFISH" ] -> Lancetfish *)
 
 (** Converts parsed string to value of type fish_species. *)
 let parse_species_str (prompt : string) : Game.fish_species = 
@@ -37,12 +37,12 @@ let parse_species_str (prompt : string) : Game.fish_species =
   | "GOLDFISH" -> Goldfish
   | "ANEMONE" -> Anemone
   | "CLOWNFISH" -> Clownfish
+  | "TURTLE" -> Turtle
   | "REMORA" -> Remora
-  | "LANCETFISH" -> Lancetfish
   | "SHARK" -> Shark
   | _ -> Huh 
 
-(* | "PUFFERFISH" -> Pufferfish *)
+(*   | "LANCETFISH" -> Lancetfish *)
 
 let parse_species_int (prompt : string) : Game.fish_species * int = 
   let lst = parse prompt in

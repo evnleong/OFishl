@@ -1,25 +1,31 @@
 type fish_species = Goldfish | Anemone | Clownfish 
-  | Remora | Lancetfish | Shark | Huh 
+  | Turtle | Remora | Shark | Huh 
+
+(* | Lancetfish *)
 
 let string_of_fish_species (s : fish_species) : string =
   match s with
   | Goldfish -> "Goldfish"
   | Anemone -> "Anemone"
   | Clownfish -> "Clownfish"
+  | Turtle -> "Turtle"
   | Remora -> "Remora"
-  | Lancetfish -> "Lancetfish"
   | Shark -> "Shark"
   | Huh -> "Huh"
+
+(*   | Lancetfish -> "Lancetfish" *)
 
 let plural_species (s : fish_species) : string =
   match s with
   | Goldfish -> "Goldfish"
   | Anemone -> "Anemones"
   | Clownfish -> "Clownfish"
+  | Turtle -> "Turtles"
   | Remora -> "Remorae"
   | Shark -> "Sharks"
-  | Lancetfish -> "Lancetfish"
   | Huh -> "Huh"
+
+(*   | Lancetfish -> "Lancetfish" *)
 
 (** Type representing fish foods. *)
 type fish_food = Fish | Pellet
@@ -70,12 +76,14 @@ let price_fish (species : fish_species) (n : int) : float =
   let m = float_of_int n in
   match species with
   | Goldfish -> 2. *. m
-  | Anemone -> 5. *. m
-  | Clownfish -> 12. *. m
+  | Anemone -> 4. *. m
+  | Clownfish -> 10. *. m
+  | Turtle -> 15. *. m
   | Remora -> 8. *. m
-  | Lancetfish -> 15. *. m
   | Shark -> 20. *. m
   | Huh -> failwith "Invalid"
+
+(* Lancetfish -> 15. *. m *)
 
 (* Returns position of fish population of species s in tank array. *)
 let fish_pos (s : fish_species) : int =
@@ -83,19 +91,23 @@ let fish_pos (s : fish_species) : int =
   | Goldfish -> 0
   | Anemone -> 1
   | Clownfish -> 2
-  | Remora -> 3
-  | Lancetfish -> 4
+  | Turtle -> 3
+  | Remora -> 4
   | Shark -> 5
   | Huh -> failwith "Invalid"
+
+(*   | Lancetfish -> 4 *)
 
 (** Sets tank t to the empty tank. *)
 let set_tank (t : tank) : unit =
   t.(fish_pos Goldfish) <- make_fish Goldfish Pellet 1.4 0.6;
   t.(fish_pos Anemone) <- make_fish Anemone Pellet 1.3 0.7;
-  t.(fish_pos Clownfish) <- make_fish Clownfish Pellet 1.2 0.7;
-  t.(fish_pos Remora) <- make_fish Remora Pellet 1.3 0.8;
-  t.(fish_pos Lancetfish) <- make_fish Lancetfish Fish 1.1 0.9; 
+  t.(fish_pos Clownfish) <- make_fish Clownfish Pellet 1.3 0.7;
+  t.(fish_pos Turtle) <- make_fish Turtle Pellet 1.2 0.9; 
+  t.(fish_pos Remora) <- make_fish Remora Pellet 1.2 0.8;
   t.(fish_pos Shark) <- make_fish Shark Fish 1.1 0.9
+
+(* t.(fish_pos Lancetfish) <- make_fish Lancetfish Fish 1.1 0.9; *)
 
 (** Initializes a new game state. *)
 let start_game (i : int) : game_state =
@@ -207,12 +219,13 @@ let predator_species (g : game_state) (s : fish_species) : bool =
 let earnings (g : game_state) : float =
   (float_of_int g.tank.(fish_pos Goldfish).num *. 1.)
   +. (float_of_int g.tank.(fish_pos Anemone).num *. 3.)
-  +. (float_of_int g.tank.(fish_pos Clownfish).num *. 12.)
+  +. (float_of_int g.tank.(fish_pos Clownfish).num *. 10.)
+  +. (float_of_int g.tank.(fish_pos Turtle).num *. 20.)
   +. (float_of_int g.tank.(fish_pos Remora).num *. 5.)
-  +. (float_of_int g.tank.(fish_pos Lancetfish).num *. 20.)
   +. (float_of_int g.tank.(fish_pos Shark).num *. 30.)
 
-(* +. (float_of_int g.tank.(fish_pos Pufferfish).num *. 8.) *)
+
+(*   +. (float_of_int g.tank.(fish_pos Lancetfish).num *. 20.) *)
 
 (** Remind the player when a species needs to be fed. *)
 let health_reminder (g : game_state) : unit =
@@ -238,7 +251,7 @@ let growth_fish (f : fish) : unit =
   else if f.health < 50. then
     f.num <- float_of_int f.num *. f.death_rate |> Float.floor |> Float.to_int
   else if f.health > 80. then
-    f.num <- float_of_int f.num *. f.growth_rate |> Float.ceil |> Float.to_int
+    f.num <- float_of_int f.num *. f.growth_rate |> Float.round |> Float.to_int
   else ()
 
 (** Updates count of each fish population in a tank. *)
@@ -274,7 +287,6 @@ let symbiosis (t : tank) : unit =
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
-  g.round <- g.round + 1;
   g.money <- g.money +. earnings g;
   print_endline
     ("\n  You earned $"
@@ -284,7 +296,9 @@ let end_of_round (g : game_state) : unit =
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;
   symbiosis g.tank; 
-  health_reminder g
+  health_reminder g;
+  g.round <- g.round + 1
+
 
 (* CHANGE IMPLEMENTATION OF FUNCTIONS BELOW *)
 

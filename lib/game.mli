@@ -2,10 +2,13 @@ type fish_species =
   | Goldfish 
   | Anemone 
   | Clownfish
+  | Turtle 
   | Remora
-  | Lancetfish
   | Shark 
   | Huh  (** Type representing the game's fish species *)
+
+(*  | Lancetfish *)
+
 
 type fish_food
 (** Type representing the type of fish food available*)
