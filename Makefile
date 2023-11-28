@@ -23,7 +23,14 @@ zip:
 	rm -f game.zip
 	zip -r game.zip . -x@exclude.lst
 
-clean:
+bisect: bisect-clean
+	-dune exec --instrument-with bisect_ppx --force test/tests.exe
+	bisect-ppx-report html
+
+bisect-clean:
+	rm -rf _coverage bisect*.coverage
+
+clean: bisect clean
 	dune clean
 	rm -f game.zip
 

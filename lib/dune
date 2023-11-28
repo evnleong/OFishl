@@ -1,4 +1,6 @@
 (library
  (name final_project)
  (public_name final_project)
- (libraries str))
+ (libraries str)
+ (instrumentation
+  (backend bisect_ppx)))
