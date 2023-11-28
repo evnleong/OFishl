@@ -369,5 +369,13 @@ let start_round_print (g : game_state) : string =
 (** Given a fish, returns a sum of the species' ages*)
 let get_age (f : fish) : int = f.age_sum
 
-(** Given a fish, returns the health of the species*)
-let get_health (f : fish) : float = f.health
+(** Given a fish, returns the current number*)
+let get_num (f : fish) : int = f.num
+
+(** Given a game and a fish species, returns the health of the species*)
+let get_health (g : game_state) (s : fish_species) : float =
+  let i = fish_pos s in
+  g.tank.(i).health
+
+(** Given a game_state, returns the tank*)
+let get_tank (g : game_state) = g.tank

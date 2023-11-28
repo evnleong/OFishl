@@ -1,17 +1,17 @@
 type fish_species =
-  | Goldfish 
-  | Anemone 
+  | Goldfish
+  | Anemone
   | Clownfish
-  | Turtle 
+  | Turtle
   | Remora
-  | Shark 
+  | Shark
   | Huh  (** Type representing the game's fish species *)
 
 (*  | Lancetfish *)
 
-
-type fish_food
-(** Type representing the type of fish food available*)
+type fish_food =
+  | Fish
+  | Pellet  (** Type representing the type of fish food available*)
 
 type fish
 (** Type representing a population of fish. 
@@ -22,6 +22,9 @@ type tank
 
 type game_state
 (** Type representing the current state of the player's game*)
+
+val make_fish : fish_species -> fish_food -> float -> float -> fish
+(** Given a species, food, growth_rate, and death_rate, creates a new fish with age = 0*)
 
 val add_fish : fish -> int -> unit
 (** Takes in a fish population, f, and an int, n, and adds n fish to f *)
@@ -109,6 +112,20 @@ val plural_species : fish_species -> string
 
 val get_playermoney : game_state -> float
 (** Takes a current game state g and retrieves the player's current money total *)
+
+(* FUNCTIONS FOR TESTING*)
+
+val get_age : fish -> int
+(** Given a fish, returns the age_sum*)
+
+val get_num : fish -> int
+(** Given a fish, returns the population*)
+
+val get_health : game_state -> fish_species -> float
+(** Given a fish, returns the health*)
+
+val get_tank : game_state -> tank
+(** Given a game_state, returns the tank*)
 
 (* Deprecated Functions *)
 
