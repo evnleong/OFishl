@@ -24,6 +24,9 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
       else if Game.buy_broke g s n then (
         print_endline "\n  You do not have enough money.";
         action num_actions g)
+      else if n < 0 then (
+        print_endline "\n  You must enter a positive integer";
+        action num_actions g)
       else Game.buy_fish_game g s n;
       action (num_actions - 1) g
 
