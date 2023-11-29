@@ -246,6 +246,7 @@ let health_reminder (g : game_state) : unit =
         ^ " are hungry!")
     else ()
   done
+[@@coverage off]
 
 (** Updates count of a fish population. *)
 let growth_fish (f : fish) : unit =
@@ -324,6 +325,7 @@ let health_statement (g : game_state) =
     header := !header ^ "      " ^ string_of_fish_species playertank.(i).species
   done;
   print_endline ("Health:       " ^ !body)
+[@@coverage off]
 
 let print_fish (pstate : game_state) =
   let playertank = pstate.tank in
@@ -340,6 +342,7 @@ let print_fish (pstate : game_state) =
   print_endline ("\n Species: " ^ !header);
   print_endline (" Count:" ^ !body1);
   print_endline (" Health:" ^ !body2)
+[@@coverage off]
 
 (* pstate.tank |> Array.iter (fun f -> print_string (string_of_int f.num)) *)
 (*
@@ -363,6 +366,7 @@ let get_max_rounds (g : game_state) : int = g.max_rounds
 let start_round_print (g : game_state) : string =
   "Day " ^ string_of_int g.round ^ "\nYou currently have $"
   ^ string_of_float g.money ^ "."
+[@@coverage off]
 
 (* FUNCTIONS TO AID TESTING *)
 
@@ -371,6 +375,11 @@ let get_age (f : fish) : int = f.age_sum
 
 (** Given a fish, returns the current number*)
 let get_num (f : fish) : int = f.num
+
+(** Given a fgame and fish species, returns the current population*)
+let get_species_population (g : game_state) (s : fish_species) : int =
+  let i = fish_pos s in
+  g.tank.(i).num
 
 (** Given a game and a fish species, returns the health of the species*)
 let get_health (g : game_state) (s : fish_species) : float =

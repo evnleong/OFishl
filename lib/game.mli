@@ -101,6 +101,9 @@ val species_extinct : game_state -> fish_species -> bool
 val string_of_fish_species : fish_species -> string
 (** Takes a fish species s and returns a string representing that fish species*)
 
+val plural_species : fish_species -> string
+(** Takes a fish species s and returns a plural string representing that fish species*)
+
 val feed_broke : game_state -> int -> bool
 (** Takes a game state g and an int n and returns whether player has enough money to feed n food *)
 
@@ -112,6 +115,9 @@ val plural_species : fish_species -> string
 
 val get_playermoney : game_state -> float
 (** Takes a current game state g and retrieves the player's current money total *)
+
+val growth_tank : tank -> unit
+(** Updates count of each fish population in a tank. *)
 
 (* FUNCTIONS FOR TESTING*)
 
@@ -126,6 +132,9 @@ val get_health : game_state -> fish_species -> float
 
 val get_tank : game_state -> tank
 (** Given a game_state, returns the tank*)
+
+val get_species_population : game_state -> fish_species -> int
+(** Given a game_state and fish species, returns the current population*)
 
 (* Deprecated Functions *)
 
