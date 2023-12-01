@@ -908,7 +908,7 @@ type game_state = {
 (** Creates a custom empty fish population. *)
 let make_fish (species : fish_species) (food : fish_food) (growth_rate : float)
     (death_rate : float) : fish =
-  <span data-count="308">{</span>
+  <span data-count="220">{</span>
     species;
     num = 0;
     age_sum = 0;
@@ -920,56 +920,56 @@ let make_fish (species : fish_species) (food : fish_food) (growth_rate : float)
 
 (** Cost of buying n fish of a species. *)
 let price_fish (species : fish_species) (n : int) : float =
-  <span data-count="60">l</span>et m = float_of_int n in
-  <span data-count="60">m</span>atch species with
-  | <span data-count="22">G</span>oldfish -&gt; 2. *. m
-  | <span data-count="8">A</span>nemone -&gt; 4. *. m
-  | <span data-count="14">C</span>lownfish -&gt; 10. *. m
-  | <span data-count="8">T</span>urtle -&gt; 15. *. m
+  <span data-count="44">l</span>et m = float_of_int n in
+  <span data-count="44">m</span>atch species with
+  | <span data-count="16">G</span>oldfish -&gt; 2. *. m
+  | <span data-count="6">A</span>nemone -&gt; 4. *. m
+  | <span data-count="10">C</span>lownfish -&gt; 10. *. m
+  | <span data-count="6">T</span>urtle -&gt; 15. *. m
   | <span data-count="0">R</span>emora -&gt; 8. *. m
-  | <span data-count="8">S</span>hark -&gt; 20. *. m
+  | <span data-count="6">S</span>hark -&gt; 20. *. m
   | <span data-count="0">H</span>uh -&gt; failwith "Invalid"
 
 (* Lancetfish -&gt; 15. *. m *)
 
 (* Returns position of fish population of species s in tank array. *)
 let fish_pos (s : fish_species) : int =
-  <span data-count="363">m</span>atch s with
-  | <span data-count="76">G</span>oldfish -&gt; 0
-  | <span data-count="67">A</span>nemone -&gt; 1
-  | <span data-count="59">C</span>lownfish -&gt; 2
-  | <span data-count="52">T</span>urtle -&gt; 3
-  | <span data-count="44">R</span>emora -&gt; 4
-  | <span data-count="65">S</span>hark -&gt; 5
+  <span data-count="267">m</span>atch s with
+  | <span data-count="56">G</span>oldfish -&gt; 0
+  | <span data-count="49">A</span>nemone -&gt; 1
+  | <span data-count="43">C</span>lownfish -&gt; 2
+  | <span data-count="38">T</span>urtle -&gt; 3
+  | <span data-count="32">R</span>emora -&gt; 4
+  | <span data-count="49">S</span>hark -&gt; 5
   | <span data-count="0">H</span>uh -&gt; failwith "Invalid"
 
 (*   | Lancetfish -&gt; 4 *)
 
 (** Sets tank t to the empty tank. *)
 let set_tank (t : tank) : unit =
-  <span data-count="42">t</span>.(fish_po<span data-count="42">s</span> Goldfish) &lt;- make_fis<span data-count="42">h</span> Goldfish Pellet 1.4 0.6;
-  <span data-count="42">t</span>.(fish_po<span data-count="42">s</span> Anemone) &lt;- make_fis<span data-count="42">h</span> Anemone Pellet 1.3 0.7;
-  <span data-count="42">t</span>.(fish_po<span data-count="42">s</span> Clownfish) &lt;- make_fis<span data-count="42">h</span> Clownfish Pellet 1.3 0.7;
-  <span data-count="42">t</span>.(fish_po<span data-count="42">s</span> Turtle) &lt;- make_fis<span data-count="42">h</span> Turtle Pellet 1.2 0.9;
-  <span data-count="42">t</span>.(fish_po<span data-count="42">s</span> Remora) &lt;- make_fis<span data-count="42">h</span> Remora Pellet 1.2 0.8;
-  <span data-count="42">t</span>.(fish_po<span data-count="42">s</span> Shark) &lt;- make_fis<span data-count="42">h</span> Shark Fish 1.1 0.9
+  <span data-count="30">t</span>.(fish_po<span data-count="30">s</span> Goldfish) &lt;- make_fis<span data-count="30">h</span> Goldfish Pellet 1.4 0.6;
+  <span data-count="30">t</span>.(fish_po<span data-count="30">s</span> Anemone) &lt;- make_fis<span data-count="30">h</span> Anemone Pellet 1.3 0.7;
+  <span data-count="30">t</span>.(fish_po<span data-count="30">s</span> Clownfish) &lt;- make_fis<span data-count="30">h</span> Clownfish Pellet 1.3 0.7;
+  <span data-count="30">t</span>.(fish_po<span data-count="30">s</span> Turtle) &lt;- make_fis<span data-count="30">h</span> Turtle Pellet 1.2 0.9;
+  <span data-count="30">t</span>.(fish_po<span data-count="30">s</span> Remora) &lt;- make_fis<span data-count="30">h</span> Remora Pellet 1.2 0.8;
+  <span data-count="30">t</span>.(fish_po<span data-count="30">s</span> Shark) &lt;- make_fis<span data-count="30">h</span> Shark Fish 1.1 0.9
 
 (* t.(fish_pos Lancetfish) &lt;- make_fish Lancetfish Fish 1.1 0.9; *)
 
 (** Initializes a new game state. *)
 let start_game (i : int) : game_state =
-  <span data-count="42">{</span>
+  <span data-count="30">{</span>
     round = 1;
     money = 100.;
-    tank = Array.mak<span data-count="42">e</span> num_species (make_fis<span data-count="42">h</span> Goldfish Pellet 1.3 0.6);
+    tank = Array.mak<span data-count="30">e</span> num_species (make_fis<span data-count="30">h</span> Goldfish Pellet 1.3 0.6);
     max_rounds = i;
   }
 
 (** Sets tank in game state g to the empty tank. *)
-let set_game (g : game_state) : unit = <span data-count="42">s</span>et_tank g.tank
+let set_game (g : game_state) : unit = <span data-count="30">s</span>et_tank g.tank
 
 (** Checks whether a fish popuation is extinct. *)
-let extinct (f : fish) : bool = <span data-count="60">f</span>.num = 0
+let extinct (f : fish) : bool = <span data-count="44">f</span>.num = 0
 
 (** Checks whether species s in game g is extinct. *)
 let species_extinct (g : game_state) (s : fish_species) : bool =
@@ -977,34 +977,34 @@ let species_extinct (g : game_state) (s : fish_species) : bool =
   <span data-count="4">e</span>xtinct g.tank.(pos)
 
 (** Subtracts cost from game state g's money. *)
-let cost (g : game_state) (c : float) : unit = <span data-count="70">g</span>.money &lt;- g.money -. c
+let cost (g : game_state) (c : float) : unit = <span data-count="50">g</span>.money &lt;- g.money -. c
 
 (** Adds i to the health of fish population f. *)
 let health_fish (f : fish) (i : float) : unit =
-  <span data-count="91">l</span>et new_health = f.health +. i in
-  if new_health &gt; 100. then <span data-count="56">f</span>.health &lt;- 100. else <span data-count="35">f</span>.health &lt;- new_health
+  <span data-count="65">l</span>et new_health = f.health +. i in
+  if new_health &gt; 100. then <span data-count="40">f</span>.health &lt;- 100. else <span data-count="25">f</span>.health &lt;- new_health
 
 (** Adds i to the health of fish population of species s in tank t. *)
 let health_tank_species (t : tank) (s : fish_species) (i : float) : unit =
-  <span data-count="21">l</span>et pos = fish_pos s in
-  <span data-count="21">h</span>ealth_fish t.(pos) i
+  <span data-count="15">l</span>et pos = fish_pos s in
+  <span data-count="15">h</span>ealth_fish t.(pos) i
 
 (** Adds i to the health of every fish population in tank t. *)
 let health_tank (t : tank) (i : float) : unit =
-  <span data-count="14">f</span>or x = 0 to num_species - 1 do
-    <span data-count="84">i</span>f t.(x).num &gt; 0 then <span data-count="14">h</span>ealth_fis<span data-count="14">h</span> t.(x) i
+  <span data-count="10">f</span>or x = 0 to num_species - 1 do
+    <span data-count="60">i</span>f t.(x).num &gt; 0 then <span data-count="10">h</span>ealth_fis<span data-count="10">h</span> t.(x) i
   done
 
 (** Adds n to fish population f. *)
-let add_fish (f : fish) (n : int) : unit = <span data-count="63">f</span>.num &lt;- f.num + n
+let add_fish (f : fish) (n : int) : unit = <span data-count="45">f</span>.num &lt;- f.num + n
 
 (** Adds n to fish population of species s in tank t. *)
 let add_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
-  <span data-count="56">l</span>et pos = fish_pos s in
-  <span data-count="56">i</span>f extinct t.(pos) then <span data-count="49">(</span>
+  <span data-count="40">l</span>et pos = fish_pos s in
+  <span data-count="40">i</span>f extinct t.(pos) then <span data-count="35">(</span>
     add_fish t.(pos) n;
-    <span data-count="49">h</span>ealth_fish t.(pos) 100.)
-  else <span data-count="7">a</span>dd_fish t.(pos) n
+    <span data-count="35">h</span>ealth_fish t.(pos) 100.)
+  else <span data-count="5">a</span>dd_fish t.(pos) n
 
 (** Checks if player does not have enough money to buy fish. *)
 let buy_broke (g : game_state) (s : fish_species) (n : int) : bool =
@@ -1013,17 +1013,17 @@ let buy_broke (g : game_state) (s : fish_species) (n : int) : bool =
 (** Adds n fish to fish population of species s in game state g. Subtracts
     cost of the fish from g's money. *)
 let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
-  <span data-count="56">a</span>dd_fish_tank g.tank s n;
-  <span data-count="56">c</span>ost g (price_fis<span data-count="56">h</span> s n)
+  <span data-count="40">a</span>dd_fish_tank g.tank s n;
+  <span data-count="40">c</span>ost g (price_fis<span data-count="40">h</span> s n)
 
 (** Ages a fish population f by one round. In effect, f's age sum increases
     by the number of fish in f. *)
-let age_fish (f : fish) : unit = <span data-count="7">f</span>.age_sum &lt;- f.age_sum + f.num
+let age_fish (f : fish) : unit = <span data-count="5">f</span>.age_sum &lt;- f.age_sum + f.num
 
 (** Ages every fish population in a tank by one round. *)
 let age_tank (t : tank) : unit =
-  <span data-count="7">f</span>or x = 0 to num_species - 1 do
-    <span data-count="42">i</span>f t.(x).num &gt; 0 then <span data-count="0">a</span>ge_fis<span data-count="0">h</span> t.(x)
+  <span data-count="5">f</span>or x = 0 to num_species - 1 do
+    <span data-count="30">i</span>f t.(x).num &gt; 0 then <span data-count="0">a</span>ge_fis<span data-count="0">h</span> t.(x)
   done
 
 (** Checks if player does not have enough money to buy medicine. *)
@@ -1033,25 +1033,25 @@ let med_broke (g : game_state) : bool = <span data-count="2">5</span>0. &gt; g.m
     the health of the population gets boosted by 30, and 50
     is subtracted from g's money. *)
 let med_game_species (g : game_state) (s : fish_species) : unit =
-  <span data-count="7">h</span>ealth_tank_species g.tank s 30.;
-  <span data-count="7">c</span>ost g 50.
+  <span data-count="5">h</span>ealth_tank_species g.tank s 30.;
+  <span data-count="5">c</span>ost g 50.
 
 (** Feeds n pellets to a fish population f. In effect, f's health increases 
     by n/N, where N is the number of fish in the population. *)
 let feed_fish (f : fish) (n : int) : unit =
-  <span data-count="7">h</span>ealth_fish f (float_of_in<span data-count="7">t</span> n /. float_of_in<span data-count="7">t</span> f.num)
+  <span data-count="5">h</span>ealth_fish f (float_of_in<span data-count="5">t</span> n /. float_of_in<span data-count="5">t</span> f.num)
 
 (** Feeds n pellets to fish population of species s in tank t. *)
 let feed_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
-  <span data-count="7">l</span>et pos = fish_pos s in
-  <span data-count="7">f</span>eed_fish t.(pos) n
+  <span data-count="5">l</span>et pos = fish_pos s in
+  <span data-count="5">f</span>eed_fish t.(pos) n
 
 (** Feeds n pellets to fish population of species s in game state g. Subtracts
     cost of fish from g's money. *)
 let feed_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
-  <span data-count="7">l</span>et m = float_of_int n in
-  <span data-count="7">f</span>eed_fish_tank g.tank s n;
-  <span data-count="7">c</span>ost g (m *. pellet_cost)
+  <span data-count="5">l</span>et m = float_of_int n in
+  <span data-count="5">f</span>eed_fish_tank g.tank s n;
+  <span data-count="5">c</span>ost g (m *. pellet_cost)
 
 (** Checks if player has enough money to feed fish. *)
 let feed_broke (g : game_state) (n : int) : bool =
@@ -1091,23 +1091,23 @@ let health_reminder (g : game_state) : unit =
 
 (** Updates count of a fish population. *)
 let growth_fish (f : fish) : unit =
-  <span data-count="14">i</span>f f.health &lt;= 0<span data-count="0">.</span> || f.num &lt;= <span data-count="0">0</span> then <span data-count="0">(</span>
+  <span data-count="10">i</span>f f.health &lt;= 0<span data-count="0">.</span> || f.num &lt;= <span data-count="0">0</span> then <span data-count="0">(</span>
     print_endline
       ("Your "
       ^ (f.species |&gt; plural_species |&gt; <span data-count="0">S</span>tring.lowercase_asci<span data-count="0">i</span>)
       ^ " have gone extinct.");
     <span data-count="0">f</span>.num &lt;- 0;
     f.health &lt;- 100.)
-  else <span data-count="14">i</span>f f.health &lt; 50. then
-    <span data-count="7">f</span>.num &lt;- float_of_in<span data-count="7">t</span> f.num *. f.death_rate |&gt; Float.floor |&gt; <span data-count="7">F</span>loat.to_in<span data-count="7">t</span>
-  else <span data-count="7">i</span>f f.health &gt; 80. then
-    <span data-count="7">f</span>.num &lt;- float_of_in<span data-count="7">t</span> f.num *. f.growth_rate |&gt; Float.round |&gt; <span data-count="7">F</span>loat.to_in<span data-count="7">t</span>
+  else <span data-count="10">i</span>f f.health &lt; 50. then
+    <span data-count="5">f</span>.num &lt;- float_of_in<span data-count="5">t</span> f.num *. f.death_rate |&gt; Float.floor |&gt; <span data-count="5">F</span>loat.to_in<span data-count="5">t</span>
+  else <span data-count="5">i</span>f f.health &gt; 80. then
+    <span data-count="5">f</span>.num &lt;- float_of_in<span data-count="5">t</span> f.num *. f.growth_rate |&gt; Float.round |&gt; <span data-count="5">F</span>loat.to_in<span data-count="5">t</span>
   else <span data-count="0">(</span>)
 
 (** Updates count of each fish population in a tank. *)
 let growth_tank (t : tank) : unit =
-  <span data-count="7">f</span>or i = 0 to num_species - 1 do
-    <span data-count="42">i</span>f t.(i).num &gt; 0 then <span data-count="14">g</span>rowth_fis<span data-count="14">h</span> t.(i)
+  <span data-count="5">f</span>or i = 0 to num_species - 1 do
+    <span data-count="30">i</span>f t.(i).num &gt; 0 then <span data-count="10">g</span>rowth_fis<span data-count="10">h</span> t.(i)
   done
 
 (** Gives health boost to anemone and clownfish populations in tank t if 
@@ -1228,7 +1228,7 @@ let get_health (g : game_state) (s : fish_species) : float =
   <span data-count="7">g</span>.tank.(i).health
 
 (** Given a game_state, returns the tank*)
-let get_tank (g : game_state) = <span data-count="42">g</span>.tank
+let get_tank (g : game_state) = <span data-count="30">g</span>.tank
 </code></pre>
       </div>
     </div>
