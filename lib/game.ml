@@ -7,8 +7,6 @@ type fish_species =
   | Shark
   | Huh
 
-(* | Lancetfish *)
-
 let string_of_fish_species (s : fish_species) : string =
   match s with
   | Goldfish -> "Goldfish"
@@ -19,8 +17,6 @@ let string_of_fish_species (s : fish_species) : string =
   | Shark -> "Shark"
   | Huh -> "Huh"
 
-(*   | Lancetfish -> "Lancetfish" *)
-
 let plural_species (s : fish_species) : string =
   match s with
   | Goldfish -> "Goldfish"
@@ -30,8 +26,6 @@ let plural_species (s : fish_species) : string =
   | Remora -> "Remorae"
   | Shark -> "Sharks"
   | Huh -> "Huh"
-
-(*   | Lancetfish -> "Lancetfish" *)
 
 (** Type representing fish foods. *)
 type fish_food = Fish | Pellet
@@ -89,8 +83,6 @@ let price_fish (species : fish_species) (n : int) : float =
   | Shark -> 20. *. m
   | Huh -> failwith "Invalid"
 
-(* Lancetfish -> 15. *. m *)
-
 (* Returns position of fish population of species s in tank array. *)
 let fish_pos (s : fish_species) : int =
   match s with
@@ -102,8 +94,6 @@ let fish_pos (s : fish_species) : int =
   | Shark -> 5
   | Huh -> failwith "Invalid"
 
-(*   | Lancetfish -> 4 *)
-
 (** Sets tank t to the empty tank. *)
 let set_tank (t : tank) : unit =
   t.(fish_pos Goldfish) <- make_fish Goldfish Pellet 1.4 0.6;
@@ -112,8 +102,6 @@ let set_tank (t : tank) : unit =
   t.(fish_pos Turtle) <- make_fish Turtle Pellet 1.2 0.9;
   t.(fish_pos Remora) <- make_fish Remora Pellet 1.2 0.8;
   t.(fish_pos Shark) <- make_fish Shark Fish 1.1 0.9
-
-(* t.(fish_pos Lancetfish) <- make_fish Lancetfish Fish 1.1 0.9; *)
 
 (** Initializes a new game state. *)
 let start_game (i : int) : game_state =
@@ -225,6 +213,7 @@ let predator_species (g : game_state) (s : fish_species) : bool =
   let pos = fish_pos s in
   predator_fish g.tank.(pos)
 
+(** Computes daily earnings. *)
 let earnings (g : game_state) : float =
   (float_of_int g.tank.(fish_pos Goldfish).num *. 1.)
   +. (float_of_int g.tank.(fish_pos Anemone).num *. 3.)
@@ -233,7 +222,17 @@ let earnings (g : game_state) : float =
   +. (float_of_int g.tank.(fish_pos Remora).num *. 5.)
   +. (float_of_int g.tank.(fish_pos Shark).num *. 30.)
 
-(*   +. (float_of_int g.tank.(fish_pos Lancetfish).num *. 20.) *)
+(** Computes game end score. *)
+let end_score (g : game_state) : int = 
+  let raw_score = 
+  (float_of_int g.tank.(fish_pos Goldfish).age_sum *. 2.)
+  +. (float_of_int g.tank.(fish_pos Anemone).age_sum *. 4.)
+  +. (float_of_int g.tank.(fish_pos Clownfish).age_sum *. 10.)
+  +. (float_of_int g.tank.(fish_pos Turtle).age_sum *. 15.)
+  +. (float_of_int g.tank.(fish_pos Remora).age_sum *. 8.)
+  +. (float_of_int g.tank.(fish_pos Shark).age_sum *. 20.)
+  +. g.money *. 10.
+  in int_of_float raw_score 
 
 (** Remind the player when a species needs to be fed. *)
 let health_reminder (g : game_state) : unit =
@@ -299,6 +298,14 @@ let symbiosis (t : tank) : unit =
   anemone_clownfish t;
   remora_shark t
 
+(** Prints end of game message. *)
+let end_of_game (g : game_state) : unit = 
+  let score = end_score g in
+  print_endline 
+    ( "\n END OF GAME. YOU SCORED "
+    ^ string_of_int score
+    ^ " POINTS.")
+
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   g.money <- g.money +. earnings g;
@@ -310,10 +317,12 @@ let end_of_round (g : game_state) : unit =
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;
   symbiosis g.tank;
-  health_reminder g;
-  g.round <- g.round + 1
+  if g.round = g.max_rounds then end_of_game g
+  else 
+    health_reminder g;
+    g.round <- g.round + 1
 
-(* CHANGE IMPLEMENTATION OF FUNCTIONS BELOW *)
+(* PRINT FUNCTIONS *)
 
 (** Summarizes the health of a player's fish. *)
 let health_statement (g : game_state) =
@@ -343,21 +352,6 @@ let print_fish (pstate : game_state) =
   print_endline (" Count:" ^ !body1);
   print_endline (" Health:" ^ !body2)
 [@@coverage off]
-
-(* pstate.tank |> Array.iter (fun f -> print_string (string_of_int f.num)) *)
-(*
-   f.species ^ "       " ^ string_of_int f.num ^ "       "
-   ^ string_of_int f.age_sum ^ "       " ^ string_of_int f.health *)
-
-(** Prints a fish_list using fish_bio. Helper function for print_tank *)
-(* let rec print_fish_list (lst : fish list) : string =
-   match lst with [] -> "" | h :: t -> print_fish h ^ "\n" ^ print_fish_list t *)
-
-(* let print_tank (t : tank) : string =
-   "\n\
-   \ Tank Contents: \n\
-   \ Species:      # of Fish:      Age Score:      Health Level: \n"
-   ^ print_fish_list (List.rev t.fish_list) *)
 
 let get_playermoney (g : game_state) : float = g.money
 let get_max_rounds (g : game_state) : int = g.max_rounds
