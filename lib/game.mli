@@ -98,7 +98,7 @@ val med_broke : game_state -> bool
 val species_extinct : game_state -> fish_species -> bool
 (** Takes a game state g and returns whether species s is extinct in game g. *)
 
-val string_of_fish_species : fish_species -> string
+val string_of_species : fish_species -> string
 (** Takes a fish species s and returns a string representing that fish species*)
 
 val plural_species : fish_species -> string

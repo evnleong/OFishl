@@ -127,17 +127,17 @@ let game_tests =
 let print_tests =
   [
     ( "String of Goldfish" >:: fun _ ->
-      assert_equal "Goldfish" (string_of_fish_species Goldfish) );
+      assert_equal "Goldfish" (string_of_species Goldfish) );
     ( "String of Anemone" >:: fun _ ->
-      assert_equal "Anemone" (string_of_fish_species Anemone) );
+      assert_equal "Anemone" (string_of_species Anemone) );
     ( "String of Clownfish" >:: fun _ ->
-      assert_equal "Clownfish" (string_of_fish_species Clownfish) );
+      assert_equal "Clownfish" (string_of_species Clownfish) );
     ( "String of Turtle" >:: fun _ ->
-      assert_equal "Turtle" (string_of_fish_species Turtle) );
+      assert_equal "Turtle" (string_of_species Turtle) );
     ( "String of Remora" >:: fun _ ->
-      assert_equal "Remora" (string_of_fish_species Remora) );
+      assert_equal "Remora" (string_of_species Remora) );
     ( "String of Shark" >:: fun _ ->
-      assert_equal "Shark" (string_of_fish_species Shark) );
+      assert_equal "Shark" (string_of_species Shark) );
     ( "Plural of Goldfish" >:: fun _ ->
       assert_equal "Goldfish" (plural_species Goldfish) );
     ( "Plural of Goldfish" >:: fun _ ->
