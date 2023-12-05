@@ -56,6 +56,7 @@ type game_state = {
   mutable money : float;
   mutable tank : tank;
   max_rounds : int;
+  mutable ended : bool
 }
 (** Type representing current game state. *)
 
@@ -123,6 +124,7 @@ let start_game (i : int) : game_state =
     money = 100.;
     tank = Array.make num_species (make_fish Goldfish Pellet 1.4 0.6);
     max_rounds = i;
+    ended = false;
   }
 
 (** Sets tank in game state g to the empty tank. *)
@@ -315,7 +317,7 @@ let health_reminder (g : game_state) : unit =
   for i = 0 to num_species - 1 do
     if g.tank.(i).health < 20. && not (extinct g.tank.(i)) then
       print_endline
-        ("Your "
+        ("\n  Your "
         ^ (g.tank.(i).species |> string_of_species
          |> String.lowercase_ascii)
         ^ " are hungry!")
@@ -382,12 +384,12 @@ let symbiosis (t : tank) : unit =
 (** Prints end of game message. *)
 let end_of_game (g : game_state) : unit = 
   let score = end_score g in print_endline (
-    "\n END OF GAME. YOU SCORED "
+    "\n  END OF GAME. YOU SCORED "
     ^ string_of_int score
-    ^ " POINTS.")
+    ^ " POINTS.");
+  g.ended <- true
 
-let game_ended (g : game_state) : bool = 
-  (g.round = g.max_rounds) || (g.money <= 0.)
+let game_ended (g : game_state) : bool = g.ended
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
@@ -401,7 +403,8 @@ let end_of_round (g : game_state) : unit =
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;
   symbiosis g.tank;
-  if game_ended g then end_of_game g
+  if (g.round = g.max_rounds) || (g.money <= 0.) then 
+    end_of_game g
   else 
     health_reminder g;
     g.round <- g.round + 1
@@ -436,9 +439,9 @@ let print_fish (pstate : game_state) =
       !header ^ "       " ^ string_of_species playertank.(i).species
   done;
 
-  print_endline ("\n Species: " ^ !header);
-  print_endline (" Count:" ^ !body1);
-  print_endline (" Health:" ^ !body2)
+  print_endline ("\n  Species: " ^ !header);
+  print_endline ("  Count:" ^ !body1);
+  print_endline ("  Health:" ^ !body2)
 [@@coverage off]
 
 let get_playermoney (g : game_state) : float = g.money

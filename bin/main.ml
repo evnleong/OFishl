@@ -3,7 +3,7 @@ open Final_project
 open Userinput
 
 (** Message for erroneous user inputs. *)
-let dunno () = print_endline "Oops, we didn't catch that."
+let dunno () = print_endline "\n  Oops, we didn't catch that."
 
 (** Buy fish. *)
 let rec buy (num_actions : int) (g : Game.game_state) : unit =
@@ -33,9 +33,9 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
 and feed (num_actions : int) (g : Game.game_state) : unit =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n\
-    \ Feed pellets to a species by typing its name and a number, ex. \n\
-    \ \"Goldfish 10\". One pellet costs $0.1. If a species has N fish, \n\
-    \ then feeding it n pellets increases its health by n/N.\n";
+    \  Feed pellets to a species by typing its name and a number, ex. \n\
+    \  \"Goldfish 10\". One pellet costs $0.1. If a species has N fish, \n\
+    \  then feeding it n pellets increases its health by n/N.\n";
 
   match parse_species_int (read_line ()) with
   | s, n ->
@@ -61,8 +61,8 @@ and feed (num_actions : int) (g : Game.game_state) : unit =
 and medicine (num_actions : int) (g : Game.game_state) : unit =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n\
-    \ Boost the health of a species by 30 points for $50.\n\
-    \ Type a species name, ex. \"Goldfish\".\n";
+    \  Boost the health of a species by 30 points for $50.\n\
+    \  Type a species name, ex. \"Goldfish\".\n";
 
   match read_line () |> parse_species with
   | Huh ->
@@ -86,11 +86,11 @@ and action num_actions (g : Game.game_state) : unit =
     if num_actions = 0 then raise Exit
     else
       ANSITerminal.print_string [ ANSITerminal.black ]
-        ("\n What would you like to do today? \n You have "
+        ("\n  What would you like to do today? \n  You have "
        ^ string_of_int num_actions ^ " action(s) left and $"
         ^ string_of_float (Game.get_playermoney g)
         ^ "  \n\
-          \ Type (Buy, Feed, Medicine, Tanks, Wallet, Pass, Manual) or \
+          \  Type (Buy, Feed, Medicine, Tanks, Wallet, Pass, Manual) or \
            Ctrl +C to Exit  \n");
     let response = parse_input (read_line ()) in
     match response with
@@ -101,7 +101,7 @@ and action num_actions (g : Game.game_state) : unit =
         Game.print_fish g;
         action num_actions g
     | Wallet ->
-        print_endline ("You currently have $" ^ string_of_float (Game.get_playermoney g));
+        print_endline ("\n  You currently have $" ^ string_of_float (Game.get_playermoney g));
         action num_actions g
     | Manual -> manual num_actions g
     | Pass -> action (num_actions - 1) g
@@ -147,10 +147,10 @@ let () =
   Game.set_game game;
   while not (Game.game_ended game) do
     ANSITerminal.print_string [ ANSITerminal.Bold; ANSITerminal.black ] 
-      ("\n Round " ^ (game |> Game.get_round |> string_of_int) ^ "\n");
+      ("\n  Round " ^ (game |> Game.get_round |> string_of_int) ^ "\n");
     action 2 game;
     Game.end_of_round game
   done;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
-    "\n Thanks for playing! \n Here's your game summary: \n";
+    "\n  Thanks for playing! Here's your game summary: \n";
   Game.print_fish game
