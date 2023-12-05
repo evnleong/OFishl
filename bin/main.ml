@@ -11,7 +11,7 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
     ("\n  You currently have $"
     ^ string_of_float (Game.get_playermoney g)
     ^ "\n\
-      \  To buy fish, type a species name and a number, ex. \"Goldfish 10\".\n\
+      \  Buy fish by typing a species name and a number, ex. \"Goldfish 10\".\n\
       \  Price per fish: Goldfish $2, Anemone $4, Remora $8, Clownfish $10, \n\
       \  Turtle $15, Shark $20.\n");
 
@@ -33,9 +33,9 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
 and feed (num_actions : int) (g : Game.game_state) : unit =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n\
-    \ To feed pellets to a species in your tank, type its name and a \n\
-    \ number, ex. \"Goldfish 10\". One pellet costs $0.1, and if a species \n\
-    \ has N fish, then feeding it n pellets increases its health by n/N.\n";
+    \ Feed pellets to a species by typing its name and a number, ex. \n\
+    \ \"Goldfish 10\". One pellet costs $0.1. If a species has N fish, \n\
+    \ then feeding it n pellets increases its health by n/N.\n";
 
   match parse_species_int (read_line ()) with
   | s, n ->
