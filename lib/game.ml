@@ -192,24 +192,18 @@ let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
 let eat_fish_species (t : tank) (pos : int) (n : int) : unit = 
   t.(pos).num <- t.(pos).num - n
 
-(* Helper for [shark_hungry]. Randomly removes a fish of some nonextinct
-    species in the tank and returns species attacked. If all prey species
-    extinct, returns [Huh]. *)
+(*  Randomly removes a fish of some nonextinct species in the tank 
+    and returns species attacked. If all prey species extinct, 
+    decreases sharks' health and returns [Huh]. *)
 let shark_bite (t : tank) : fish_species = 
   let prey_lst = get_prey t in 
-  if prey_lst = [] then Huh else
+  if prey_lst = [] then (
+    health_tank_species t Shark ~-.5.; Huh)
+  else
     let n = List.length prey_lst in
     let prey_pos = Random.int n in 
     eat_fish_species t prey_pos 1; 
     pos_to_species prey_pos
-
-(* Sharks try to eat a single prey fish. Returns species of fish eaten 
-   if attack successful, otherwise reduces sharks' health and 
-    returns [Huh]. *)
-let shark_hungry (t : tank) : fish_species = 
-  let species = shark_bite t in 
-  if species = Huh then (health_tank_species t Shark ~-.5.; Huh)
-  else species
 
 (* Each shark eats one fish, otherwise shark health decreases. 
     Returns array tracking the number of each species eaten. *)
@@ -219,7 +213,7 @@ let shark_dinner (t : tank) : int array =
       (* Track the fish eaten. Position of species in [track] 
         corresponds to position in [g.tank]. *)
   for x = 1 to num_sharks do 
-    ignore x; let species = shark_hungry t in
+    ignore x; let species = shark_bite t in
     if species <> Huh then 
     track.(fish_pos species) <- track.(fish_pos species) + 1
   done; track 
@@ -235,7 +229,7 @@ let shark_news ( track : int array) : string =
       lst := (!lst ^ "\n  " ^ string_of_int track.(pos) ^ " " 
       ^ (pos |> pos_to_species |> plural_species |> String.lowercase_ascii)))
   done; 
-  "\n  Your sharks ate the following fish:" ^ !lst ^ ". \n"
+  "\n  Your sharks ate the following fish today:" ^ !lst ^ ". \n"
 
 (** Feeds shark in tank at end of round and prints message with
     the fish eaten. *)
@@ -332,9 +326,9 @@ let health_reminder (g : game_state) : unit =
 (** Updates count of a fish population. *)
 let growth_fish (f : fish) : unit =
   if f.health < 50. then
-    f.num <- float_of_int f.num *. f.death_rate |> Float.floor |> Float.to_int
+    f.num <- (float_of_int f.num *. f.death_rate) |> Float.floor |> Float.to_int
   else if f.health > 80. then
-    f.num <- float_of_int f.num *. f.growth_rate |> Float.round |> Float.to_int
+    f.num <- (float_of_int f.num *. f.growth_rate) |> Float.round |> Float.to_int
 
 (** Updates count of each fish population in a tank. *)
 let growth_tank (t : tank) : unit =
@@ -387,9 +381,8 @@ let symbiosis (t : tank) : unit =
 
 (** Prints end of game message. *)
 let end_of_game (g : game_state) : unit = 
-  let score = end_score g in
-  print_endline 
-    ( "\n END OF GAME. YOU SCORED "
+  let score = end_score g in print_endline (
+    "\n END OF GAME. YOU SCORED "
     ^ string_of_int score
     ^ " POINTS.")
 
@@ -399,9 +392,8 @@ let end_of_round (g : game_state) : unit =
   check_extinct g.tank;
   g.money <- g.money +. earnings g;
   print_endline
-    ("\n  Earnings today: $"
-    ^ string_of_float (earnings g)
-    ^"\n\n  Next day....");
+    ("\n  Earnings for this round: $"
+    ^ string_of_float (earnings g));
   age_tank g.tank;
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;

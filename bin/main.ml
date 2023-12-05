@@ -7,14 +7,13 @@ let dunno () = print_endline "Oops, we didn't catch that."
 
 (** Buy fish. *)
 let rec buy (num_actions : int) (g : Game.game_state) : unit =
-  print_endline
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
     ("\n  You currently have $"
     ^ string_of_float (Game.get_playermoney g)
     ^ "\n\
-      \  Buy some fish of a species to add to your tank. \n\
-      \  Example: To buy 10 goldfish, type \"Goldfish 10\". \n\
+      \  To buy fish, type a species and a number, ex. \"Goldfish 10\".\n\
       \  Price per fish: Goldfish $2, Anemone $4, Remora $8, \n\
-      \  Clownfish $10, Turtle $15, Shark $20.");
+      \  Clownfish $10, Turtle $15, Shark $20.\n");
 
   match parse_species_int (read_line ()) with
   | s, n ->
@@ -27,17 +26,16 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
       else if n < 0 then (
         print_endline "\n  You must enter a positive integer";
         action num_actions g)
-      else Game.buy_fish_game g s n;
-      action (num_actions - 1) g
+      else (Game.buy_fish_game g s n;
+      action (num_actions - 1) g)
 
 (** Feed n pellets to fish population. *)
 and feed (num_actions : int) (g : Game.game_state) : unit =
-  print_endline
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n\
-    \  Feed pellets to a species in your tank. \n\
-    \  Example: To feed your goldfish 10 pellets, type \"Goldfish 10\". \n\
-    \  One pellet costs $0.1, and feeding n pellets to a species with N fish \n\
-    \  increases its health by n/N points.";
+    \ To feed pellets to a species in your tank, type its name and a \n\
+    \ number, ex. \"Goldfish 10\". One pellet costs $0.1, and if a species \n\
+    \ has N fish, then feeding it n pellets increases its health by n/N.\n";
 
   match parse_species_int (read_line ()) with
   | s, n ->
@@ -56,16 +54,15 @@ and feed (num_actions : int) (g : Game.game_state) : unit =
       else if Game.feed_broke g n then (
         print_endline "\n  You do not have enough money.";
         action num_actions g)
-      else Game.feed_fish_game g s n;
-      action (num_actions - 1) g
+      else (Game.feed_fish_game g s n;
+      action (num_actions - 1) g)
 
 (** Give medicine to a fish population. *)
 and medicine (num_actions : int) (g : Game.game_state) : unit =
-  print_endline
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n\
-    \  Give medicine to a species in your tank to boost its health by 30 points.\n\
-    \  E.g. to give medicine to the goldfish in your tank, type \n\
-    \  \"Goldfish\". Medicine has a flat price of $50.";
+    \ Boost the health of a species by 30 points for $50.\n\
+    \ Type a species name, ex. \"Goldfish\".\n";
 
   match read_line () |> parse_species with
   | Huh ->
@@ -81,8 +78,8 @@ and medicine (num_actions : int) (g : Game.game_state) : unit =
       else if Game.med_broke g then (
         print_endline "\n  You do not have enough money.";
         action num_actions g)
-      else Game.med_game_species g s;
-      action (num_actions - 1) g
+      else (Game.med_game_species g s;
+      action (num_actions - 1) g)
 
 and action num_actions (g : Game.game_state) : unit =
   try
@@ -93,7 +90,7 @@ and action num_actions (g : Game.game_state) : unit =
        ^ string_of_int num_actions ^ " action(s) left and $"
         ^ string_of_float (Game.get_playermoney g)
         ^ "  \n\
-          \ Type (Buy, Feed, Medicine, Tanks, Wallet, Pass, Instructions) or \
+          \ Type (Buy, Feed, Medicine, Tanks, Wallet, Pass, Manual) or \
            Ctrl +C to Exit  \n");
     let response = parse_input (read_line ()) in
     match response with
@@ -104,14 +101,19 @@ and action num_actions (g : Game.game_state) : unit =
         Game.print_fish g;
         action num_actions g
     | Wallet ->
-        print_endline ("You have $" ^ string_of_float (Game.get_playermoney g));
+        print_endline ("You currently have $" ^ string_of_float (Game.get_playermoney g));
         action num_actions g
-    | Instructions -> failwith "UNIMPLEMENTED"
+    | Manual -> manual num_actions g
     | Pass -> action (num_actions - 1) g
     | Dunno ->
         dunno ();
         action num_actions g
   with Exit -> ()
+
+(** Displays additional information about the game. *)
+and manual (num_actions : int) (g : Game.game_state) : unit = 
+  print_endline "TO DO";
+  action num_actions g
 
 let () =
   (* ANSITerminal.print_string [ ANSITerminal.cyan ]
