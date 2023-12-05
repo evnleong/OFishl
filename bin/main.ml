@@ -11,9 +11,9 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
     ("\n  You currently have $"
     ^ string_of_float (Game.get_playermoney g)
     ^ "\n\
-      \  To buy fish, type a species and a number, ex. \"Goldfish 10\".\n\
-      \  Price per fish: Goldfish $2, Anemone $4, Remora $8, \n\
-      \  Clownfish $10, Turtle $15, Shark $20.\n");
+      \  To buy fish, type a species name and a number, ex. \"Goldfish 10\".\n\
+      \  Price per fish: Goldfish $2, Anemone $4, Remora $8, Clownfish $10, \n\
+      \  Turtle $15, Shark $20.\n");
 
   match parse_species_int (read_line ()) with
   | s, n ->
@@ -145,8 +145,9 @@ let () =
      Starting Game...\n";
   let game = Game.start_game 3 in
   Game.set_game game;
-  for i = 1 to Game.get_max_rounds game do
-    print_endline ("\n Starting Round " ^ string_of_int i);
+  while not (Game.game_ended game) do
+    ANSITerminal.print_string [ ANSITerminal.Bold; ANSITerminal.black ] 
+      ("\n Round " ^ (game |> Game.get_round |> string_of_int) ^ "\n");
     action 2 game;
     Game.end_of_round game
   done;

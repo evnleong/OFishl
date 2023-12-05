@@ -386,6 +386,9 @@ let end_of_game (g : game_state) : unit =
     ^ string_of_int score
     ^ " POINTS.")
 
+let game_ended (g : game_state) : bool = 
+  (g.round = g.max_rounds) || (g.money <= 0.)
+
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   if not (extinct g.tank.(5)) then shark_update g.tank;
@@ -398,7 +401,7 @@ let end_of_round (g : game_state) : unit =
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;
   symbiosis g.tank;
-  if g.round = g.max_rounds then end_of_game g
+  if game_ended g then end_of_game g
   else 
     health_reminder g;
     g.round <- g.round + 1
@@ -440,6 +443,7 @@ let print_fish (pstate : game_state) =
 
 let get_playermoney (g : game_state) : float = g.money
 let get_max_rounds (g : game_state) : int = g.max_rounds
+let get_round (g : game_state) : int = g.round
 
 (** Initialize a round by printing the current round and currency. *)
 let start_round_print (g : game_state) : string =
