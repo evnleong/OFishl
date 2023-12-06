@@ -3,7 +3,6 @@ type input =
   | Feed
   | Medicine
   | View_Tanks
-  | Wallet
   | Manual
   | Pass
   | Dunno  (** Input types representing possible user inputs *)

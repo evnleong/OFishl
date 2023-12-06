@@ -1,4 +1,4 @@
-type input = Buy | Feed | Medicine | View_Tanks | Wallet 
+type input = Buy | Feed | Medicine | View_Tanks 
   | Manual | Pass | Dunno
 
 let parse (prompt : string) : string list = 
@@ -12,11 +12,12 @@ let parse_input (prompt : string) : input =
     | [ "BUY" ] -> Buy
     | [ "FEED" ] -> Feed
     | [ "MEDICINE" ] -> Medicine
-    | [ "TANKS" ] -> View_Tanks
-    | [ "WALLET" ] -> Wallet
+    | [ "TANK" ] -> View_Tanks
     | [ "MANUAL" ] -> Manual
     | [ "PASS" ] -> Pass
     | _ -> Dunno )
+  
+  (*     | [ "WALLET" ] -> Wallet *)
 
 (** Converts string to value of type fish_species. *)
 let parse_species (prompt : string) : Game.fish_species = 

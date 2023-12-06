@@ -8,9 +8,9 @@ let dunno () = print_endline "\n  Oops, we didn't catch that."
 (** Buy fish. *)
 let rec buy (num_actions : int) (g : Game.game_state) : unit =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
-    ("\n  You currently have $"
-    ^ string_of_float (Game.get_playermoney g)
-    ^ "\n\
+    ( (*"\n  You currently have $"
+    ^ string_of_float (Game.get_playermoney g) *)
+     "\n\
       \  Buy fish by typing a species name and a number, ex. \"Goldfish 10\".\n\
       \  Price per fish: Goldfish $2, Anemone $4, Remora $8, Clownfish $10, \n\
       \  Turtle $15, Shark $20.\n");
@@ -86,11 +86,11 @@ and action num_actions (g : Game.game_state) : unit =
     if num_actions = 0 then raise Exit
     else
       ANSITerminal.print_string [ ANSITerminal.black ]
-        ("\n  What would you like to do today? \n  You have "
-       ^ string_of_int num_actions ^ " action(s) left and $"
+        ("\n  What would you like to do today? \n  You have $"
         ^ string_of_float (Game.get_playermoney g)
+        ^ " and " ^ string_of_int num_actions ^ " action(s) left."
         ^ "  \n\
-          \  Type (Buy, Feed, Medicine, Tanks, Wallet, Pass, Manual) or \
+          \  Type (Buy, Feed, Medicine, Tank, Pass, Manual) or \
            Ctrl +C to Exit  \n");
     let response = parse_input (read_line ()) in
     match response with
@@ -100,15 +100,16 @@ and action num_actions (g : Game.game_state) : unit =
     | View_Tanks ->
         Game.print_fish g;
         action num_actions g
-    | Wallet ->
-        print_endline ("\n  You currently have $" ^ string_of_float (Game.get_playermoney g));
-        action num_actions g
     | Manual -> manual num_actions g
     | Pass -> action (num_actions - 1) g
     | Dunno ->
         dunno ();
         action num_actions g
   with Exit -> ()
+
+  (*  | Wallet ->
+        print_endline ("\n  You currently have $" ^ string_of_float (Game.get_playermoney g));
+        action num_actions g *)
 
 (** Displays additional information about the game. *)
 and manual (num_actions : int) (g : Game.game_state) : unit = 
