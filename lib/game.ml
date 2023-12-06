@@ -192,7 +192,8 @@ let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
 
 (** Removes [n] fish of species in position [pos] of tank [t]. *)
 let eat_fish_species (t : tank) (pos : int) (n : int) : unit = 
-  t.(pos).num <- t.(pos).num - n
+  t.(pos).num <- t.(pos).num - n;
+  if t.(pos).num = 0 then t.(pos).extinct <- true
 
 (*  Randomly removes a fish of some nonextinct species in the tank 
     and returns species attacked. If all prey species extinct, 
@@ -203,9 +204,9 @@ let shark_bite (t : tank) : fish_species =
     health_tank_species t Shark ~-.5.; Huh)
   else
     let n = List.length prey_lst in
-    let prey_pos = Random.int n in 
-    eat_fish_species t prey_pos 1; 
-    pos_to_species prey_pos
+    let prey_pos = List.nth prey_lst (Random.int n) in 
+    (eat_fish_species t prey_pos 1; 
+    pos_to_species prey_pos)
 
 (* Each shark eats one fish, otherwise shark health decreases. 
     Returns array tracking the number of each species eaten. *)
