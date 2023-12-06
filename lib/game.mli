@@ -119,6 +119,9 @@ val get_playermoney : game_state -> float
 val growth_tank : tank -> unit
 (** Updates count of each fish population in a tank. *)
 
+val end_score : game_state -> int 
+(** Returns end of game score *)
+
 val game_ended : game_state -> bool 
 (** Returns whether or not the game has ended *)
 

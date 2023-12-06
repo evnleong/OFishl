@@ -301,7 +301,7 @@ let earnings (g : game_state) : float =
   +. (float_of_int g.tank.(fish_pos Remora).num *. 5.)
   +. (float_of_int g.tank.(fish_pos Shark).num *. 30.)
 
-(** Computes game end score. *)
+(** Returns end of game score *)
 let end_score (g : game_state) : int = 
   let raw_score = 
   (float_of_int g.tank.(fish_pos Goldfish).age_sum *. 2.)
@@ -383,12 +383,12 @@ let symbiosis (t : tank) : unit =
   remora_shark t
 
 (** Prints end of game message. *)
-let end_of_game (g : game_state) : unit = 
+(* let end_of_game (g : game_state) : unit = 
   let score = end_score g in print_endline (
     "\n  END OF GAME. YOU SCORED "
     ^ string_of_int score
     ^ " POINTS.");
-  g.ended <- true
+  g.ended <- true *)
 
 let game_ended (g : game_state) : bool = g.ended
 
@@ -405,7 +405,7 @@ let end_of_round (g : game_state) : unit =
   health_tank g.tank ~-.5.;
   symbiosis g.tank;
   if (g.round = g.max_rounds) || (g.money <= 0.) then 
-    end_of_game g
+    g.ended <- true
   else 
     health_reminder g;
     g.round <- g.round + 1

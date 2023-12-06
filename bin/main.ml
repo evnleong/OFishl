@@ -137,12 +137,12 @@ let () =
     "  )\n__(_______(______(__________\n     \n";
   ANSITerminal.print_string
     [ ANSITerminal.Bold; ANSITerminal.magenta ]
-    "Build your own aquarium!\n";
+    "Build Your Own Aquarium!\n";
   ANSITerminal.print_string [ ANSITerminal.magenta ]
     "\n\
-     Start the game with $100, use it to buy more fish and tanks.\n\
+     Start the game with $100, use it to buy and feed fish.\n\
      Each round simulates one day and the game ends after 3 rounds.\n\n\
-     Be careful: each day you have a limited amount of actions you can take! \n\n\
+     Be careful: Each day, you have a limited number of actions! \n\n\
      Starting Game...\n";
   let game = Game.start_game 3 in
   Game.set_game game;
@@ -152,6 +152,11 @@ let () =
     action 2 game;
     Game.end_of_round game
   done;
+  ANSITerminal.print_string
+    [ ANSITerminal.Bold; ANSITerminal.black ]
+    ("\n  END OF GAME. YOU SCORED "
+    ^ string_of_int (Game.end_score game)
+    ^ " POINTS.\n");
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n  Thanks for playing! Here's your game summary: \n";
   Game.print_fish game
