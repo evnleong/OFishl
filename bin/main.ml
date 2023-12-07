@@ -8,12 +8,12 @@ let dunno () = print_endline "\n  Oops, we didn't catch that."
 (** Buy fish. *)
 let rec buy (num_actions : int) (g : Game.game_state) : unit =
   ANSITerminal.print_string [ ANSITerminal.cyan ]
-    ( (*"\n  You currently have $"
-    ^ string_of_float (Game.get_playermoney g) *)
-     "\n\
-      \  Buy fish by typing a species name and a number, ex. \"Goldfish 10\".\n\
-      \  Price per fish: Goldfish $2, Anemone $4, Remora $8, Clownfish $10, \n\
-      \  Turtle $15, Shark $20.\n");
+    (*"\n  You currently have $"
+      ^ string_of_float (Game.get_playermoney g) *)
+    "\n\
+    \  Buy fish by typing a species name and a number, ex. \"Goldfish 10\".\n\
+    \  Price per fish: Goldfish $2, Anemone $4, Remora $8, Clownfish $10, \n\
+    \  Turtle $15, Shark $20.\n";
 
   match parse_species_int (read_line ()) with
   | s, n ->
@@ -26,8 +26,9 @@ let rec buy (num_actions : int) (g : Game.game_state) : unit =
       else if n < 0 then (
         print_endline "\n  You must enter a positive integer";
         action num_actions g)
-      else (Game.buy_fish_game g s n;
-      action (num_actions - 1) g)
+      else (
+        Game.buy_fish_game g s n;
+        action (num_actions - 1) g)
 
 (** Feed n pellets to fish population. *)
 and feed (num_actions : int) (g : Game.game_state) : unit =
@@ -54,8 +55,9 @@ and feed (num_actions : int) (g : Game.game_state) : unit =
       else if Game.feed_broke g n then (
         print_endline "\n  You do not have enough money.";
         action num_actions g)
-      else (Game.feed_fish_game g s n;
-      action (num_actions - 1) g)
+      else (
+        Game.feed_fish_game g s n;
+        action (num_actions - 1) g)
 
 (** Give medicine to a fish population. *)
 and medicine (num_actions : int) (g : Game.game_state) : unit =
@@ -78,8 +80,9 @@ and medicine (num_actions : int) (g : Game.game_state) : unit =
       else if Game.med_broke g then (
         print_endline "\n  You do not have enough money.";
         action num_actions g)
-      else (Game.med_game_species g s;
-      action (num_actions - 1) g)
+      else (
+        Game.med_game_species g s;
+        action (num_actions - 1) g)
 
 and action num_actions (g : Game.game_state) : unit =
   try
@@ -90,8 +93,8 @@ and action num_actions (g : Game.game_state) : unit =
         ^ string_of_float (Game.get_playermoney g)
         ^ " and " ^ string_of_int num_actions ^ " action(s) left."
         ^ "  \n\
-          \  Type (Buy, Feed, Medicine, Tank, Pass, Manual) or \
-           Ctrl +C to Exit  \n");
+          \  Type (Buy, Feed, Medicine, Tank, Pass, Manual) or Ctrl +C to Exit  \n"
+        );
     let response = parse_input (read_line ()) in
     match response with
     | Buy -> buy num_actions g
@@ -107,25 +110,16 @@ and action num_actions (g : Game.game_state) : unit =
         action num_actions g
   with Exit -> ()
 
-  (*  | Wallet ->
-        print_endline ("\n  You currently have $" ^ string_of_float (Game.get_playermoney g));
-        action num_actions g *)
+(* | Wallet ->
+     print_endline ("\n  You currently have $" ^ string_of_float (Game.get_playermoney g));
+     action num_actions g *)
 
 (** Displays additional information about the game. *)
-and manual (num_actions : int) (g : Game.game_state) : unit = 
+and manual (num_actions : int) (g : Game.game_state) : unit =
   print_endline "TO DO";
   action num_actions g
 
 let () =
-  (* ANSITerminal.print_string [ ANSITerminal.cyan ]
-     "\n\
-     \     .\n\
-     \    \":\"\n\
-     \  ___:____     |\"\\/\"|\n\
-      ,'        `.      /\n\
-      |  O        \\___/  |\n\
-      ~^~^~^~^~^~^~^~^~^~^~^~^~\n\n\
-     \ "; *)
   ANSITerminal.print_string [ ANSITerminal.red ] "    ><>\n";
   ANSITerminal.print_string [ ANSITerminal.cyan ] "         o \n o";
   ANSITerminal.print_string [ ANSITerminal.yellow ] "          <><\n";
@@ -147,7 +141,8 @@ let () =
   let game = Game.start_game 3 in
   Game.set_game game;
   while not (Game.game_ended game) do
-    ANSITerminal.print_string [ ANSITerminal.Bold; ANSITerminal.black ] 
+    ANSITerminal.print_string
+      [ ANSITerminal.Bold; ANSITerminal.black ]
       ("\n  Round " ^ (game |> Game.get_round |> string_of_int) ^ "\n");
     action 2 game;
     Game.end_of_round game
@@ -157,6 +152,18 @@ let () =
     ("\n  END OF GAME. YOU SCORED "
     ^ string_of_int (Game.end_score game)
     ^ " POINTS.\n");
+  if Game.end_score game > 2000 then
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "Acheivement Unlocked: Aquarium Master "
+  else if Game.end_score game > 1500 then
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "Acheivement Unlocked: Shark Swimmer "
+  else if Game.end_score game > 1000 then
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "Acheivement Unlocked: Fish Feeder"
+  else
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "Acheivement Unlocked: Kept Typing Pass";
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n  Thanks for playing! Here's your game summary: \n";
   Game.print_fish game
