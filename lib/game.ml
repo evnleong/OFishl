@@ -398,12 +398,23 @@ let symbiosis (t : tank) : unit =
      ^ " POINTS.");
    g.ended <- true *)
 
+(**Causes player to have a random chance of losing money in between rounds*)
+let randomly_lose_money (g : game_state) =
+  Random.self_init ();
+  let loss = 20. -. float_of_int (Random.int 15) in
+  if Random.int 3 = 0 then (
+    g.money <- g.money -. loss;
+    print_endline
+      ("\n Ticket sales were down this round! You lost " ^ string_of_float loss
+     ^ " dollars."))
+
 let game_ended (g : game_state) : bool = g.ended
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   if not (extinct g.tank.(5)) then shark_update g.tank;
   check_extinct g.tank;
+  randomly_lose_money g;
   g.money <- g.money +. earnings g;
   print_endline ("\n  Earnings for this round: $" ^ string_of_float (earnings g));
   age_tank g.tank;
