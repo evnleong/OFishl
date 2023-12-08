@@ -302,12 +302,12 @@ let predator_species (g : game_state) (s : fish_species) : bool =
 
 (** Computes daily earnings. *)
 let earnings (g : game_state) : float =
-  (float_of_int g.tank.(fish_pos Goldfish).num *. 1.)
-  +. (float_of_int g.tank.(fish_pos Anemone).num *. 3.)
-  +. (float_of_int g.tank.(fish_pos Clownfish).num *. 10.)
-  +. (float_of_int g.tank.(fish_pos Turtle).num *. 20.)
-  +. (float_of_int g.tank.(fish_pos Remora).num *. 5.)
-  +. (float_of_int g.tank.(fish_pos Shark).num *. 30.)
+  (float_of_int g.tank.(fish_pos Goldfish).num *. 0.5)
+  +. (float_of_int g.tank.(fish_pos Anemone).num *. 0.5)
+  +. (float_of_int g.tank.(fish_pos Clownfish).num *. 1.)
+  +. (float_of_int g.tank.(fish_pos Turtle).num *. 2.)
+  +. (float_of_int g.tank.(fish_pos Remora).num *. 2.5)
+  +. (float_of_int g.tank.(fish_pos Shark).num *. 4.)
 
 (** Returns end of game score *)
 let end_score (g : game_state) : int =
@@ -328,7 +328,7 @@ let health_reminder (g : game_state) : unit =
     if g.tank.(i).health < 20. && not (extinct g.tank.(i)) then
       print_endline
         ("\n  Your "
-        ^ (g.tank.(i).species |> string_of_species |> String.lowercase_ascii)
+        ^ (g.tank.(i).species |> plural_species |> String.lowercase_ascii)
         ^ " are hungry!")
     else ()
   done
