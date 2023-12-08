@@ -120,15 +120,6 @@ and manual (num_actions : int) (g : Game.game_state) : unit =
   action num_actions g
 
 let () =
-  (* ANSITerminal.print_string [ ANSITerminal.cyan ]
-     "\n\
-     \     .\n\
-     \    \":\"\n\
-     \  ___:____     |\"\\/\"|\n\
-      ,'        `.      /\n\
-      |  O        \\___/  |\n\
-      ~^~^~^~^~^~^~^~^~^~^~^~^~\n\n\
-     \ "; *)
   ANSITerminal.print_string [ ANSITerminal.red ] "    ><>\n";
   ANSITerminal.print_string [ ANSITerminal.cyan ] "         o \n o";
   ANSITerminal.print_string [ ANSITerminal.yellow ] "          <><\n";
@@ -161,6 +152,18 @@ let () =
     ("\n  END OF GAME. YOU SCORED "
     ^ string_of_int (Game.end_score game)
     ^ " POINTS.\n");
+  if Game.end_score game > 2000 then
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "Acheivement Unlocked: Aquarium Master "
+  else if Game.end_score game > 1500 then
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "Acheivement Unlocked: Shark Swimmer "
+  else if Game.end_score game > 1000 then
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "Acheivement Unlocked: Fish Feeder"
+  else
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "Acheivement Unlocked: Kept Typing Pass";
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n  Thanks for playing! Here's your game summary: \n";
   Game.print_fish game
