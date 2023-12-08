@@ -38,7 +38,7 @@ type fish = {
   food : fish_food;
   growth_rate : float;
   death_rate : float;
-  mutable extinct : bool
+  mutable extinct : bool;
 }
 (** Type representing a population of fish. *)
 
@@ -56,7 +56,7 @@ type game_state = {
   mutable money : float;
   mutable tank : tank;
   max_rounds : int;
-  mutable ended : bool
+  mutable ended : bool;
 }
 (** Type representing current game state. *)
 
@@ -71,7 +71,7 @@ let make_fish (species : fish_species) (food : fish_food) (growth_rate : float)
     food;
     growth_rate;
     death_rate;
-    extinct = true
+    extinct = true;
   }
 
 (** Cost of buying n fish of a species. *)
@@ -138,7 +138,6 @@ let species_extinct (g : game_state) (s : fish_species) : bool =
   let pos = fish_pos s in
   extinct g.tank.(pos)
 
-
 (** Subtracts cost from game state g's money. *)
 let cost (g : game_state) (c : float) : unit = g.money <- g.money -. c
 
@@ -180,67 +179,76 @@ let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
   add_fish_tank g.tank s n;
   cost g (price_fish s n)
 
-(* Returns list of nonextinct prey species in tank [t], where prey 
-    includes every species fish except shark and remora. Each 
+(* Returns list of nonextinct prey species in tank [t], where prey
+    includes every species fish except shark and remora. Each
     species is represented by its position in the tank array. *)
-    let get_prey (t : tank) : int list = 
-      let prey_lst = ref [] in
-      for pos = 0 to 3 do 
-        if not (extinct t.(pos)) then prey_lst := pos :: !prey_lst
-      done;
-      !prey_lst
+let get_prey (t : tank) : int list =
+  let prey_lst = ref [] in
+  for pos = 0 to 3 do
+    if not (extinct t.(pos)) then prey_lst := pos :: !prey_lst
+  done;
+  !prey_lst
 
 (** Removes [n] fish of species in position [pos] of tank [t]. *)
-let eat_fish_species (t : tank) (pos : int) (n : int) : unit = 
+let eat_fish_species (t : tank) (pos : int) (n : int) : unit =
   t.(pos).num <- t.(pos).num - n;
   if t.(pos).num = 0 then t.(pos).extinct <- true
 
-(*  Randomly removes a fish of some nonextinct species in the tank 
-    and returns species attacked. If all prey species extinct, 
-    decreases sharks' health and returns [Huh]. *)
-let shark_bite (t : tank) : fish_species = 
-  let prey_lst = get_prey t in 
+(* Randomly removes a fish of some nonextinct species in the tank
+   and returns species attacked. If all prey species extinct,
+   decreases sharks' health and returns [Huh]. *)
+let shark_bite (t : tank) : fish_species =
+  let prey_lst = get_prey t in
   if prey_lst = [] then (
-    health_tank_species t Shark ~-.5.; Huh)
+    health_tank_species t Shark ~-.5.;
+    Huh)
   else
     let n = List.length prey_lst in
-    let prey_pos = List.nth prey_lst (Random.int n) in 
-    (eat_fish_species t prey_pos 1; 
-    pos_to_species prey_pos)
+    let prey_pos = List.nth prey_lst (Random.int n) in
+    eat_fish_species t prey_pos 1;
+    pos_to_species prey_pos
 
-(* Each shark eats one fish, otherwise shark health decreases. 
+(* Each shark eats one fish, otherwise shark health decreases.
     Returns array tracking the number of each species eaten. *)
-let shark_dinner (t : tank) : int array = 
-  let num_sharks = t.(5).num in 
-  let track = Array.make 4 0 in 
-      (* Track the fish eaten. Position of species in [track] 
-        corresponds to position in [g.tank]. *)
-  for x = 1 to num_sharks do 
-    ignore x; let species = shark_bite t in
-    if species <> Huh then 
-    track.(fish_pos species) <- track.(fish_pos species) + 1
-  done; track 
+let shark_dinner (t : tank) : int array =
+  let num_sharks = t.(5).num in
+  let track = Array.make 4 0 in
+  (* Track the fish eaten. Position of species in [track]
+     corresponds to position in [g.tank]. *)
+  for x = 1 to num_sharks do
+    ignore x;
+    let species = shark_bite t in
+    if species <> Huh then
+      track.(fish_pos species) <- track.(fish_pos species) + 1
+  done;
+  track
 
 (* Helper for shark_news. Converts int array into string list. *)
-let shark_news ( track : int array) : string = 
-  let lst = ref "" in 
-  for pos = 3 downto 0 do 
-    if track.(pos) = 1 then (
-      lst := (!lst ^ "\n  1 " 
-      ^ (pos |> pos_to_species |> string_of_species |> String.lowercase_ascii)))
-    else if track.(pos) <> 0 then (
-      lst := (!lst ^ "\n  " ^ string_of_int track.(pos) ^ " " 
-      ^ (pos |> pos_to_species |> plural_species |> String.lowercase_ascii)))
-  done; 
+let shark_news (track : int array) : string =
+  let lst = ref "" in
+  for pos = 3 downto 0 do
+    if track.(pos) = 1 then
+      lst :=
+        !lst ^ "\n  1 "
+        ^ (pos |> pos_to_species |> string_of_species |> String.lowercase_ascii)
+    else if track.(pos) <> 0 then
+      lst :=
+        !lst ^ "\n  "
+        ^ string_of_int track.(pos)
+        ^ " "
+        ^ (pos |> pos_to_species |> plural_species |> String.lowercase_ascii)
+  done;
   "\n  Your sharks ate the following fish today:" ^ !lst ^ ". \n"
+[@@coverage off]
 
 (** Feeds shark in tank at end of round and prints message with
     the fish eaten. *)
-let shark_update (t : tank) : unit = 
-  let track = shark_dinner t in 
-  if Array.find_opt (fun x -> x > 0) track <> None then 
-  print_string (shark_news track)
-  else print_string ("\n  Your sharks had nothing to eat this round.")
+let shark_update (t : tank) : unit =
+  let track = shark_dinner t in
+  if Array.find_opt (fun x -> x > 0) track <> None then
+    print_string (shark_news track)
+  else print_string "\n  Your sharks had nothing to eat this round."
+[@@coverage off]
 
 (** Ages a fish population f by one round. In effect, f's age sum increases
     by the number of fish in f. *)
@@ -302,16 +310,17 @@ let earnings (g : game_state) : float =
   +. (float_of_int g.tank.(fish_pos Shark).num *. 30.)
 
 (** Returns end of game score *)
-let end_score (g : game_state) : int = 
-  let raw_score = 
-  (float_of_int g.tank.(fish_pos Goldfish).age_sum *. 2.)
-  +. (float_of_int g.tank.(fish_pos Anemone).age_sum *. 4.)
-  +. (float_of_int g.tank.(fish_pos Clownfish).age_sum *. 10.)
-  +. (float_of_int g.tank.(fish_pos Turtle).age_sum *. 15.)
-  +. (float_of_int g.tank.(fish_pos Remora).age_sum *. 8.)
-  +. (float_of_int g.tank.(fish_pos Shark).age_sum *. 20.)
-  +. g.money *. 10.
-  in int_of_float raw_score 
+let end_score (g : game_state) : int =
+  let raw_score =
+    (float_of_int g.tank.(fish_pos Goldfish).age_sum *. 2.)
+    +. (float_of_int g.tank.(fish_pos Anemone).age_sum *. 4.)
+    +. (float_of_int g.tank.(fish_pos Clownfish).age_sum *. 10.)
+    +. (float_of_int g.tank.(fish_pos Turtle).age_sum *. 15.)
+    +. (float_of_int g.tank.(fish_pos Remora).age_sum *. 8.)
+    +. (float_of_int g.tank.(fish_pos Shark).age_sum *. 20.)
+    +. (g.money *. 10.)
+  in
+  int_of_float raw_score
 
 (** Remind the player when a species needs to be fed. *)
 let health_reminder (g : game_state) : unit =
@@ -319,8 +328,7 @@ let health_reminder (g : game_state) : unit =
     if g.tank.(i).health < 20. && not (extinct g.tank.(i)) then
       print_endline
         ("\n  Your "
-        ^ (g.tank.(i).species |> string_of_species
-         |> String.lowercase_ascii)
+        ^ (g.tank.(i).species |> string_of_species |> String.lowercase_ascii)
         ^ " are hungry!")
     else ()
   done
@@ -329,9 +337,9 @@ let health_reminder (g : game_state) : unit =
 (** Updates count of a fish population. *)
 let growth_fish (f : fish) : unit =
   if f.health < 50. then
-    f.num <- (float_of_int f.num *. f.death_rate) |> Float.floor |> Float.to_int
+    f.num <- float_of_int f.num *. f.death_rate |> Float.floor |> Float.to_int
   else if f.health > 80. then
-    f.num <- (float_of_int f.num *. f.growth_rate) |> Float.round |> Float.to_int
+    f.num <- float_of_int f.num *. f.growth_rate |> Float.round |> Float.to_int
 
 (** Updates count of each fish population in a tank. *)
 let growth_tank (t : tank) : unit =
@@ -339,9 +347,9 @@ let growth_tank (t : tank) : unit =
     if t.(i).num > 0 then growth_fish t.(i)
   done
 
-let check_extinct (t : tank) : unit = 
-  for i = 0 to num_species - 1 do 
-    let f = t.(i) in 
+let check_extinct (t : tank) : unit =
+  for i = 0 to num_species - 1 do
+    let f = t.(i) in
     if (not f.extinct) && (f.health <= 0. || f.num <= 0) then (
       print_endline
         ("\n  Your "
@@ -383,12 +391,12 @@ let symbiosis (t : tank) : unit =
   remora_shark t
 
 (** Prints end of game message. *)
-(* let end_of_game (g : game_state) : unit = 
-  let score = end_score g in print_endline (
-    "\n  END OF GAME. YOU SCORED "
-    ^ string_of_int score
-    ^ " POINTS.");
-  g.ended <- true *)
+(* let end_of_game (g : game_state) : unit =
+   let score = end_score g in print_endline (
+     "\n  END OF GAME. YOU SCORED "
+     ^ string_of_int score
+     ^ " POINTS.");
+   g.ended <- true *)
 
 let game_ended (g : game_state) : bool = g.ended
 
@@ -397,18 +405,14 @@ let end_of_round (g : game_state) : unit =
   if not (extinct g.tank.(5)) then shark_update g.tank;
   check_extinct g.tank;
   g.money <- g.money +. earnings g;
-  print_endline
-    ("\n  Earnings for this round: $"
-    ^ string_of_float (earnings g));
+  print_endline ("\n  Earnings for this round: $" ^ string_of_float (earnings g));
   age_tank g.tank;
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;
   symbiosis g.tank;
-  if (g.round = g.max_rounds) || (g.money <= 0.) then 
-    g.ended <- true
-  else 
-    health_reminder g;
-    g.round <- g.round + 1
+  if g.round = g.max_rounds || g.money <= 0. then g.ended <- true
+  else health_reminder g;
+  g.round <- g.round + 1
 
 (* PRINT FUNCTIONS *)
 
@@ -424,8 +428,7 @@ let health_statement (g : game_state) =
   print_endline ("Health:       " ^ !body)
 [@@coverage off]
 
-let display_health (f : fish) : float = 
-  if extinct f then 0. else f.health
+let display_health (f : fish) : float = if extinct f then 0. else f.health
 
 let print_fish (pstate : game_state) =
   let playertank = pstate.tank in
@@ -434,10 +437,10 @@ let print_fish (pstate : game_state) =
   let header = ref "" in
   for i = 0 to num_species - 1 do
     body1 := !body1 ^ "             " ^ string_of_int playertank.(i).num;
-    body2 := !body2 ^ "            " 
-              ^ (playertank.(i) |> display_health |> string_of_float);
-    header :=
-      !header ^ "       " ^ string_of_species playertank.(i).species
+    body2 :=
+      !body2 ^ "            "
+      ^ (playertank.(i) |> display_health |> string_of_float);
+    header := !header ^ "       " ^ string_of_species playertank.(i).species
   done;
 
   print_endline ("\n  Species: " ^ !header);

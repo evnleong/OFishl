@@ -110,6 +110,10 @@ val feed_broke : game_state -> int -> bool
 val predator_species : game_state -> fish_species -> bool
 (** Helper function to check if species s in game g is a predator. *)
 
+val shark_dinner : tank -> int array
+(* Each shark eats one fish, otherwise shark health decreases.
+    Returns array tracking the number of each species eaten. *)
+
 val plural_species : fish_species -> string
 (** Helper formatting function to return the correct plural name for a given fish species s *)
 
@@ -119,13 +123,13 @@ val get_playermoney : game_state -> float
 val growth_tank : tank -> unit
 (** Updates count of each fish population in a tank. *)
 
-val end_score : game_state -> int 
+val end_score : game_state -> int
 (** Returns end of game score *)
 
-val game_ended : game_state -> bool 
+val game_ended : game_state -> bool
 (** Returns whether or not the game has ended *)
 
-val get_round : game_state -> int 
+val get_round : game_state -> int
 (** Returns the current round of the game *)
 
 (* FUNCTIONS FOR TESTING*)
