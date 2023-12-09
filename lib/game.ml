@@ -390,14 +390,6 @@ let symbiosis (t : tank) : unit =
   anemone_clownfish t;
   remora_shark t
 
-(** Prints end of game message. *)
-(* let end_of_game (g : game_state) : unit =
-   let score = end_score g in print_endline (
-     "\n  END OF GAME. YOU SCORED "
-     ^ string_of_int score
-     ^ " POINTS.");
-   g.ended <- true *)
-
 (**Causes player to have a random chance of losing money in between rounds*)
 let randomly_lose_money (g : game_state) =
   Random.self_init ();
@@ -413,7 +405,6 @@ let game_ended (g : game_state) : bool = g.ended
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   if not (extinct g.tank.(5)) then shark_update g.tank;
-  check_extinct g.tank;
   randomly_lose_money g;
   g.money <- g.money +. earnings g;
   print_endline ("\n  Earnings for this round: $" ^ string_of_float (earnings g));
@@ -421,9 +412,10 @@ let end_of_round (g : game_state) : unit =
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;
   symbiosis g.tank;
+  check_extinct g.tank;
   if g.round = g.max_rounds || g.money <= 0. then g.ended <- true
-  else health_reminder g;
-  g.round <- g.round + 1
+  else (health_reminder g;
+    g.round <- g.round + 1)
 
 (* PRINT FUNCTIONS *)
 
