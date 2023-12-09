@@ -165,38 +165,136 @@ let game_tests =
       assert_equal true (end_score game2 > 0) );
   ]
 
+(* USER INPUT TESTS *)
 let user_input_tests =
   [
-    ( " Terminal input parsed into string list" >:: fun _ ->
+    (* parse tests *)
+    ( "Parse empty string" >:: fun _ ->
+      assert_equal [] (parse "") );  
+    ( "Parse ABCDEF" >:: fun _ ->
       assert_equal [ "ABCDEF" ] (parse "ABCDEF") );
-    ( "All terminal input is auto-capitalized to normalize input  " >:: fun _ ->
+    ( "Parse abcdef" >:: fun _ ->
       assert_equal [ "ABCDEF" ] (parse "abcdef") );
-    ( "Invalid input parses as Dunno constructor" >:: fun _ ->
+    ( "Parse whitespace" >:: fun _ ->
+      assert_equal [] (parse "   ") );
+    ( "Parse hi hello" >:: fun _ ->
+      assert_equal ["HI"; "HELLO"] (parse "hi hello") );
+    ( "Parse camels are slay" >:: fun _ ->
+      assert_equal ["CAMELS"; "ARE"; "SLAY"] (parse "camels are slay") );
+    ( "Parse words with whitespace" >:: fun _ ->
+      assert_equal ["CAMELS"; "ARE"; "SLAY"] (parse "   camels   are  slay  ") );
+
+    (* parse_input tests *)
+    ( "Parse input empty string" >:: fun _ ->
+        assert_equal Dunno (parse_input "") );
+    ( "Parse input whitespace" >:: fun _ ->
+        assert_equal Dunno (parse_input "  ") );
+    ( "Parse input invalid one word" >:: fun _ ->
       assert_equal Dunno (parse_input "abcdef") );
-    ( "User input of Buy parses as Buy" >:: fun _ ->
+    ( "Parse input invalid two words" >:: fun _ ->
+      assert_equal Dunno (parse_input "two words") );
+    ( "Parse input invalid Fe ed" >:: fun _ ->
+      assert_equal Dunno (parse_input "Fe ed") );
+    ( "Parse input Fe ed" >:: fun _ ->
+      assert_equal Dunno (parse_input "Fe ed") );
+    ( "Parse input invalid Manual 5" >:: fun _ ->
+      assert_equal Dunno (parse_input "Manual 5") );
+
+    ( "Parse input feed" >:: fun _ ->
+        assert_equal Feed (parse_input "Feed") );
+    ( "Parse input feed with whitespace" >:: fun _ ->
+        assert_equal Feed (parse_input " Feed  ") );
+    ( "Parse input feed all caps" >:: fun _ ->
+       assert_equal Feed (parse_input "FEED") );
+    ( "Parse input feed lowercase" >:: fun _ ->
+        assert_equal Feed (parse_input "feed") );
+    ( "Parse input feed alternate uppercase lowercase" >:: fun _ ->
+        assert_equal Feed (parse_input "fEeD") );
+
+    ( "Parse input Buy" >:: fun _ ->
       assert_equal Buy (parse_input "Buy") );
-    ( "User input of Medicine parses as Medicine" >:: fun _ ->
-      assert_equal Medicine (parse_input "Medicine") );
-    ( "Capitalization does not affect parser" >:: fun _ ->
+    ( "Parse input buy all caps" >:: fun _ ->
       assert_equal Buy (parse_input "BUY") );
-    ( "User input of Goldfish parses as Goldfish" >:: fun _ ->
+    ( "Parse input Medicine" >:: fun _ ->
+      assert_equal Medicine (parse_input "Medicine") );
+    ( "Parse input Tank" >:: fun _ ->
+      assert_equal View_Tanks (parse_input "Tank") );
+    ( "Parse input Manual" >:: fun _ ->
+      assert_equal Manual (parse_input "Manual") );
+    ( "Parse input Pass" >:: fun _ ->
+      assert_equal Pass (parse_input "Pass") );
+
+    (* parse_species tests *)
+    ( "Parse species Goldfish" >:: fun _ ->
       assert_equal Goldfish (parse_species "Goldfish") );
-    ( "User input of Remora parses as Remora" >:: fun _ ->
-      assert_equal Remora (parse_species "Remora") );
-    ( "Capitalization does not affect species parser" >:: fun _ ->
+    ( "Parse species goldfish all caps" >:: fun _ ->
       assert_equal Goldfish (parse_species "GOLDFISH") );
+    ( "Parse species GoLdFISH" >:: fun _ ->
+      assert_equal Goldfish (parse_species "GoLdFISH") );
+    ( "Parse species goldfish with whitespace" >:: fun _ ->
+      assert_equal Goldfish (parse_species "   Goldfish  ") );
+    ( "Parse species Remora" >:: fun _ ->
+      assert_equal Remora (parse_species "Remora") );
+    ( "Parse species anemone" >:: fun _ ->
+      assert_equal Anemone (parse_species "Anemone") );
+    ( "Parse species clownfish" >:: fun _ ->
+      assert_equal Clownfish (parse_species "Clownfish") );
+    ( "Parse species turtle" >:: fun _ ->
+      assert_equal Turtle (parse_species "Turtle") );
+    ( "Parse species shark" >:: fun _ ->
+      assert_equal Shark (parse_species "Shark") );
     ( "Invalid species input is caught with Huh constructor" >:: fun _ ->
       assert_equal Huh (parse_species "awsjfh") );
-    ( "User buying 1 goldfish parses as Goldfish 1" >:: fun _ ->
+
+    
+    (* parse species int tests*)
+    ( "parse_species_int Goldfish 1" >:: fun _ ->
       assert_equal (Goldfish, 1) (parse_species_int "Goldfish 1") );
-    ( "User buying 10 remora parses as Remora 10" >:: fun _ ->
-      assert_equal (Remora, 10) (parse_species_int "Remora 10") );
-    ( "Capitalization does not affect species parser" >:: fun _ ->
+    ( "parse_species_int Goldfish 1 alternating caps" >:: fun _ ->
       assert_equal (Goldfish, 1) (parse_species_int "GOlDfIsH 1") );
-    ( "User buying no goldfish parses as Goldfish 0" >:: fun _ ->
+    ( "parse_species_int Goldfish -2" >:: fun _ ->
+      assert_equal (Goldfish, -2) (parse_species_int "Goldfish -2") );
+    ( "parse_species_int Goldfish 0" >:: fun _ ->
       assert_equal (Goldfish, 0) (parse_species_int "Goldfish 0") );
-    ( "Invalid species input adds no additional fish" >:: fun _ ->
+    ( "parse_species_int Goldfish 5 whitespace" >:: fun _ ->
+      assert_equal (Goldfish, 5) (parse_species_int "  Goldfish    5   ") );
+    ( "parse_species_int anemone 1 all caps" >:: fun _ ->
+      assert_equal (Anemone, 1) (parse_species_int "ANEMONE 1") );
+    ( "parse_species_int anemone 5" >:: fun _ ->
+      assert_equal (Anemone, 5) (parse_species_int "Anemone 5") );
+    ( "parse_species_int turtle 5" >:: fun _ ->
+      assert_equal (Turtle, 5) (parse_species_int "Turtle 5") );
+    ( "parse_species_int remora 10" >:: fun _ ->
+      assert_equal (Remora, 10) (parse_species_int "Remora 10") );
+    ( "parse_species_int shark 5" >:: fun _ ->
+      assert_equal (Shark, 5) (parse_species_int "Shark 5") );
+
+    ( "parse_species_int invalid input one word" >:: fun _ ->
       assert_equal (Huh, 0) (parse_species_int "awsjfh") );
+    ( "parse_species_int invalid Goldfish1" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "Goldfish1") );
+    ( "parse_species_int invalid Turtle 5 hello" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "Turtle 5 hello") );
+    ( "parse_species_int invalid Turtles 5" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "Turtles 5") );
+    ( "parse_species_int invalid empty string" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "") );
+    ( "parse_species_int invalid whitespace" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "  ") );
+    ( "parse_species_int invalid Turtle whitespace" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "Turtle  ") );
+    ( "parse_species_int invalid Turtle one" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "Turtle one") );
+    ( "parse_species_int invalid Goldfish Turtle" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "Goldfish Turtle") );
+    ( "parse_species_int invalid 1 Goldfish" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "1 Goldfish") );
+    ( "parse_species_int invalid Goldfish comma 1" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "Goldfish, 1") );
+    ( "parse_species_int invalid Goldfish --2" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "Goldfish --2") );
+    ( "parse_species_int invalid hello 2" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "hello 2") ); 
   ]
 
 let print_tests =
