@@ -127,15 +127,15 @@ and manual (num_actions : int) (g : Game.game_state) : unit =
     \     and other sharks. At the end of a round, every shark in your tank will \n\
     \     randomly devour some other fish. For every shark that has no fish to \n\
     \     eat, the health of sharks will decrease by 2 points.\n\
-    \  4. There are 2 symbiotic pairings--clownfish and anemone; sharks and remorae.\n\
+    \  4. There are 2 symbiotic pairings: clownfish and anemone; sharks and remorae.\n\
     \     If both species of a pairing are present in your tank at the end of a \n\
     \     round, then they will give each other a small health boost.\n\
     \  5. A species with health > 80 and enough fish will grow on its own.\n\
     \     If a species has health < 50, then its number will automatically decline.\n\
     \  6. At the end of a round, you will earn an amount of money that depends on the\n\
     \     number of each species in your tank.\n\
-    \  7. At the end of the game, you will receive a score that depends on the cumulative\n\
-    \     ages of the species in your tank.\n";
+    \  7. At the end of the game, you will receive a score that depends on the\n\
+    \     cumulative ages of the species in your tank.\n";
   action num_actions g
 
 let () =
