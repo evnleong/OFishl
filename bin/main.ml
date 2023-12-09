@@ -121,7 +121,7 @@ and manual (num_actions : int) (g : Game.game_state) : unit =
   ANSITerminal.print_string [ ANSITerminal.blue ]
     "\n\
     \  1. The health of every species except sharks will automatically decrease \n\
-    \     by 5 points at the end of a round (see 3) \n\
+    \     by 5 points at the end of a round (see 3). \n\
     \  2. A species will increase in health when given food or medicine. \n\
     \  3. Sharks eat fish to survive. The only fish they do not eat are remorae \n\
     \     and other sharks. At the end of a round, every shark in your tank will \n\
