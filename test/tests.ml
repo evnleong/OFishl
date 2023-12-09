@@ -12,6 +12,7 @@
 open OUnit2
 open Final_project
 open Game
+open Userinput
 
 let goldfish = make_fish Goldfish Pellet 1.4 0.6
 let remora = make_fish Remora Pellet 1. 0.8
@@ -164,6 +165,40 @@ let game_tests =
       assert_equal true (end_score game2 > 0) );
   ]
 
+let user_input_tests =
+  [
+    ( " Terminal input parsed into string list" >:: fun _ ->
+      assert_equal [ "ABCDEF" ] (parse "ABCDEF") );
+    ( "All terminal input is auto-capitalized to normalize input  " >:: fun _ ->
+      assert_equal [ "ABCDEF" ] (parse "abcdef") );
+    ( "Invalid input parses as Dunno constructor" >:: fun _ ->
+      assert_equal Dunno (parse_input "abcdef") );
+    ( "User input of Buy parses as Buy" >:: fun _ ->
+      assert_equal Buy (parse_input "Buy") );
+    ( "User input of Medicine parses as Medicine" >:: fun _ ->
+      assert_equal Medicine (parse_input "Medicine") );
+    ( "Capitalization does not affect parser" >:: fun _ ->
+      assert_equal Buy (parse_input "BUY") );
+    ( "User input of Goldfish parses as Goldfish" >:: fun _ ->
+      assert_equal Goldfish (parse_species "Goldfish") );
+    ( "User input of Remora parses as Remora" >:: fun _ ->
+      assert_equal Remora (parse_species "Remora") );
+    ( "Capitalization does not affect species parser" >:: fun _ ->
+      assert_equal Goldfish (parse_species "GOLDFISH") );
+    ( "Invalid species input is caught with Huh constructor" >:: fun _ ->
+      assert_equal Huh (parse_species "awsjfh") );
+    ( "User buying 1 goldfish parses as Goldfish 1" >:: fun _ ->
+      assert_equal (Goldfish, 1) (parse_species_int "Goldfish 1") );
+    ( "User buying 10 remora parses as Remora 10" >:: fun _ ->
+      assert_equal (Remora, 10) (parse_species_int "Remora 10") );
+    ( "Capitalization does not affect species parser" >:: fun _ ->
+      assert_equal (Goldfish, 1) (parse_species_int "GOlDfIsH 1") );
+    ( "User buying no goldfish parses as Goldfish 0" >:: fun _ ->
+      assert_equal (Goldfish, 0) (parse_species_int "Goldfish 0") );
+    ( "Invalid species input adds no additional fish" >:: fun _ ->
+      assert_equal (Huh, 0) (parse_species_int "awsjfh") );
+  ]
+
 let print_tests =
   [
     ( "String of Goldfish" >:: fun _ ->
@@ -198,6 +233,7 @@ let suite =
   >::: List.flatten
          [
            currency_tests;
+           user_input_tests;
            fish_tests;
            health_tests;
            population_tests;
