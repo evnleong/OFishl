@@ -271,7 +271,7 @@ let med_game_species (g : game_state) (s : fish_species) : unit =
   if med_broke g then () else health_tank_species g.tank s 30.;
   cost g 50.
 
-(* Helper for feed_fish that rounds float to 1 dp *)
+(* Helper for feed_fish that rounds float to 1 dp. *)
 let round_float (f : float) : float = (f *. 10. |> Float.round) /. 10.
 
 (** Feeds n pellets to a fish population f. In effect, f's health increases 
@@ -394,7 +394,8 @@ let symbiosis (t : tank) : unit =
   anemone_clownfish t;
   remora_shark t
 
-(**Player will have a random chance of losing money in between rounds. Chance increases based on number of fish player owns*)
+(** Player will have a random chance of losing money in between rounds. 
+    Chance increases based on number of fish player owns. *)
 let randomly_lose_money (g : game_state) : float =
   Random.self_init ();
   let totalfishnum =
@@ -510,7 +511,7 @@ let table_spacing (s : string) (spaces : string) : string =
   let space_length = String.length spaces in
   if string_length = 1 then spaces
   else
-    (*we need to decrease spaces following this string*)
+    (* we need to decrease spaces following this string *)
     String.sub spaces 0 (space_length - string_length + 1)
 [@@coverage off]
 
@@ -520,7 +521,7 @@ let health_statement (g : game_state) =
   let body = ref "" in
   let header = ref "" in
   for i = 0 to num_species - 1 do
-    (*if there is a previous column, we need to check spacing*)
+    (* if there is a previous column, we need to check spacing *)
     let bodyspaces =
       if i > 0 then
         table_spacing (string_of_float playertank.(i - 1).health) "           "
