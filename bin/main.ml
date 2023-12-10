@@ -110,10 +110,6 @@ and action num_actions (g : Game.game_state) : unit =
         action num_actions g
   with Exit -> ()
 
-(* | Wallet ->
-     print_endline ("\n  You currently have $" ^ string_of_float (Game.get_playermoney g));
-     action num_actions g *)
-
 (** Displays additional information about the game. *)
 and manual (num_actions : int) (g : Game.game_state) : unit =
   ANSITerminal.print_string
