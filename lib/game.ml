@@ -271,10 +271,14 @@ let med_game_species (g : game_state) (s : fish_species) : unit =
   health_tank_species g.tank s 30.;
   cost g 50.
 
+(* Helper for feed_fish that rounds float to 1 dp *)  
+let round_float (f : float) : float = 
+  (f *. 10. |> Float.round) /. 10. 
+
 (** Feeds n pellets to a fish population f. In effect, f's health increases 
     by n/N, where N is the number of fish in the population. *)
 let feed_fish (f : fish) (n : int) : unit =
-  health_fish f (float_of_int n /. float_of_int f.num)
+  health_fish f (float_of_int n /. float_of_int f.num |> round_float)
 
 (** Feeds n pellets to fish population of species s in tank t. *)
 let feed_fish_tank (t : tank) (s : fish_species) (n : int) : unit =
