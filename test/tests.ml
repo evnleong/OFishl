@@ -57,7 +57,7 @@ let health2_r = get_health game2 Remora
 let _ = symbiosis game2
 
 
-(* Game 3: Clownfish and anemone *)
+(* Game 3: Clownfish and anemone symbiosis *)
 let game3 = start_game 10
 
 let _ =
@@ -65,7 +65,14 @@ let _ =
   buy_fish_game game3 Clownfish 7;
   buy_fish_game game3 Anemone 7;
   health_tank_species (get_tank game3) Anemone (-50.);
-  feed_fish_game game3 Anemone (7 * 50)
+  health_tank_species (get_tank game3) Clownfish (-10.);
+  feed_fish_game game3 Anemone (7 * 40)
+
+  let health3_c = get_health game3 Clownfish
+
+  let health3_a = get_health game3 Anemone
+
+  let _ = symbiosis game3
 
 (* Game 4: Only turtles *)
 let game4 = start_game 3
@@ -258,7 +265,7 @@ let money_tests = [
   (* get_playermoney tests *)
   ("Playermoney start of game1" >:: fun _ -> assert_equal 100. (get_playermoney game1));
   ("Playermoney game2" >:: fun _ -> assert_equal 44. (get_playermoney game2));
-  ("Playermoney game3" >:: fun _ -> assert_equal ~-.33. (get_playermoney game3));
+  ("Playermoney game3" >:: fun _ -> assert_equal ~-.26. (get_playermoney game3));
   ("Playermoney game4" >:: fun _ -> assert_equal 25. (get_playermoney game4));
 
   (* broke tests *)
@@ -298,6 +305,10 @@ let health_tests = [
       assert_equal true (get_health game2 Shark > health2_s));
   ( "Symbiosis game2 remorae" >:: fun _ -> 
       assert_equal true (get_health game2 Remora > health2_r));
+  ( "Symbiosis game3 clownfish" >:: fun _ -> 
+      assert_equal true (get_health game3 Clownfish > health3_c));
+  ( "Symbiosis game3 anemone" >:: fun _ -> 
+      assert_equal true (get_health game3 Anemone > health3_a));
 
   (* shark eat tests *)
   ( "Shark eat game7" >:: fun _ -> assert_equal true shark7 );
