@@ -248,7 +248,7 @@ let shark_update (g : game_state) : unit =
   let track = shark_dinner t in
   if Array.find_opt (fun x -> x > 0) track <> None then
     print_string (shark_news track)
-  else print_string "\n  Your sharks had nothing to eat this round."
+  else print_string "\n  Your sharks had nothing to eat this round.\n"
 [@@coverage off]
 
 (** Ages a fish population f by one round. In effect, f's age sum increases
