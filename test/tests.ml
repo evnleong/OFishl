@@ -21,6 +21,13 @@ let remora = make_fish Remora Pellet 1. 0.8
 let sum_prey_eaten (prey : prey_record) : int = 
   prey.goldfish + prey.anemone + prey.clownfish + prey.turtle
 
+let and_prey_eaten (prey : prey_record) (g : int) (a : int) 
+    (c : int) (t : int) : bool = 
+  prey.goldfish = g
+  && prey.anemone = a 
+  && prey.clownfish = c 
+  && prey.turtle = t
+
 (* SAMPLE GAMES *)
 
 (* Game 1: Empty game *)
@@ -97,10 +104,22 @@ let game8 = start_game 4
 
 let _ =
   set_game game8;
-  buy_fish_game game8 Shark 4;
-  end_of_round game8; 
-  end_of_round game8; 
-  end_of_round game8  
+  buy_fish_game game8 Shark 4
+
+let shark8 = 
+  let _ = get_eaten_prey game8 in 
+  let _ = get_eaten_prey game8 in 
+  let prey8 = get_eaten_prey game8 in 
+  and_prey_eaten prey8 0 0 0 0
+  && get_health game8 Shark = 40.
+
+let _ = 
+  buy_fish_game game8 Goldfish 2
+
+let shark8' = 
+  let prey8 = get_eaten_prey game8 in 
+  and_prey_eaten prey8 2 0 0 0 
+  && get_health game8 Shark = 30.
 
 (* Game 9: Buy one of every fish; shark successively eats *)
 let game9 = start_game 3 
@@ -132,10 +151,8 @@ let _ =
 
 let shark10 = 
   let prey10 = get_eaten_prey game10 in 
-  (prey10.goldfish = 2 
-  && prey10.anemone = 0
-  && prey10.clownfish = 0 
-  && prey10.turtle = 0)
+  and_prey_eaten prey10 2 0 0 0
+
 
 (* Functions related to money, earning, buying *)
 let money_tests = [
@@ -195,6 +212,8 @@ let health_tests = [
 
   (* shark eat tests *)
   ( "Shark eat game7" >:: fun _ -> assert_equal true shark7 );
+  ( "Shark eat game8 hungry" >:: fun _ -> assert_equal true shark8 );  
+  ( "Shark eat game8 2 goldfish" >:: fun _ -> assert_equal true shark8' ); 
   ( "Shark eat game9" >:: fun _ -> assert_equal true shark9 );
   ( "Shark eat game10" >:: fun _ -> assert_equal true shark10 );
 ]
