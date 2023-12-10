@@ -271,9 +271,8 @@ let med_game_species (g : game_state) (s : fish_species) : unit =
   health_tank_species g.tank s 30.;
   cost g 50.
 
-(* Helper for feed_fish that rounds float to 1 dp *)  
-let round_float (f : float) : float = 
-  (f *. 10. |> Float.round) /. 10. 
+(* Helper for feed_fish that rounds float to 1 dp *)
+let round_float (f : float) : float = (f *. 10. |> Float.round) /. 10.
 
 (** Feeds n pellets to a fish population f. In effect, f's health increases 
     by n/N, where N is the number of fish in the population. *)
@@ -395,22 +394,77 @@ let symbiosis (t : tank) : unit =
   anemone_clownfish t;
   remora_shark t
 
-(**Causes player to have a random chance of losing money in between rounds*)
+(**Player will have a random chance of losing money in between rounds. Chance increases based on number of fish player owns*)
 let randomly_lose_money (g : game_state) =
   Random.self_init ();
-  let loss = 20. -. float_of_int (Random.int 15) in
-  if Random.int 3 = 0 then (
+  let loss = 30. -. float_of_int (Random.int 15) in
+  let totalfishnum =
+    Array.fold_left (fun acc fish -> acc + fish.num) 0 g.tank
+  in
+  if Random.int (min ((totalfishnum / 10) + 1) 3) = 0 then (
     g.money <- g.money -. loss;
     print_endline
       ("\n Ticket sales were down this round! You lost " ^ string_of_float loss
      ^ " dollars."))
+
+let randomly_get_money (g : game_state) =
+  Random.self_init ();
+  let gain = 20. -. float_of_int (Random.int 15) in
+  if Random.int 4 = 0 then (
+    g.money <- g.money +. gain;
+    print_endline
+      ("\n\
+       \ Congrats! Your aquarium had booming ticket sales this round! You \
+        gained an extra " ^ string_of_float gain ^ " dollars."))
+
+let activity_check (g : game_state) : unit =
+  let totalfishnum =
+    Array.fold_left (fun acc fish -> acc + fish.num) 0 g.tank
+  in
+  if totalfishnum < 20 then
+    print_endline
+      "\n\
+      \  Attention: Your aquarium requires maintenance! Without new fish, \
+       there's an increased risk of reduced ticket sales.";
+  if not (buy_broke g Goldfish 1) then (
+    print_endline
+      "  Consider using your money to buy new fish to keep your aquarium \
+       vibrant and attractive!";
+    randomly_get_money g)
+  else
+    print_endline
+      "  Unfortunately, you don't have enough money to buy new fish. Be \
+       cautious!"
+
+let celebrity_vist (g : game_state) =
+  Random.self_init ();
+  let gain = 20. -. float_of_int (Random.int 15) in
+  let rarefishnum =
+    List.fold_left
+      (fun acc species -> acc + g.tank.(fish_pos species).num)
+      0
+      [ Shark; Turtle; Clownfish ]
+  in
+  if rarefishnum > 2 && Random.int 3 = 0 then (
+    g.money <- g.money +. gain;
+    print_endline
+      ("\n\
+       \  Woah! A celebrity visited your aquarium and liked your expensive \
+        fish -- you got a stellar review!\n\
+       \        \n\
+       \ You gained an extra " ^ string_of_float gain ^ " dollars."))
 
 let game_ended (g : game_state) : bool = g.ended
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   if not (extinct g.tank.(5)) then shark_update g;
-  randomly_lose_money g;
+  print_endline "\n \n  While you were gone...";
+  activity_check g;
+  celebrity_vist g;
+  Random.self_init ();
+  if Random.int 2 = 1 then randomly_lose_money g
+  else if Random.int 4 = 1 then randomly_get_money g;
   g.money <- g.money +. earnings g;
   print_endline ("\n  Earnings for this round: $" ^ string_of_float (earnings g));
   age_tank g.tank;
@@ -419,7 +473,8 @@ let end_of_round (g : game_state) : unit =
   symbiosis g.tank;
   check_extinct g.tank;
   if g.round = g.max_rounds || g.money <= 0. then g.ended <- true
-  else (health_reminder g;
+  else (
+    health_reminder g;
     g.round <- g.round + 1)
 
 (* PRINT FUNCTIONS *)
@@ -487,13 +542,21 @@ let get_health (g : game_state) (s : fish_species) : float =
 (** Given a game_state, returns the tank*)
 let get_tank (g : game_state) = g.tank
 
-type prey_record = 
-  {goldfish : int; anemone : int; clownfish : int; turtle : int}
+type prey_record = {
+  goldfish : int;
+  anemone : int;
+  clownfish : int;
+  turtle : int;
+}
 
 (** Given a game_state, performs end of round shark update
     and returns record of number of each prey eaten *)
-let get_eaten_prey (g : game_state) : prey_record = 
-  let prey_ar = shark_dinner g.tank in 
+let get_eaten_prey (g : game_state) : prey_record =
+  let prey_ar = shark_dinner g.tank in
 
-  { goldfish = prey_ar.(0); anemone = prey_ar.(1); 
-    clownfish = prey_ar.(2); turtle = prey_ar.(3)}
+  {
+    goldfish = prey_ar.(0);
+    anemone = prey_ar.(1);
+    clownfish = prey_ar.(2);
+    turtle = prey_ar.(3);
+  }
