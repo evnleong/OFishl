@@ -16,12 +16,15 @@ open Userinput
 
 let goldfish = make_fish Goldfish Pellet 1.4 0.6
 let remora = make_fish Remora Pellet 1. 0.8
+
+(* Game 1: empty game *)
 let game = start_game 10
 
 let _ =
   set_game game;
   age_tank (get_tank game)
 
+(* Game 2: remorae and sharks *)
 let game2 = start_game 5
 
 let _ =
@@ -31,6 +34,7 @@ let _ =
   add_fish remora 10;
   age_fish remora
 
+(* Game 3: clownfish and anemone *)
 let game3 = start_game 10
 
 let _ =
@@ -40,6 +44,7 @@ let _ =
   health_tank_species (get_tank game3) Anemone (-50.);
   feed_fish_game game3 Anemone (7 * 50)
 
+(* Game 4: only turtles *)
 let game4 = start_game 3
 
 let _ =
@@ -47,6 +52,7 @@ let _ =
   buy_fish_game game4 Turtle 5;
   health_tank (get_tank game4) (-30.)
 
+(* Game 5: only goldfish *)
 let game5 = start_game 3
 
 let _ =
@@ -55,6 +61,7 @@ let _ =
   buy_fish_game game5 Goldfish 2;
   med_game_species game5 Goldfish
 
+(* Game 6: clownfish and goldfish *)
 let game6 = start_game 1
 
 let _ =
@@ -64,6 +71,7 @@ let _ =
   buy_fish_game game6 Goldfish 2;
   growth_tank (get_tank game6)
 
+(* Game 7: sharks and clownfish *)
 let game7 = start_game 4
 
 let _ =
@@ -75,255 +83,256 @@ let _ =
 
 let array = shark_dinner (get_tank game7)
 
-(*if the shark eats, their health increases*)
+(* if the shark eats, their health increases *)
 let fish_eaten = array.(2) > 0
 let shark_health = get_health game7 Shark > 10.
 
-(*Symbiosis*)
-let game8 = start_game 6
 
-let _ =
-  set_game game8;
-  buy_fish_game game8 Shark 2;
-  buy_fish_game game8 Remora 10;
-  end_of_round game8
+(* Functions related to money, earning, buying *)
+let money_tests = [
+  (* price_fish tests *)
+  ("Price of 1 goldfish" >:: fun _ -> assert_equal 2. (price_fish Goldfish 1));
+  ("Price of 10 sharks" >:: fun _ -> assert_equal 200. (price_fish Shark 10));
+  ("Price of 3 remorae" >:: fun _ -> assert_equal 24. (price_fish Remora 3));
+  ("Price of 0 goldfis" >:: fun _ -> assert_equal 0. (price_fish Goldfish 0));
+  ("Price_fish exception" >:: fun _ ->
+    assert_raises (Failure "Invalid") (fun () -> price_fish Huh 3) );
 
-let currency_tests =
-  [
-    ("price of 1 goldfish" >:: fun _ -> assert_equal 2. (price_fish Goldfish 1));
-    ("price of 10 sharks" >:: fun _ -> assert_equal 200. (price_fish Shark 10));
-    ("price of 3 remorae" >:: fun _ -> assert_equal 24. (price_fish Remora 3));
-    ( "price_fish exception" >:: fun _ ->
-      assert_raises (Failure "Invalid") (fun () -> price_fish Huh 3) );
-    ("Extinct Shark" >:: fun _ -> assert_equal true (species_extinct game Shark));
-    ( "Not Extinct Shark" >:: fun _ ->
-      assert_equal false (species_extinct game2 Shark) );
-    ("Start w/ 100" >:: fun _ -> assert_equal 100. (get_playermoney game));
-    ("Cost 40." >:: fun _ -> assert_equal 60. (get_playermoney game2));
-    ( "Healthy fish species" >:: fun _ ->
+  (* get_playermoney tests *)
+  ("Start w/ 100" >:: fun _ -> assert_equal 100. (get_playermoney game));
+  ("Cost 40." >:: fun _ -> assert_equal 60. (get_playermoney game2));
+  ("Start w/ 100" >:: fun _ -> assert_equal 100. (get_playermoney game));
+  ("Cost 40." >:: fun _ -> assert_equal 60. (get_playermoney game2));
+
+  (* broke tests *)
+  ( "not enough money to buy 100 anemone" >:: fun _ ->
+    assert_equal true (buy_broke game3 Anemone 100) );
+  ( "enough money to buy" >:: fun _ ->
+    assert_equal false (buy_broke game Turtle 0) );
+  ( "not enough money to buy medicine" >:: fun _ ->
+    assert_equal true (med_broke game3) );
+  ( "enough money to buy medicine" >:: fun _ ->
+    assert_equal false (med_broke game) );
+  ( "not enough money to buy food" >:: fun _ ->
+    assert_equal true (feed_broke game3 100) );
+  ( "enough money to buy food" >:: fun _ ->
+    assert_equal false (feed_broke game 10) );
+  ("empty game earnings" >:: fun _ -> assert_equal 0. (earnings game));
+  ( "earnings from 7 clownfish and 7 anemone" >:: fun _ ->
+    assert_equal 91. (earnings game3) );
+]
+
+(* Test functions and actions that manipulate health: medicine, food, shark eating *)
+let health_tests = [
+  ( "Healthy fish species" >:: fun _ ->
+    assert_equal 100. (get_health game Goldfish) );
+  ("Sick sharks" >:: fun _ -> assert_equal 20. (get_health game2 Shark));
+  ( "Feed hungry anemone" >:: fun _ ->
+    assert_equal 100. (get_health game3 Anemone) );
+  ( "Healthy fish species" >:: fun _ ->
       assert_equal 100. (get_health game Goldfish) );
-    ("Sick sharks" >:: fun _ -> assert_equal 20. (get_health game2 Shark));
-    ( "Feed hungry anemone" >:: fun _ ->
+  ("Sick sharks" >:: fun _ -> assert_equal 20. (get_health game2 Shark));
+  ( "Feed hungry anemone" >:: fun _ ->
       assert_equal 100. (get_health game3 Anemone) );
-    ( "not enough money to buy 100 anemone" >:: fun _ ->
-      assert_equal true (buy_broke game3 Anemone 100) );
-    ( "enough money to buy" >:: fun _ ->
-      assert_equal false (buy_broke game Turtle 0) );
-    ( "not enough money to buy medicine" >:: fun _ ->
-      assert_equal true (med_broke game3) );
-    ( "enough money to buy medicine" >:: fun _ ->
-      assert_equal false (med_broke game) );
-    ( "not enough money to buy food" >:: fun _ ->
-      assert_equal true (feed_broke game3 100) );
-    ( "enough money to buy food" >:: fun _ ->
-      assert_equal false (feed_broke game 10) );
-    ("empty game earnings" >:: fun _ -> assert_equal 0. (earnings game));
-    ( "earnings from 7 clownfish and 7 anemone" >:: fun _ ->
-      assert_equal 91. (earnings game3) );
+  ("health_tank -30." >:: fun _ -> assert_equal 70. (get_health game4 Turtle));
+  ("Shark_dinner" >:: fun _ -> assert_equal fish_eaten shark_health);
+]
+
+(* Tests to do with population numbers: extinct, growth *)
+let population_tests = [
+  ("Extinct Shark" >:: fun _ -> assert_equal true (species_extinct game Shark));
+  ( "Not Extinct Shark" >:: fun _ ->
+  assert_equal false (species_extinct game2 Shark) );
+  ("Extinct Shark" >:: fun _ -> assert_equal true (species_extinct game Shark));
+  ( "Not Extinct Shark" >:: fun _ ->
+    assert_equal false (species_extinct game2 Shark) );  
+
+  ("age 10 remora" >:: fun _ -> assert_equal 10 (get_age remora));
+  ( "growth_tank sick Clownfish" >:: fun _ ->
+    assert_equal 1 (get_species_population game6 Clownfish) );
+  ( "growth_tank healthy goldfish" >:: fun _ ->
+    assert_equal 3 (get_species_population game6 Goldfish) );
   ]
 
-let fish_tests =
-  [ ("make empty goldfish" >:: fun _ -> assert_equal 0 (get_age goldfish)) ]
 
-let health_tests =
-  [
-    ("Extinct Shark" >:: fun _ -> assert_equal true (species_extinct game Shark));
-    ( "Not Extinct Shark" >:: fun _ ->
-      assert_equal false (species_extinct game2 Shark) );
-    ("Start w/ 100" >:: fun _ -> assert_equal 100. (get_playermoney game));
-    ("Cost 40." >:: fun _ -> assert_equal 60. (get_playermoney game2));
-    ( "Healthy fish species" >:: fun _ ->
-      assert_equal 100. (get_health game Goldfish) );
-    ("Sick sharks" >:: fun _ -> assert_equal 20. (get_health game2 Shark));
-    ( "Feed hungry anemone" >:: fun _ ->
-      assert_equal 100. (get_health game3 Anemone) );
-    ("health_tank -30." >:: fun _ -> assert_equal 70. (get_health game4 Turtle));
+(* Tests for functions to do with fish properties: *)
+let fish_tests = [
+  ("make empty goldfish" >:: fun _ -> assert_equal 0 (get_age goldfish)); 
+  ( "predator_fish false" >:: fun _ ->
+  assert_equal false (predator_species game Goldfish) );
+  ( "predator_fish true" >:: fun _ ->
+  assert_equal true (predator_species game Shark) );
   ]
 
-let population_tests =
-  [
-    ("age 10 remora" >:: fun _ -> assert_equal 10 (get_age remora));
-    ( "growth_tank sick Clownfish" >:: fun _ ->
-      assert_equal 1 (get_species_population game6 Clownfish) );
-    ( "growth_tank healthy goldfish" >:: fun _ ->
-      assert_equal 3 (get_species_population game6 Goldfish) );
-  ]
-
-let game_tests =
-  [
-    ( "predator_fish false" >:: fun _ ->
-      assert_equal false (predator_species game Goldfish) );
-    ( "predator_fish true" >:: fun _ ->
-      assert_equal true (predator_species game Shark) );
-    ("add 10 remora" >:: fun _ -> assert_equal 10 (get_num remora));
-    ("10 round maximum" >:: fun _ -> assert_equal 10 (get_max_rounds game));
-    ("5 round maximum" >:: fun _ -> assert_equal 5 (get_max_rounds game2));
-    ( "End Score Calculation" >:: fun _ ->
-      assert_equal true (end_score game2 > 0) );
-    ("Shark_dinner" >:: fun _ -> assert_equal fish_eaten shark_health);
-    ( "End Score Calculation" >:: fun _ ->
-      assert_equal true (end_score game2 > 0) );
+(* Tests for end of game and end of round *)
+let game_tests = [
+  ("add 10 remora" >:: fun _ -> assert_equal 10 (get_num remora));
+  ("10 round maximum" >:: fun _ -> assert_equal 10 (get_max_rounds game));
+  ("5 round maximum" >:: fun _ -> assert_equal 5 (get_max_rounds game2));
+  ( "End Score Calculation" >:: fun _ ->
+    assert_equal true (end_score game2 > 0) );
+  ( "End Score Calculation" >:: fun _ ->
+    assert_equal true (end_score game2 > 0) );
   ]
 
 (* USER INPUT TESTS *)
-let user_input_tests =
-  [
-    (* parse tests *)
-    ( "Parse empty string" >:: fun _ ->
-      assert_equal [] (parse "") );  
-    ( "Parse ABCDEF" >:: fun _ ->
-      assert_equal [ "ABCDEF" ] (parse "ABCDEF") );
-    ( "Parse abcdef" >:: fun _ ->
-      assert_equal [ "ABCDEF" ] (parse "abcdef") );
-    ( "Parse whitespace" >:: fun _ ->
-      assert_equal [] (parse "   ") );
-    ( "Parse hi hello" >:: fun _ ->
-      assert_equal ["HI"; "HELLO"] (parse "hi hello") );
-    ( "Parse camels are slay" >:: fun _ ->
-      assert_equal ["CAMELS"; "ARE"; "SLAY"] (parse "camels are slay") );
-    ( "Parse words with whitespace" >:: fun _ ->
-      assert_equal ["CAMELS"; "ARE"; "SLAY"] (parse "   camels   are  slay  ") );
+let user_input_tests = [
+  (* parse tests *)
+  ( "Parse empty string" >:: fun _ ->
+    assert_equal [] (parse "") );  
+  ( "Parse ABCDEF" >:: fun _ ->
+    assert_equal [ "ABCDEF" ] (parse "ABCDEF") );
+  ( "Parse abcdef" >:: fun _ ->
+    assert_equal [ "ABCDEF" ] (parse "abcdef") );
+  ( "Parse whitespace" >:: fun _ ->
+    assert_equal [] (parse "   ") );
+  ( "Parse hi hello" >:: fun _ ->
+    assert_equal ["HI"; "HELLO"] (parse "hi hello") );
+  ( "Parse camels are slay" >:: fun _ ->
+    assert_equal ["CAMELS"; "ARE"; "SLAY"] (parse "camels are slay") );
+  ( "Parse words with whitespace" >:: fun _ ->
+    assert_equal ["CAMELS"; "ARE"; "SLAY"] (parse "   camels   are  slay  ") );
 
-    (* parse_input tests *)
-    ( "Parse input empty string" >:: fun _ ->
-        assert_equal Dunno (parse_input "") );
-    ( "Parse input whitespace" >:: fun _ ->
-        assert_equal Dunno (parse_input "  ") );
-    ( "Parse input invalid one word" >:: fun _ ->
-      assert_equal Dunno (parse_input "abcdef") );
-    ( "Parse input invalid two words" >:: fun _ ->
-      assert_equal Dunno (parse_input "two words") );
-    ( "Parse input invalid Fe ed" >:: fun _ ->
-      assert_equal Dunno (parse_input "Fe ed") );
-    ( "Parse input Fe ed" >:: fun _ ->
-      assert_equal Dunno (parse_input "Fe ed") );
-    ( "Parse input invalid Manual 5" >:: fun _ ->
-      assert_equal Dunno (parse_input "Manual 5") );
+  (* parse_input tests *)
+  ( "Parse input empty string" >:: fun _ ->
+      assert_equal Dunno (parse_input "") );
+  ( "Parse input whitespace" >:: fun _ ->
+      assert_equal Dunno (parse_input "  ") );
+  ( "Parse input invalid one word" >:: fun _ ->
+    assert_equal Dunno (parse_input "abcdef") );
+  ( "Parse input invalid two words" >:: fun _ ->
+    assert_equal Dunno (parse_input "two words") );
+  ( "Parse input invalid Fe ed" >:: fun _ ->
+    assert_equal Dunno (parse_input "Fe ed") );
+  ( "Parse input Fe ed" >:: fun _ ->
+    assert_equal Dunno (parse_input "Fe ed") );
+  ( "Parse input invalid Manual 5" >:: fun _ ->
+    assert_equal Dunno (parse_input "Manual 5") );
 
-    ( "Parse input feed" >:: fun _ ->
-        assert_equal Feed (parse_input "Feed") );
-    ( "Parse input feed with whitespace" >:: fun _ ->
-        assert_equal Feed (parse_input " Feed  ") );
-    ( "Parse input feed all caps" >:: fun _ ->
-       assert_equal Feed (parse_input "FEED") );
-    ( "Parse input feed lowercase" >:: fun _ ->
-        assert_equal Feed (parse_input "feed") );
-    ( "Parse input feed alternate uppercase lowercase" >:: fun _ ->
-        assert_equal Feed (parse_input "fEeD") );
+  ( "Parse input feed" >:: fun _ ->
+      assert_equal Feed (parse_input "Feed") );
+  ( "Parse input feed with whitespace" >:: fun _ ->
+      assert_equal Feed (parse_input " Feed  ") );
+  ( "Parse input feed all caps" >:: fun _ ->
+      assert_equal Feed (parse_input "FEED") );
+  ( "Parse input feed lowercase" >:: fun _ ->
+      assert_equal Feed (parse_input "feed") );
+  ( "Parse input feed alternate uppercase lowercase" >:: fun _ ->
+      assert_equal Feed (parse_input "fEeD") );
 
-    ( "Parse input Buy" >:: fun _ ->
-      assert_equal Buy (parse_input "Buy") );
-    ( "Parse input buy all caps" >:: fun _ ->
-      assert_equal Buy (parse_input "BUY") );
-    ( "Parse input Medicine" >:: fun _ ->
-      assert_equal Medicine (parse_input "Medicine") );
-    ( "Parse input Tank" >:: fun _ ->
-      assert_equal View_Tanks (parse_input "Tank") );
-    ( "Parse input Manual" >:: fun _ ->
-      assert_equal Manual (parse_input "Manual") );
-    ( "Parse input Pass" >:: fun _ ->
-      assert_equal Pass (parse_input "Pass") );
+  ( "Parse input Buy" >:: fun _ ->
+    assert_equal Buy (parse_input "Buy") );
+  ( "Parse input buy all caps" >:: fun _ ->
+    assert_equal Buy (parse_input "BUY") );
+  ( "Parse input Medicine" >:: fun _ ->
+    assert_equal Medicine (parse_input "Medicine") );
+  ( "Parse input Tank" >:: fun _ ->
+    assert_equal View_Tanks (parse_input "Tank") );
+  ( "Parse input Manual" >:: fun _ ->
+    assert_equal Manual (parse_input "Manual") );
+  ( "Parse input Pass" >:: fun _ ->
+    assert_equal Pass (parse_input "Pass") );
 
-    (* parse_species tests *)
-    ( "Parse species Goldfish" >:: fun _ ->
-      assert_equal Goldfish (parse_species "Goldfish") );
-    ( "Parse species goldfish all caps" >:: fun _ ->
-      assert_equal Goldfish (parse_species "GOLDFISH") );
-    ( "Parse species GoLdFISH" >:: fun _ ->
-      assert_equal Goldfish (parse_species "GoLdFISH") );
-    ( "Parse species goldfish with whitespace" >:: fun _ ->
-      assert_equal Goldfish (parse_species "   Goldfish  ") );
-    ( "Parse species Remora" >:: fun _ ->
-      assert_equal Remora (parse_species "Remora") );
-    ( "Parse species anemone" >:: fun _ ->
-      assert_equal Anemone (parse_species "Anemone") );
-    ( "Parse species clownfish" >:: fun _ ->
-      assert_equal Clownfish (parse_species "Clownfish") );
-    ( "Parse species turtle" >:: fun _ ->
-      assert_equal Turtle (parse_species "Turtle") );
-    ( "Parse species shark" >:: fun _ ->
-      assert_equal Shark (parse_species "Shark") );
-    ( "Invalid species input is caught with Huh constructor" >:: fun _ ->
-      assert_equal Huh (parse_species "awsjfh") );
+  (* parse_species tests *)
+  ( "Parse species Goldfish" >:: fun _ ->
+    assert_equal Goldfish (parse_species "Goldfish") );
+  ( "Parse species goldfish all caps" >:: fun _ ->
+    assert_equal Goldfish (parse_species "GOLDFISH") );
+  ( "Parse species GoLdFISH" >:: fun _ ->
+    assert_equal Goldfish (parse_species "GoLdFISH") );
+  ( "Parse species goldfish with whitespace" >:: fun _ ->
+    assert_equal Goldfish (parse_species "   Goldfish  ") );
+  ( "Parse species Remora" >:: fun _ ->
+    assert_equal Remora (parse_species "Remora") );
+  ( "Parse species anemone" >:: fun _ ->
+    assert_equal Anemone (parse_species "Anemone") );
+  ( "Parse species clownfish" >:: fun _ ->
+    assert_equal Clownfish (parse_species "Clownfish") );
+  ( "Parse species turtle" >:: fun _ ->
+    assert_equal Turtle (parse_species "Turtle") );
+  ( "Parse species shark" >:: fun _ ->
+    assert_equal Shark (parse_species "Shark") );
+  ( "Invalid species input is caught with Huh constructor" >:: fun _ ->
+    assert_equal Huh (parse_species "awsjfh") );
 
     
-    (* parse species int tests*)
-    ( "parse_species_int Goldfish 1" >:: fun _ ->
-      assert_equal (Goldfish, 1) (parse_species_int "Goldfish 1") );
-    ( "parse_species_int Goldfish 1 alternating caps" >:: fun _ ->
-      assert_equal (Goldfish, 1) (parse_species_int "GOlDfIsH 1") );
-    ( "parse_species_int Goldfish -2" >:: fun _ ->
-      assert_equal (Goldfish, -2) (parse_species_int "Goldfish -2") );
-    ( "parse_species_int Goldfish 0" >:: fun _ ->
-      assert_equal (Goldfish, 0) (parse_species_int "Goldfish 0") );
-    ( "parse_species_int Goldfish 5 whitespace" >:: fun _ ->
-      assert_equal (Goldfish, 5) (parse_species_int "  Goldfish    5   ") );
-    ( "parse_species_int anemone 1 all caps" >:: fun _ ->
-      assert_equal (Anemone, 1) (parse_species_int "ANEMONE 1") );
-    ( "parse_species_int anemone 5" >:: fun _ ->
-      assert_equal (Anemone, 5) (parse_species_int "Anemone 5") );
-    ( "parse_species_int turtle 5" >:: fun _ ->
-      assert_equal (Turtle, 5) (parse_species_int "Turtle 5") );
-    ( "parse_species_int remora 10" >:: fun _ ->
-      assert_equal (Remora, 10) (parse_species_int "Remora 10") );
-    ( "parse_species_int shark 5" >:: fun _ ->
-      assert_equal (Shark, 5) (parse_species_int "Shark 5") );
+  (* parse species int tests*)
+  ( "parse_species_int Goldfish 1" >:: fun _ ->
+    assert_equal (Goldfish, 1) (parse_species_int "Goldfish 1") );
+  ( "parse_species_int Goldfish 1 alternating caps" >:: fun _ ->
+    assert_equal (Goldfish, 1) (parse_species_int "GOlDfIsH 1") );
+  ( "parse_species_int Goldfish -2" >:: fun _ ->
+    assert_equal (Goldfish, -2) (parse_species_int "Goldfish -2") );
+  ( "parse_species_int Goldfish 0" >:: fun _ ->
+    assert_equal (Goldfish, 0) (parse_species_int "Goldfish 0") );
+  ( "parse_species_int Goldfish 5 whitespace" >:: fun _ ->
+    assert_equal (Goldfish, 5) (parse_species_int "  Goldfish    5   ") );
+  ( "parse_species_int anemone 1 all caps" >:: fun _ ->
+    assert_equal (Anemone, 1) (parse_species_int "ANEMONE 1") );
+  ( "parse_species_int anemone 5" >:: fun _ ->
+    assert_equal (Anemone, 5) (parse_species_int "Anemone 5") );
+  ( "parse_species_int turtle 5" >:: fun _ ->
+    assert_equal (Turtle, 5) (parse_species_int "Turtle 5") );
+  ( "parse_species_int remora 10" >:: fun _ ->
+    assert_equal (Remora, 10) (parse_species_int "Remora 10") );
+  ( "parse_species_int shark 5" >:: fun _ ->
+    assert_equal (Shark, 5) (parse_species_int "Shark 5") );
 
-    ( "parse_species_int invalid input one word" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "awsjfh") );
-    ( "parse_species_int invalid Goldfish1" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "Goldfish1") );
-    ( "parse_species_int invalid Turtle 5 hello" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "Turtle 5 hello") );
-    ( "parse_species_int invalid Turtles 5" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "Turtles 5") );
-    ( "parse_species_int invalid empty string" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "") );
-    ( "parse_species_int invalid whitespace" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "  ") );
-    ( "parse_species_int invalid Turtle whitespace" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "Turtle  ") );
-    ( "parse_species_int invalid Turtle one" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "Turtle one") );
-    ( "parse_species_int invalid Goldfish Turtle" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "Goldfish Turtle") );
-    ( "parse_species_int invalid 1 Goldfish" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "1 Goldfish") );
-    ( "parse_species_int invalid Goldfish comma 1" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "Goldfish, 1") );
-    ( "parse_species_int invalid Goldfish --2" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "Goldfish --2") );
-    ( "parse_species_int invalid hello 2" >:: fun _ ->
-      assert_equal (Huh, 0) (parse_species_int "hello 2") ); 
+  ( "parse_species_int invalid input one word" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "awsjfh") );
+  ( "parse_species_int invalid Goldfish1" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "Goldfish1") );
+  ( "parse_species_int invalid Turtle 5 hello" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "Turtle 5 hello") );
+  ( "parse_species_int invalid Turtles 5" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "Turtles 5") );
+  ( "parse_species_int invalid empty string" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "") );
+  ( "parse_species_int invalid whitespace" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "  ") );
+  ( "parse_species_int invalid Turtle whitespace" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "Turtle  ") );
+  ( "parse_species_int invalid Turtle one" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "Turtle one") );
+  ( "parse_species_int invalid Goldfish Turtle" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "Goldfish Turtle") );
+  ( "parse_species_int invalid 1 Goldfish" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "1 Goldfish") );
+  ( "parse_species_int invalid Goldfish comma 1" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "Goldfish, 1") );
+  ( "parse_species_int invalid Goldfish --2" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "Goldfish --2") );
+  ( "parse_species_int invalid hello 2" >:: fun _ ->
+    assert_equal (Huh, 0) (parse_species_int "hello 2") ); 
   ]
 
-let print_tests =
-  [
-    ( "String of Goldfish" >:: fun _ ->
-      assert_equal "Goldfish" (string_of_species Goldfish) );
-    ( "String of Anemone" >:: fun _ ->
-      assert_equal "Anemone" (string_of_species Anemone) );
-    ( "String of Clownfish" >:: fun _ ->
-      assert_equal "Clownfish" (string_of_species Clownfish) );
-    ( "String of Turtle" >:: fun _ ->
-      assert_equal "Turtle" (string_of_species Turtle) );
-    ( "String of Remora" >:: fun _ ->
-      assert_equal "Remora" (string_of_species Remora) );
-    ( "String of Shark" >:: fun _ ->
-      assert_equal "Shark" (string_of_species Shark) );
-    ("Exception Huh" >:: fun _ -> assert_equal "Huh" (string_of_species Huh));
-    ( "Plural of Goldfish" >:: fun _ ->
-      assert_equal "Goldfish" (plural_species Goldfish) );
-    ( "Plural of Anemone" >:: fun _ ->
-      assert_equal "Anemones" (plural_species Anemone) );
-    ( "Plural of Clownfish" >:: fun _ ->
-      assert_equal "Clownfish" (plural_species Clownfish) );
-    ( "Plural of Turtle" >:: fun _ ->
-      assert_equal "Turtles" (plural_species Turtle) );
-    ( "Plural of Remora" >:: fun _ ->
-      assert_equal "Remorae" (plural_species Remora) );
-    ("Plural of Shark" >:: fun _ -> assert_equal "Sharks" (plural_species Shark));
-    ("Exception Huh" >:: fun _ -> assert_equal "Huh" (plural_species Huh));
+let string_tests = [
+  ( "String of Goldfish" >:: fun _ ->
+    assert_equal "Goldfish" (string_of_species Goldfish) );
+  ( "String of Anemone" >:: fun _ ->
+    assert_equal "Anemone" (string_of_species Anemone) );
+  ( "String of Clownfish" >:: fun _ ->
+    assert_equal "Clownfish" (string_of_species Clownfish) );
+  ( "String of Turtle" >:: fun _ ->
+    assert_equal "Turtle" (string_of_species Turtle) );
+  ( "String of Remora" >:: fun _ ->
+    assert_equal "Remora" (string_of_species Remora) );
+  ( "String of Shark" >:: fun _ ->
+    assert_equal "Shark" (string_of_species Shark) );
+  ("Exception Huh" >:: fun _ -> assert_equal "Huh" (string_of_species Huh));
+
+  ( "Plural of Goldfish" >:: fun _ ->
+    assert_equal "Goldfish" (plural_species Goldfish) );
+  ( "Plural of Anemone" >:: fun _ ->
+    assert_equal "Anemones" (plural_species Anemone) );
+  ( "Plural of Clownfish" >:: fun _ ->
+    assert_equal "Clownfish" (plural_species Clownfish) );
+  ( "Plural of Turtle" >:: fun _ ->
+    assert_equal "Turtles" (plural_species Turtle) );
+  ( "Plural of Remora" >:: fun _ ->
+    assert_equal "Remorae" (plural_species Remora) );
+  ("Plural of Shark" >:: fun _ -> assert_equal "Sharks" (plural_species Shark));
+  ("Exception Huh" >:: fun _ -> assert_equal "Huh" (plural_species Huh));
   ]
 
 let suite =
