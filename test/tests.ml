@@ -14,8 +14,11 @@ open Final_project
 open Game
 open Userinput
 
+(* Test make_fish and add_fish *)
 let goldfish = make_fish Goldfish Pellet 1.4 0.6
 let remora = make_fish Remora Pellet 1. 0.8
+
+let _ = add_fish remora 10 
 
 (* FUNCTIONS TO AID TESTING *)
 let sum_prey_eaten (prey : prey_record) : int = 
@@ -37,14 +40,22 @@ let _ =
   set_game game1;
   age_tank (get_tank game1)
 
-(* Game 2: Remorae and unhealthy sharks symbiosis *)
+(* Game 2: Remorae and unhealthy sharks *)
 let game2 = start_game 5
 
 let _ =
   set_game game2;
   buy_fish_game game2 Shark 2;
+  buy_fish_game game2 Remora 2;
   health_tank_species (get_tank game2) Shark (-80.);
-  add_fish remora 10
+  health_tank_species (get_tank game2) Remora (-20.)
+
+let health2_s = get_health game2 Shark
+
+let health2_r = get_health game2 Remora
+
+let _ = symbiosis game2
+
 
 (* Game 3: Clownfish and anemone *)
 let game3 = start_game 10
@@ -246,7 +257,7 @@ let money_tests = [
 
   (* get_playermoney tests *)
   ("Playermoney start of game1" >:: fun _ -> assert_equal 100. (get_playermoney game1));
-  ("Playermoney game2" >:: fun _ -> assert_equal 60. (get_playermoney game2));
+  ("Playermoney game2" >:: fun _ -> assert_equal 44. (get_playermoney game2));
   ("Playermoney game3" >:: fun _ -> assert_equal ~-.33. (get_playermoney game3));
   ("Playermoney game4" >:: fun _ -> assert_equal 25. (get_playermoney game4));
 
@@ -275,14 +286,18 @@ let health_tests = [
   (* check health tests *)
   ( "Health goldfish game1" >:: fun _ ->
     assert_equal 100. (get_health game1 Goldfish) );
-  ( "Health sharks game2" >:: fun _ -> assert_equal 20. (get_health game2 Shark));
   ( "Health goldfish game1" >:: fun _ ->
     assert_equal 100. (get_health game1 Goldfish) );
+  ( "Health shark game2" >:: fun _ -> assert_equal 20. health2_s );
   ( "Health turtle game4" >:: fun _ -> assert_equal 70. (get_health game4 Turtle) );
 
   (* feed tests *)
 
   (* symbiosis tests *)
+  ( "Symbiosis game2 sharks" >:: fun _ -> 
+      assert_equal true (get_health game2 Shark > health2_s));
+  ( "Symbiosis game2 remorae" >:: fun _ -> 
+      assert_equal true (get_health game2 Remora > health2_r));
 
   (* shark eat tests *)
   ( "Shark eat game7" >:: fun _ -> assert_equal true shark7 );
@@ -299,7 +314,7 @@ let population_tests = [
   (* extinct tests *)
   ( "Extinct shark game1" >:: fun _ -> assert_equal true (species_extinct game1 Shark));
   ( "Not extinct shark game2" >:: fun _ ->
-  assert_equal false (species_extinct game2 Shark) );
+      assert_equal false (species_extinct game2 Shark) );
   ( "Extinct goldfish game2" >:: fun _ -> assert_equal true (species_extinct game3 Goldfish));
   ( "Not extinct clownfish game3" >:: fun _ ->
       assert_equal false (species_extinct game3 Clownfish) ); 
