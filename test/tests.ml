@@ -275,7 +275,7 @@ let _ =
   (* Not enough money to buy medicine, this should not boost clownfish health *)
   med_game_species game17 Clownfish
 
-(* Functions related to money, earning, buying *)
+(* Tests related to money, earning, buying *)
 let money_tests =
   [
     (* price_fish tests *)
@@ -314,7 +314,7 @@ let money_tests =
     ("Earnings game2" >:: fun _ -> assert_equal 18. (earnings game2));
   ]
 
-(* Tests to do with manipulating health: medicine, food, shark eating, symbiosis *)
+(* Tests related to health: medicine, food, shark eating, symbiosis *)
 let health_tests =
   [
     (* check health *)
@@ -342,7 +342,7 @@ let health_tests =
     ("Shark eat game10 hungry" >:: fun _ -> assert_equal true shark10');
   ]
 
-(* Tests to do with population numbers: extinct, growth *)
+(* Tests related to population numbers: extinction, growth *)
 let population_tests =
   [
     (* extinct tests *)
@@ -401,7 +401,7 @@ let fish_tests =
       assert_equal 4 (get_agesum game2 Shark) );
   ]
 
-(* Tests for end of game and end of round *)
+(* End of game and end of round *)
 let game_tests =
   [
     ("Number of remorae" >:: fun _ -> assert_equal 10 (get_num remora));
