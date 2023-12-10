@@ -395,27 +395,18 @@ let symbiosis (t : tank) : unit =
   remora_shark t
 
 (**Player will have a random chance of losing money in between rounds. Chance increases based on number of fish player owns*)
-let randomly_lose_money (g : game_state) =
+let randomly_lose_money (g : game_state) : float =
   Random.self_init ();
-  let loss = 30. -. float_of_int (Random.int 15) in
   let totalfishnum =
     Array.fold_left (fun acc fish -> acc + fish.num) 0 g.tank
   in
-  if Random.int (min ((totalfishnum / 10) + 1) 3) = 0 then (
-    g.money <- g.money -. loss;
-    print_endline
-      ("\n Ticket sales were down this round! You lost " ^ string_of_float loss
-     ^ " dollars."))
+  let loss = 30. -. float_of_int (Random.int 15) in
+  if Random.int (min ((totalfishnum / 10) + 1) 3) = 0 then -1. *. loss else 3.0
 
-let randomly_get_money (g : game_state) =
+let randomly_get_money =
   Random.self_init ();
   let gain = 20. -. float_of_int (Random.int 15) in
-  if Random.int 4 = 0 then (
-    g.money <- g.money +. gain;
-    print_endline
-      ("\n\
-       \ Congrats! Your aquarium had booming ticket sales this round! You \
-        gained an extra " ^ string_of_float gain ^ " dollars."))
+  if Random.int 4 = 0 then gain else 4.0
 
 let activity_check (g : game_state) : unit =
   let totalfishnum =
@@ -426,17 +417,16 @@ let activity_check (g : game_state) : unit =
       "\n\
       \  Attention: Your aquarium requires maintenance! Without new fish, \
        there's an increased risk of reduced ticket sales.";
-  if not (buy_broke g Goldfish 1) then (
+  if not (buy_broke g Goldfish 1) then
     print_endline
-      "  Consider using your money to buy new fish to keep your aquarium \
-       vibrant and attractive!";
-    randomly_get_money g)
+      " Reminder: Consider using your money to buy new fish to keep your \
+       aquarium vibrant and attractive!"
   else
     print_endline
-      "  Unfortunately, you don't have enough money to buy new fish. Be \
-       cautious!"
+      " Unfortunately, you don't have enough money to buy new fish. Be \
+       cautious of reduced ticket sales!"
 
-let celebrity_vist (g : game_state) =
+let celebrity_visit (g : game_state) : float =
   Random.self_init ();
   let gain = 20. -. float_of_int (Random.int 15) in
   let rarefishnum =
@@ -446,28 +436,62 @@ let celebrity_vist (g : game_state) =
       [ Shark; Turtle; Clownfish ]
   in
   if rarefishnum > 2 && Random.int 3 = 0 then (
-    g.money <- g.money +. gain;
     print_endline
       ("\n\
        \  Woah! A celebrity visited your aquarium and liked your expensive \
         fish -- you got a stellar review!\n\
        \        \n\
-       \ You gained an extra " ^ string_of_float gain ^ " dollars."))
+       \ You gained an extra " ^ string_of_float gain ^ " dollars.");
+    gain)
+  else 0.0
 
 let game_ended (g : game_state) : bool = g.ended
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
   if not (extinct g.tank.(5)) then shark_update g;
-  print_endline "\n \n  While you were gone...";
+  print_endline "                           AQUARIUM NEWS";
+  print_endline
+    " \
+     ==========================================================================";
+  print_endline "\n While you were gone...";
   activity_check g;
-  celebrity_vist g;
   Random.self_init ();
-  if Random.int 2 = 1 then randomly_lose_money g
-  else if Random.int 4 = 1 then randomly_get_money g;
-  g.money <- g.money +. earnings g;
-  print_endline ("\n  Earnings for this round: $" ^ string_of_float (earnings g));
-  age_tank g.tank;
+  let netloss = randomly_lose_money g in
+  let netgain = randomly_get_money in
+  let totalfishnum =
+    Array.fold_left (fun acc fish -> acc + fish.num) 0 g.tank
+  in
+  let net_change =
+    let randomized_result =
+      if Random.int (totalfishnum + 10) < 5 then (
+        print_endline
+          ("\n   Ticket sales were down this round! You lost "
+         ^ string_of_float netloss ^ " dollars.");
+        netloss)
+      else if Random.int 4 = 1 then (
+        print_endline
+          ("\n\
+           \ Congrats! Your aquarium had booming ticket sales this round! You \
+            gained an extra " ^ string_of_float netgain ^ " dollars.");
+        netgain)
+      else 0.0
+    in
+    randomized_result
+  in
+  let celebritymoney = celebrity_visit g in
+  g.money <- g.money +. earnings g +. net_change +. celebritymoney;
+
+  print_endline
+    ("\n   Your fish earnings for this round: $" ^ string_of_float (earnings g));
+
+  print_endline
+    ("\n   Net earnings for this round were: $"
+    ^ string_of_float (net_change +. earnings g +. celebritymoney));
+  print_endline
+    "\n\
+    \ \
+     ==========================================================================";
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;
   symbiosis g.tank;
