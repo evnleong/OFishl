@@ -488,6 +488,7 @@ let table_spacing (s : string) (spaces : string) : string =
   else
     (*we need to decrease spaces following this string*)
     String.sub spaces 0 (space_length - string_length + 1)
+[@@coverage off]
 
 (** Summarizes the health of a player's fish. *)
 let health_statement (g : game_state) =

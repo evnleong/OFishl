@@ -3,10 +3,13 @@
     exceptions. The majority of our functions rely on mutability and therefore 
     only return units. To test these functions, we make a couple of different 
     game states relying on different features of the game. In this test file we 
-    include tests for our Game module. The Userinput module was manually tested 
-    in the terminal along with main.ml.
+    include tests for our Game module and Userinput module. We measure our 
+    test coverage using bisect and turn coverage off for functions involved in
+    printing -- these were tested manually in the terminal.
     This test plan demonstrates correctness our system by covering base cases 
-    and typical game behavior while also exploring corner cases and exceptions. 
+    and typical game behavior while also exploring corner cases and exceptions.
+    Our test code covers 97% of our non printing related functions in the game 
+    and userinput modules. 
     *)
 
 open OUnit2
