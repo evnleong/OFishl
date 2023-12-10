@@ -54,7 +54,7 @@ type tank = fish array
 type game_state = {
   mutable round : int;
   mutable money : float;
-  mutable tank : tank;
+  tank : tank;
   max_rounds : int;
   mutable ended : bool;
 }
@@ -503,13 +503,30 @@ let end_of_round (g : game_state) : unit =
 
 (* PRINT FUNCTIONS *)
 
+(** Given a string and set number of spaces, appropriately decreases the number 
+    spaces to maintain equal distance between columns in a table*)
+let table_spacing (s : string) (spaces : string) : string =
+  let string_length = String.length s in
+  let space_length = String.length spaces in
+  if string_length = 1 then spaces
+  else
+    (*we need to decrease spaces following this string*)
+    String.sub spaces 0 (space_length - string_length + 1)
+[@@coverage off]
+
 (** Summarizes the health of a player's fish. *)
 let health_statement (g : game_state) =
   let playertank = g.tank in
   let body = ref "" in
   let header = ref "" in
   for i = 0 to num_species - 1 do
-    body := !body ^ "           " ^ string_of_float playertank.(i).health;
+    (*if there is a previous column, we need to check spacing*)
+    let bodyspaces =
+      if i > 0 then
+        table_spacing (string_of_float playertank.(i - 1).health) "           "
+      else "           "
+    in
+    body := !body ^ bodyspaces ^ string_of_float playertank.(i).health;
     header := !header ^ "      " ^ string_of_species playertank.(i).species
   done;
   print_endline ("Health:       " ^ !body)
@@ -523,9 +540,21 @@ let print_fish (pstate : game_state) =
   let body2 = ref "" in
   let header = ref "" in
   for i = 0 to num_species - 1 do
-    body1 := !body1 ^ "             " ^ string_of_int playertank.(i).num;
+    let body1spaces =
+      if i > 0 then
+        table_spacing (string_of_int playertank.(i - 1).num) "             "
+      else "             "
+    in
+    let body2spaces =
+      if i > 0 then
+        table_spacing
+          (playertank.(i - 1) |> display_health |> string_of_float)
+          "             "
+      else "            "
+    in
+    body1 := !body1 ^ body1spaces ^ string_of_int playertank.(i).num;
     body2 :=
-      !body2 ^ "            "
+      !body2 ^ body2spaces
       ^ (playertank.(i) |> display_health |> string_of_float);
     header := !header ^ "       " ^ string_of_species playertank.(i).species
   done;

@@ -88,7 +88,7 @@ and action num_actions (g : Game.game_state) : unit =
   try
     if num_actions = 0 then raise Exit
     else
-      ANSITerminal.print_string [ ANSITerminal.black ]
+      ANSITerminal.print_string [ ANSITerminal.default ]
         ("\n  What would you like to do today? \n  You have $"
         ^ string_of_float (Game.get_playermoney g)
         ^ " and " ^ string_of_int num_actions ^ " action(s) left."
@@ -116,23 +116,28 @@ and action num_actions (g : Game.game_state) : unit =
 
 (** Displays additional information about the game. *)
 and manual (num_actions : int) (g : Game.game_state) : unit =
-  ANSITerminal.print_string [ ANSITerminal.Bold; ANSITerminal.blue ] 
-  "\n  Additional Information: \n";
+  ANSITerminal.print_string
+    [ ANSITerminal.Bold; ANSITerminal.blue ]
+    "\n  Additional Information: \n";
   ANSITerminal.print_string [ ANSITerminal.blue ]
     "\n\
     \  1. The health of every species except sharks will automatically decrease \n\
     \     by 5 points at the end of a round (see 3). \n\
     \  2. A species will increase in health when given food or medicine. \n\
     \  3. Sharks eat fish to survive. The only fish they do not eat are remorae \n\
-    \     and other sharks. At the end of a round, every shark in your tank will \n\
+    \     and other sharks. At the end of a round, every shark in your tank \
+     will \n\
     \     randomly devour some other fish. For every shark that has no fish to \n\
     \     eat, the health of sharks will decrease by 2 points.\n\
-    \  4. There are 2 symbiotic pairings: clownfish and anemone; sharks and remorae.\n\
+    \  4. There are 2 symbiotic pairings: clownfish and anemone; sharks and \
+     remorae.\n\
     \     If both species of a pairing are present in your tank at the end of a \n\
     \     round, then they will give each other a small health boost.\n\
     \  5. A species with health > 80 and enough fish will grow on its own.\n\
-    \     If a species has health < 50, then its number will automatically decline.\n\
-    \  6. At the end of a round, you will earn an amount of money that depends on the\n\
+    \     If a species has health < 50, then its number will automatically \
+     decline.\n\
+    \  6. At the end of a round, you will earn an amount of money that depends \
+     on the\n\
     \     number of each species in your tank.\n\
     \  7. At the end of the game, you will receive a score that depends on the\n\
     \     cumulative ages of the species in your tank.\n";
