@@ -211,6 +211,26 @@ let num3 =
 
 let goldfish13 = (num2 > num1) && (num3 > num2)
 
+(* Game 14: Population successively declines *)
+let game14 = start_game 5
+
+let num1 = 
+  set_game game14; 
+  buy_fish_game game14 Goldfish 50;
+  health_tank_species (get_tank game14) Goldfish  (-50.);
+  end_of_round game14; 
+  get_species_num game14 Goldfish 
+
+let num2 = 
+  end_of_round game14;
+  get_species_num game14 Goldfish 
+
+let num3 = 
+  end_of_round game14; 
+  get_species_num game14 Goldfish 
+
+let goldfish14 = (num2 < num1) && (num3 < num2)
+
 (* Functions related to money, earning, buying *)
 let money_tests = [
   (* price_fish tests *)
@@ -290,8 +310,10 @@ let population_tests = [
     assert_equal 1 (get_species_num game6 Clownfish) );
   ( "Growth healthy goldfish game6" >:: fun _ ->
     assert_equal 3 (get_species_num game6 Goldfish) );
-  ( "Growth goldfish successive rounds game13" >:: fun _ ->
+  ( "Growth healthy goldfish successive rounds game13" >:: fun _ ->
     assert_equal true goldfish13 );
+  ( "Growth sick goldfish successive rounds game14" >:: fun _ ->
+    assert_equal true goldfish14 );
   ]
 
 
