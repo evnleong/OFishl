@@ -140,8 +140,18 @@ let shark9 =
     || prey9.clownfish = 1 
     || prey9.turtle = 1)
     && (sum_prey_eaten prey9 = 1)
+  
+let shark9' = 
+  let prey9' = get_eaten_prey game9 in 
+  let prey9'' = get_eaten_prey game9 in 
+  let prey9''' = get_eaten_prey game9 in 
+  let prey9'''' = get_eaten_prey game9 in 
+  sum_prey_eaten prey9' = 1
+  && sum_prey_eaten prey9'' = 1
+  && sum_prey_eaten prey9''' = 1 
+  && sum_prey_eaten prey9'''' = 0 
 
-(* Game 10: 2 sharks eat 2 goldfish *)
+(* Game 10: 2 sharks eat 2 goldfish, then go hungry *)
 let game10 = start_game 3 
 
 let _ = 
@@ -167,6 +177,20 @@ let _ =
   end_of_round game11; 
   end_of_round game11; 
   end_of_round game11
+
+(* Game 12: Force goldfish to go extinct *)
+let game12 = start_game 3 
+
+let _ = 
+  set_game game12; 
+  buy_fish_game game12 Goldfish 10;
+  health_tank_species (get_tank game12) Goldfish  (-100.);
+  end_of_round game12
+
+let goldfish12 = 
+  get_health game12 Goldfish = 100. 
+  && get_species_num game12 Goldfish = 0 
+  && species_extinct game12 Goldfish = true  
 
 (* Functions related to money, earning, buying *)
 let money_tests = [
@@ -228,7 +252,8 @@ let health_tests = [
   ( "Shark eat game7" >:: fun _ -> assert_equal true shark7 );
   ( "Shark eat game8 hungry" >:: fun _ -> assert_equal true shark8 );  
   ( "Shark eat game8 2 goldfish" >:: fun _ -> assert_equal true shark8' ); 
-  ( "Shark eat game9" >:: fun _ -> assert_equal true shark9 );
+  ( "Shark eat first game9" >:: fun _ -> assert_equal true shark9 );
+  ( "Shark eat successively game9" >:: fun _ -> assert_equal true shark9' );
   ( "Shark eat game10 2 goldfish" >:: fun _ -> assert_equal true shark10 );
   ( "Shark eat game10 hungry" >:: fun _ -> assert_equal true shark10' );
 ]
@@ -241,7 +266,8 @@ let population_tests = [
   assert_equal false (species_extinct game2 Shark) );
   ( "Extinct goldfish game2" >:: fun _ -> assert_equal true (species_extinct game3 Goldfish));
   ( "Not extinct clownfish game3" >:: fun _ ->
-    assert_equal false (species_extinct game3 Clownfish) );  
+      assert_equal false (species_extinct game3 Clownfish) ); 
+  ( "Extinct goldfish game12" >:: fun _ -> assert_equal true goldfish12 );  
 
   (* population number tests *)
   ( "Growth sick clownfish game6" >:: fun _ ->
