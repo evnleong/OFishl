@@ -47,7 +47,9 @@ let _ =
   buy_fish_game game2 Shark 2;
   buy_fish_game game2 Remora 2;
   health_tank_species (get_tank game2) Shark (-80.);
-  health_tank_species (get_tank game2) Remora (-20.)
+  health_tank_species (get_tank game2) Remora (-20.);
+  age_tank (get_tank game2);
+  age_tank (get_tank game2)
 
 let health2_s = get_health game2 Shark
 let health2_r = get_health game2 Remora
@@ -74,7 +76,11 @@ let game4 = start_game 3
 let _ =
   set_game game4;
   buy_fish_game game4 Turtle 5;
-  health_tank (get_tank game4) (-30.)
+  health_tank (get_tank game4) (-30.);
+  (*Feed turtles, increase health by 1*)
+  feed_fish_game game4 Turtle 5;
+  (*Restore health back down to 70. *)
+  health_tank (get_tank game4) (-1.)
 
 (* Game 5: Only goldfish *)
 let game5 = start_game 3
@@ -244,6 +250,31 @@ let _ =
   health_tank_species (get_tank game15) Remora (-5.);
   growth_tank (get_tank game15)
 
+(* Game 16: Age sums of different population numbers *)
+let game16 = start_game 3
+
+let _ =
+  set_game game16;
+  buy_fish_game game16 Goldfish 3;
+  buy_fish_game game16 Clownfish 4;
+  buy_fish_game game16 Anemone 1;
+  buy_fish_game game16 Remora 2;
+  age_tank (get_tank game16)
+
+(* Game 16: Age sums of different population numbers *)
+let game17 = start_game 3
+
+let _ =
+  set_game game17;
+  buy_fish_game game17 Goldfish 3;
+  buy_fish_game game17 Clownfish 1;
+  health_tank_species (get_tank game17) Goldfish (-70.);
+  health_tank_species (get_tank game17) Clownfish (-70.);
+  (*Can afford 1 medicine so boost goldfish health*)
+  med_game_species game17 Goldfish;
+  (*Not enough money to buy medicine, this should not boost clownfish health*)
+  med_game_species game17 Clownfish
+
 (* Functions related to money, earning, buying *)
 let money_tests =
   [
@@ -264,7 +295,7 @@ let money_tests =
     ("Playermoney game2" >:: fun _ -> assert_equal 44. (get_playermoney game2));
     ( "Playermoney game3" >:: fun _ ->
       assert_equal ~-.26. (get_playermoney game3) );
-    ("Playermoney game4" >:: fun _ -> assert_equal 25. (get_playermoney game4));
+    ("Playermoney game4" >:: fun _ -> assert_equal 24.5 (get_playermoney game4));
     (* broke tests *)
     ( "Broke game3 buy 100 anemone" >:: fun _ ->
       assert_equal true (buy_broke game3 Anemone 100) );
@@ -280,14 +311,13 @@ let money_tests =
     (* earning tests *)
     ("Earnings empty game" >:: fun _ -> assert_equal 0. (earnings game1));
     ("Earnings game3" >:: fun _ -> assert_equal 35. (earnings game3));
+    ("Earnings game2" >:: fun _ -> assert_equal 18. (earnings game2));
   ]
 
 (* Functions and actions that manipulate health: medicine, food, shark eating, symbiosis *)
 let health_tests =
   [
     (* check health tests *)
-    ( "Health goldfish game1" >:: fun _ ->
-      assert_equal 100. (get_health game1 Goldfish) );
     ( "Health goldfish game1" >:: fun _ ->
       assert_equal 100. (get_health game1 Goldfish) );
     ("Health shark game2" >:: fun _ -> assert_equal 20. health2_s);
@@ -346,9 +376,31 @@ let fish_tests =
     ("Make empty goldfish" >:: fun _ -> assert_equal 0 (get_age goldfish));
     ( "Predator goldfish false" >:: fun _ ->
       assert_equal false (predator_species game1 Goldfish) );
+    ( "Predator remora false" >:: fun _ ->
+      assert_equal false (predator_species game2 Remora) );
+    ( "Predator clownfish false" >:: fun _ ->
+      assert_equal false (predator_species game9 Clownfish) );
+    ( "Predator turtle false" >:: fun _ ->
+      assert_equal false (predator_species game9 Turtle) );
+    ( "Predator anemone false" >:: fun _ ->
+      assert_equal false (predator_species game9 Anemone) );
     ( "Predator shark true" >:: fun _ ->
       assert_equal true (predator_species game1 Shark) );
     ("Age of remorae" >:: fun _ -> assert_equal 0 (get_age remora));
+    (*test of different age_sums after 1 round*)
+    ( "Age of 3 goldfish, 1 round" >:: fun _ ->
+      assert_equal 3 (get_agesum game16 Goldfish) );
+    ( "Age of 4 clownfish, 1 round" >:: fun _ ->
+      assert_equal 4 (get_agesum game16 Clownfish) );
+    ( "Age of 1 anemone, 1 round" >:: fun _ ->
+      assert_equal 1 (get_agesum game16 Anemone) );
+    ( "Age of 2 Remora, 1 round" >:: fun _ ->
+      assert_equal 2 (get_agesum game16 Remora) );
+    (*test of different age_sums after 2 rounds*)
+    ( "Age of 2 Remora, 2 rounds" >:: fun _ ->
+      assert_equal 4 (get_agesum game2 Remora) );
+    ( "Age of 2 Sharks, 2 rounds" >:: fun _ ->
+      assert_equal 4 (get_agesum game2 Shark) );
   ]
 
 (* Tests for end of game and end of round *)
@@ -363,6 +415,11 @@ let game_tests =
     ("End score calculation" >:: fun _ -> assert_equal 1000 (end_score game1));
     (* game_ended *)
     ("Game ended game11" >:: fun _ -> assert_equal true (game_ended game11));
+    (* med_game_species*)
+    ( "game17 med boost goldfish" >:: fun _ ->
+      assert_equal 60. (get_health game17 Goldfish) );
+    ( "Game17 no med boost clownfish" >:: fun _ ->
+      assert_equal 30. (get_health game17 Clownfish) );
   ]
 
 let string_tests =
