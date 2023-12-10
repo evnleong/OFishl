@@ -1,3 +1,5 @@
+open ANSITerminal
+
 type fish_species =
   | Goldfish
   | Anemone
@@ -247,8 +249,10 @@ let shark_update (g : game_state) : unit =
   let t = g.tank in
   let track = shark_dinner t in
   if Array.find_opt (fun x -> x > 0) track <> None then
-    print_string (shark_news track)
-  else print_string "\n  Your sharks had nothing to eat this round."
+    ANSITerminal.print_string [] (shark_news track)
+  else
+    ANSITerminal.print_string []
+      "\n  Your sharks had nothing to eat this round. \n"
 [@@coverage off]
 
 (** Ages a fish population f by one round. In effect, f's age sum increases
@@ -415,7 +419,7 @@ let activity_check (g : game_state) : unit =
   if totalfishnum < 20 then
     print_endline
       "\n\
-      \  Attention: Your aquarium requires maintenance! Without new fish, \
+      \ Attention: Your aquarium requires maintenance! Without new fish, \
        there's an increased risk of reduced ticket sales.";
   if not (buy_broke g Goldfish 1) then
     print_endline
@@ -449,12 +453,12 @@ let game_ended (g : game_state) : bool = g.ended
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
-  if not (extinct g.tank.(5)) then shark_update g;
-  print_endline "                           AQUARIUM NEWS";
-  print_endline
-    " \
-     ==========================================================================";
+  ANSITerminal.print_string [ ANSITerminal.blue ]
+    "\n\n =================================AQUARIUM NEWS";
+  ANSITerminal.print_string [ ANSITerminal.blue ]
+    " =================================";
   print_endline "\n While you were gone...";
+  if not (extinct g.tank.(5)) then shark_update g;
   activity_check g;
   Random.self_init ();
   let netloss = randomly_lose_money g in
@@ -488,7 +492,7 @@ let end_of_round (g : game_state) : unit =
   print_endline
     ("\n   Net earnings for this round were: $"
     ^ string_of_float (net_change +. earnings g +. celebritymoney));
-  print_endline
+  ANSITerminal.print_string [ ANSITerminal.blue ]
     "\n\
     \ \
      ==========================================================================";
