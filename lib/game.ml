@@ -182,12 +182,12 @@ let buy_fish_game (g : game_state) (s : fish_species) (n : int) : unit =
 (* Returns list of nonextinct prey species in tank [t], where prey
     includes every species fish except shark and remora. Each
     species is represented by its position in the tank array. *)
-let get_prey (t : tank) : int list =
-  let prey_lst = ref [] in
+let prey_lst (t : tank) : int list =
+  let lst = ref [] in
   for pos = 0 to 3 do
-    if not (extinct t.(pos)) then prey_lst := pos :: !prey_lst
+    if not (extinct t.(pos)) then lst := pos :: !lst
   done;
-  !prey_lst
+  !lst
 
 (** Removes [n] fish of species in position [pos] of tank [t]. *)
 let eat_fish_species (t : tank) (pos : int) (n : int) : unit =
@@ -198,13 +198,13 @@ let eat_fish_species (t : tank) (pos : int) (n : int) : unit =
    and returns species attacked. If all prey species extinct,
    decreases sharks' health and returns [Huh]. *)
 let shark_bite (t : tank) : fish_species =
-  let prey_lst = get_prey t in
-  if prey_lst = [] then (
+  let lst = prey_lst t in
+  if lst = [] then (
     health_tank_species t Shark ~-.5.;
     Huh)
   else
-    let n = List.length prey_lst in
-    let prey_pos = List.nth prey_lst (Random.int n) in
+    let n = List.length lst in
+    let prey_pos = List.nth lst (Random.int n) in
     eat_fish_species t prey_pos 1;
     pos_to_species prey_pos
 
@@ -482,3 +482,13 @@ let get_health (g : game_state) (s : fish_species) : float =
 
 (** Given a game_state, returns the tank*)
 let get_tank (g : game_state) = g.tank
+
+type prey_record = 
+  {goldfish : int; anemone : int; clownfish : int; turtle : int}
+
+(** Given a game_state, returns record of  *)
+let get_eaten_prey (g : game_state) : prey_record = 
+  let prey_ar = shark_dinner g.tank in 
+
+  { goldfish = prey_ar.(0); anemone = prey_ar.(1); 
+    clownfish = prey_ar.(2); turtle = prey_ar.(3)}

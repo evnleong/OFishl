@@ -17,6 +17,10 @@ open Userinput
 let goldfish = make_fish Goldfish Pellet 1.4 0.6
 let remora = make_fish Remora Pellet 1. 0.8
 
+(* FUNCTIONS TO AID TESTING *)
+let sum_prey_eaten (prey : prey_record) : int = 
+  prey.goldfish + prey.anemone + prey.clownfish + prey.turtle
+
 (* SAMPLE GAMES *)
 
 (* Game 1: Empty game *)
@@ -26,7 +30,7 @@ let _ =
   set_game game1;
   age_tank (get_tank game1)
 
-(* Game 2: Remorae and sharks *)
+(* Game 2: Remorae and unhealthy sharks *)
 let game2 = start_game 5
 
 let _ =
@@ -79,22 +83,43 @@ let _ =
   buy_fish_game game7 Shark 1;
   buy_fish_game game7 Clownfish 10
 
+(*
 let array = shark_dinner (get_tank game7)
 
 (* if the shark eats, their health increases *)
 let fish_eaten = array.(2) > 0
 let shark_health = get_health game7 Shark > 10.
+*)
 
-
-(* Game 8: Only sharks; update for three rounds *)
-let game7 = start_game 4
+(* Game 8: Only sharks; lose health for three rounds *)
+let game8 = start_game 4
 
 let _ =
-  set_game game7;
-  buy_fish_game game7 Shark 4;
-  end_of_round game7; 
-  end_of_round game7; 
-  end_of_round game7  
+  set_game game8;
+  buy_fish_game game8 Shark 4;
+  end_of_round game8; 
+  end_of_round game8; 
+  end_of_round game8  
+
+(* Game 9: Buy one of every fish *)
+let game9 = start_game 3 
+
+let _ = 
+  set_game game9;
+  buy_fish_game game9 Goldfish 1;
+  buy_fish_game game9 Anemone 1;
+  buy_fish_game game9 Clownfish 1;
+  buy_fish_game game9 Remora 1;
+  buy_fish_game game9 Turtle 1;
+  buy_fish_game game9 Shark 1 
+  
+let shark9 = 
+  let prey9 = get_eaten_prey game9 in 
+    (prey9.goldfish = 1
+    || prey9.anemone = 1
+    || prey9.clownfish = 1 
+    || prey9.turtle = 1)
+    && (sum_prey_eaten prey9 = 1)
 
 (* Functions related to money, earning, buying *)
 let money_tests = [
@@ -135,7 +160,7 @@ let money_tests = [
     assert_equal 35. (earnings game3) );
 ]
 
-(* Test functions and actions that manipulate health: medicine, food, shark eating *)
+(* Functions and actions that manipulate health: medicine, food, shark eating *)
 let health_tests = [
   (* check health tests *)
   ( "Health goldfish game1" >:: fun _ ->
@@ -153,7 +178,8 @@ let health_tests = [
       assert_equal 100. (get_health game3 Anemone) );
 
   (* shark eat tests *)
-  ( "Shark_dinner" >:: fun _ -> assert_equal fish_eaten shark_health );
+  (* ( "Shark_dinner" >:: fun _ -> assert_equal fish_eaten shark_health ); *)
+  ( "Shark eat game9" >:: fun _ -> assert_equal true shark9 );
 ]
 
 (* Tests to do with population numbers: extinct, growth *)

@@ -23,6 +23,13 @@ type tank
 type game_state
 (** Type representing the current state of the player's game*)
 
+type prey_record = {
+    goldfish : int; 
+    anemone : int; 
+    clownfish : int; 
+    turtle : int }
+(** Record type associating each prey species with an integer, for use in testing *)
+
 val make_fish : fish_species -> fish_food -> float -> float -> fish
 (** Given a species, food, growth_rate, and death_rate, creates a new fish with age = 0*)
 
@@ -110,7 +117,7 @@ val feed_broke : game_state -> int -> bool
 val predator_species : game_state -> fish_species -> bool
 (** Helper function to check if species s in game g is a predator. *)
 
-val shark_dinner : tank -> int array
+val get_eaten_prey : game_state -> prey_record
 (* Each shark eats one fish, otherwise shark health decreases.
     Returns array tracking the number of each species eaten. *)
 
