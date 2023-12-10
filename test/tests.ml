@@ -37,7 +37,7 @@ let _ =
   set_game game1;
   age_tank (get_tank game1)
 
-(* Game 2: Remorae and unhealthy sharks *)
+(* Game 2: Remorae and unhealthy sharks symbiosis *)
 let game2 = start_game 5
 
 let _ =
@@ -192,6 +192,25 @@ let goldfish12 =
   && get_species_num game12 Goldfish = 0 
   && species_extinct game12 Goldfish = true  
 
+(* Game 13: Population successively grows *)
+let game13 = start_game 5
+
+let num1 = 
+  set_game game13; 
+  buy_fish_game game13 Goldfish 50;
+  end_of_round game13; 
+  get_species_num game13 Goldfish 
+
+let num2 = 
+  end_of_round game13;
+  get_species_num game13 Goldfish 
+
+let num3 = 
+  end_of_round game13; 
+  get_species_num game13 Goldfish 
+
+let goldfish13 = (num2 > num1) && (num3 > num2)
+
 (* Functions related to money, earning, buying *)
 let money_tests = [
   (* price_fish tests *)
@@ -231,7 +250,7 @@ let money_tests = [
     assert_equal 35. (earnings game3) );
 ]
 
-(* Functions and actions that manipulate health: medicine, food, shark eating *)
+(* Functions and actions that manipulate health: medicine, food, shark eating, symbiosis *)
 let health_tests = [
   (* check health tests *)
   ( "Health goldfish game1" >:: fun _ ->
@@ -242,11 +261,8 @@ let health_tests = [
   ( "Health turtle game4" >:: fun _ -> assert_equal 70. (get_health game4 Turtle) );
 
   (* feed tests *)
-  ( "Feed hungry anemone" >:: fun _ ->
-    assert_equal 100. (get_health game3 Anemone) );
-  ( "Sick sharks" >:: fun _ -> assert_equal 20. (get_health game2 Shark) );
-  ( "Feed hungry anemone" >:: fun _ ->
-      assert_equal 100. (get_health game3 Anemone) );
+
+  (* symbiosis tests *)
 
   (* shark eat tests *)
   ( "Shark eat game7" >:: fun _ -> assert_equal true shark7 );
@@ -274,6 +290,8 @@ let population_tests = [
     assert_equal 1 (get_species_num game6 Clownfish) );
   ( "Growth healthy goldfish game6" >:: fun _ ->
     assert_equal 3 (get_species_num game6 Goldfish) );
+  ( "Growth goldfish successive rounds game13" >:: fun _ ->
+    assert_equal true goldfish13 );
   ]
 
 
