@@ -261,7 +261,7 @@ let _ =
   buy_fish_game game16 Remora 2;
   age_tank (get_tank game16)
 
-(* Game 16: Age sums of different population numbers *)
+(* Game 17: Medicine action *)
 let game17 = start_game 3
 
 let _ =
@@ -270,12 +270,12 @@ let _ =
   buy_fish_game game17 Clownfish 1;
   health_tank_species (get_tank game17) Goldfish (-70.);
   health_tank_species (get_tank game17) Clownfish (-70.);
-  (*Can afford 1 medicine so boost goldfish health*)
+  (* Can afford 1 medicine so boost goldfish health *)
   med_game_species game17 Goldfish;
-  (*Not enough money to buy medicine, this should not boost clownfish health*)
+  (* Not enough money to buy medicine, this should not boost clownfish health *)
   med_game_species game17 Clownfish
 
-(* Functions related to money, earning, buying *)
+(* Tests related to money, earning, buying *)
 let money_tests =
   [
     (* price_fish tests *)
@@ -314,10 +314,10 @@ let money_tests =
     ("Earnings game2" >:: fun _ -> assert_equal 18. (earnings game2));
   ]
 
-(* Functions and actions that manipulate health: medicine, food, shark eating, symbiosis *)
+(* Tests related to health: medicine, food, shark eating, symbiosis *)
 let health_tests =
   [
-    (* health tests *)
+    (* check health *)
     ( "Health goldfish game1" >:: fun _ ->
       assert_equal 100. (get_health game1 Goldfish) );
     ("Health shark game2" >:: fun _ -> assert_equal 20. health2_s);
@@ -342,7 +342,7 @@ let health_tests =
     ("Shark eat game10 hungry" >:: fun _ -> assert_equal true shark10');
   ]
 
-(* Tests to do with population numbers: extinct, growth *)
+(* Tests related to population numbers: extinction, growth *)
 let population_tests =
   [
     (* extinct tests *)
@@ -401,7 +401,7 @@ let fish_tests =
       assert_equal 4 (get_agesum game2 Shark) );
   ]
 
-(* Tests for end of game and end of round *)
+(* End of game and end of round *)
 let game_tests =
   [
     ("Number of remorae" >:: fun _ -> assert_equal 10 (get_num remora));

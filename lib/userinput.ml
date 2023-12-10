@@ -17,8 +17,6 @@ let parse_input (prompt : string) : input =
     | [ "PASS" ] -> Pass
     | _ -> Dunno )
   
-  (*     | [ "WALLET" ] -> Wallet *)
-
 (** Converts string to value of type fish_species. *)
 let parse_species (prompt : string) : Game.fish_species = 
   match parse prompt with 

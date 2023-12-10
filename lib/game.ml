@@ -273,7 +273,7 @@ let med_game_species (g : game_state) (s : fish_species) : unit =
   if med_broke g then () else health_tank_species g.tank s 30.;
   cost g 50.
 
-(* Helper for feed_fish that rounds float to 1 dp *)
+(* Helper for feed_fish that rounds float to 1 dp. *)
 let round_float (f : float) : float = (f *. 10. |> Float.round) /. 10.
 
 (** Feeds n pellets to a fish population f. In effect, f's health increases 
@@ -315,7 +315,7 @@ let earnings (g : game_state) : float =
   +. (float_of_int g.tank.(fish_pos Remora).num *. 1.)
   +. (float_of_int g.tank.(fish_pos Shark).num *. 8.)
 
-(** Returns end of game score *)
+(** Returns end of game score. *)
 let end_score (g : game_state) : int =
   let raw_score =
     (float_of_int g.tank.(fish_pos Goldfish).age_sum *. 2.)
@@ -396,7 +396,8 @@ let symbiosis (t : tank) : unit =
   anemone_clownfish t;
   remora_shark t
 
-(**Player will have a random chance of losing money in between rounds. Chance increases based on number of fish player owns*)
+(** Player will have a random chance of losing money in between rounds. 
+    Chance increases based on number of fish player owns. *)
 let randomly_lose_money (g : game_state) : float =
   Random.self_init ();
   let totalfishnum =
@@ -506,13 +507,13 @@ let end_of_round (g : game_state) : unit =
 (* PRINT FUNCTIONS *)
 
 (** Given a string and set number of spaces, appropriately decreases the number 
-    spaces to maintain equal distance between columns in a table*)
+    spaces to maintain equal distance between columns in a table. *)
 let table_spacing (s : string) (spaces : string) : string =
   let string_length = String.length s in
   let space_length = String.length spaces in
   if string_length = 1 then spaces
   else
-    (*we need to decrease spaces following this string*)
+    (* we need to decrease spaces following this string *)
     String.sub spaces 0 (space_length - string_length + 1)
 [@@coverage off]
 
@@ -522,7 +523,7 @@ let health_statement (g : game_state) =
   let body = ref "" in
   let header = ref "" in
   for i = 0 to num_species - 1 do
-    (*if there is a previous column, we need to check spacing*)
+    (* if there is a previous column, we need to check spacing *)
     let bodyspaces =
       if i > 0 then
         table_spacing (string_of_float playertank.(i - 1).health) "           "
@@ -578,28 +579,28 @@ let start_round_print (g : game_state) : string =
 
 (* FUNCTIONS TO AID TESTING *)
 
-(** Given a fish, returns a sum of the species' ages*)
+(** Given a fish, returns a sum of the species' ages. *)
 let get_age (f : fish) : int = f.age_sum
 
-(** Given a fish, returns the current number*)
+(** Given a fish, returns the current number. *)
 let get_num (f : fish) : int = f.num
 
-(** Given a fgame and fish species, returns the current population*)
+(** Given a fgame and fish species, returns the current population. *)
 let get_species_num (g : game_state) (s : fish_species) : int =
   let i = fish_pos s in
   g.tank.(i).num
 
-(** Given a game and a fish species, returns the health of the species*)
+(** Given a game and a fish species, returns the health of the species. *)
 let get_health (g : game_state) (s : fish_species) : float =
   let i = fish_pos s in
   g.tank.(i).health
 
-(** Given a game and a fish species, returns the age_sum of the species*)
+(** Given a game and a fish species, returns the age_sum of the species. *)
 let get_agesum (g : game_state) (s : fish_species) : int =
   let i = fish_pos s in
   g.tank.(i).age_sum
 
-(** Given a game_state, returns the tank*)
+(** Given a game_state, returns the tank. *)
 let get_tank (g : game_state) = g.tank
 
 type prey_record = {
@@ -610,7 +611,7 @@ type prey_record = {
 }
 
 (** Given a game_state, performs end of round shark update
-    and returns record of number of each prey eaten *)
+    and returns record of number of each prey eaten. *)
 let get_eaten_prey (g : game_state) : prey_record =
   let prey_ar = shark_dinner g.tank in
 
