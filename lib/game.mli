@@ -130,7 +130,7 @@ val get_playermoney : game_state -> float
 val growth_tank : tank -> unit
 (** Updates count of each fish population in a tank. *)
 
-val symbiosis : game_state -> unit 
+val symbiosis : tank -> unit 
 (** Gives health boost to symbiotic fish species in tank t. 
     Symbiotic pairings: anemone and clownfish; remora and shark. *)
 

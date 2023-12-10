@@ -390,8 +390,7 @@ let remora_shark (t : tank) : unit =
 
 (** Gives health boost to symbiotic fish species in tank t. 
     Symbiotic pairings: anemone and clownfish; remora and shark. *)
-let symbiosis (g : game_state) : unit =
-  let t = g.tank in 
+let symbiosis (t : tank) : unit =
   anemone_clownfish t;
   remora_shark t
 
@@ -471,7 +470,7 @@ let end_of_round (g : game_state) : unit =
   age_tank g.tank;
   if g.round > 1 then growth_tank g.tank;
   health_tank g.tank ~-.5.;
-  symbiosis g;
+  symbiosis g.tank;
   check_extinct g.tank;
   if g.round = g.max_rounds || g.money <= 0. then g.ended <- true
   else (

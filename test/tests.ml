@@ -14,7 +14,7 @@ open Final_project
 open Game
 open Userinput
 
-(* Test make_fish and add_fish *)
+(* Values for testing make_fish and add_fish *)
 let goldfish = make_fish Goldfish Pellet 1.4 0.6
 let remora = make_fish Remora Pellet 1. 0.8
 
@@ -40,7 +40,7 @@ let _ =
   set_game game1;
   age_tank (get_tank game1)
 
-(* Game 2: Remorae and unhealthy sharks *)
+(* Game 2: Remorae and sharks symbiosis *)
 let game2 = start_game 5
 
 let _ =
@@ -54,7 +54,7 @@ let health2_s = get_health game2 Shark
 
 let health2_r = get_health game2 Remora
 
-let _ = symbiosis game2
+let _ = symbiosis (get_tank game2)
 
 
 (* Game 3: Clownfish and anemone symbiosis *)
@@ -72,7 +72,7 @@ let _ =
 
   let health3_a = get_health game3 Anemone
 
-  let _ = symbiosis game3
+  let _ = symbiosis (get_tank game3)
 
 (* Game 4: Only turtles *)
 let game4 = start_game 3
@@ -100,7 +100,7 @@ let _ =
   buy_fish_game game6 Goldfish 2;
   growth_tank (get_tank game6)
 
-(* Game 7: 1 shark and 10 clownfish *)
+(* Game 7: Shark and clownfish *)
 let game7 = start_game 4
 
 let _ =
@@ -117,7 +117,7 @@ let shark7 =
   && get_health game7 Shark = 100.
 
 
-(* Game 8: Only sharks; lose health for three rounds; add goldfish *)
+(* Game 8: Sharks lose health for three rounds then eat goldfish *)
 let game8 = start_game 4
 
 let _ =
@@ -139,7 +139,7 @@ let shark8' =
   and_prey_eaten prey8 2 0 0 0 
   && get_health game8 Shark = 30.
 
-(* Game 9: Buy one of every fish; shark successively eats *)
+(* Game 9: One of every fish. Shark successively eats *)
 let game9 = start_game 3 
 
 let _ = 
@@ -249,6 +249,18 @@ let num3 =
 
 let goldfish14 = (num2 < num1) && (num3 < num2)
 
+(* Game 15: Growth with populations of size 1 *)
+let game15 = start_game 3
+
+let _ = 
+  set_game game15; 
+  buy_fish_game game15 Turtle 1; 
+  buy_fish_game game15 Remora 1; 
+  health_tank_species (get_tank game15) Turtle  (-70.);
+  health_tank_species (get_tank game15) Remora  (-5.);
+  growth_tank (get_tank game15)
+
+
 (* Functions related to money, earning, buying *)
 let money_tests = [
   (* price_fish tests *)
@@ -338,8 +350,10 @@ let population_tests = [
     assert_equal 3 (get_species_num game6 Goldfish) );
   ( "Growth healthy goldfish successive rounds game13" >:: fun _ ->
     assert_equal true goldfish13 );
-  ( "Growth sick goldfish successive rounds game14" >:: fun _ ->
-    assert_equal true goldfish14 );
+  ( "Growth sick single turtle game15" >:: fun _ ->
+     assert_equal 0 (get_species_num game15 Turtle) );
+  ( "Growth healthy single remora game15" >:: fun _ ->
+     assert_equal 1 (get_species_num game15 Remora) );
   ]
 
 
