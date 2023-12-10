@@ -268,7 +268,7 @@ let med_broke (g : game_state) : bool = 50. > g.money
     the health of the population gets boosted by 30, and 50
     is subtracted from g's money. *)
 let med_game_species (g : game_state) (s : fish_species) : unit =
-  health_tank_species g.tank s 30.;
+  if med_broke g then () else health_tank_species g.tank s 30.;
   cost g 50.
 
 (* Helper for feed_fish that rounds float to 1 dp *)
@@ -567,6 +567,11 @@ let get_species_num (g : game_state) (s : fish_species) : int =
 let get_health (g : game_state) (s : fish_species) : float =
   let i = fish_pos s in
   g.tank.(i).health
+
+(** Given a game and a fish species, returns the age_sum of the species*)
+let get_agesum (g : game_state) (s : fish_species) : int =
+  let i = fish_pos s in
+  g.tank.(i).age_sum
 
 (** Given a game_state, returns the tank*)
 let get_tank (g : game_state) = g.tank

@@ -24,10 +24,11 @@ type game_state
 (** Type representing the current state of the player's game*)
 
 type prey_record = {
-    goldfish : int; 
-    anemone : int; 
-    clownfish : int; 
-    turtle : int }
+  goldfish : int;
+  anemone : int;
+  clownfish : int;
+  turtle : int;
+}
 (** Record type associating each prey species with an integer, for use in testing *)
 
 val make_fish : fish_species -> fish_food -> float -> float -> fish
@@ -130,7 +131,7 @@ val get_playermoney : game_state -> float
 val growth_tank : tank -> unit
 (** Updates count of each fish population in a tank. *)
 
-val symbiosis : tank -> unit 
+val symbiosis : tank -> unit
 (** Gives health boost to symbiotic fish species in tank t. 
     Symbiotic pairings: anemone and clownfish; remora and shark. *)
 
@@ -152,7 +153,10 @@ val get_num : fish -> int
 (** Given a fish, returns the population*)
 
 val get_health : game_state -> fish_species -> float
-(** Given a fish, returns the health*)
+(** Given a game state and fish species, returns the health*)
+
+val get_agesum : game_state -> fish_species -> int
+(** Given a game state and fish species, returns the age_sum*)
 
 val get_tank : game_state -> tank
 (** Given a game_state, returns the tank*)
