@@ -471,7 +471,7 @@ let get_age (f : fish) : int = f.age_sum
 let get_num (f : fish) : int = f.num
 
 (** Given a fgame and fish species, returns the current population*)
-let get_species_population (g : game_state) (s : fish_species) : int =
+let get_species_num (g : game_state) (s : fish_species) : int =
   let i = fish_pos s in
   g.tank.(i).num
 
@@ -486,7 +486,8 @@ let get_tank (g : game_state) = g.tank
 type prey_record = 
   {goldfish : int; anemone : int; clownfish : int; turtle : int}
 
-(** Given a game_state, returns record of  *)
+(** Given a game_state, performs end of round shark update
+    and returns record of number of each prey eaten *)
 let get_eaten_prey (g : game_state) : prey_record = 
   let prey_ar = shark_dinner g.tank in 
 

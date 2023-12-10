@@ -83,13 +83,14 @@ let _ =
   buy_fish_game game7 Shark 1;
   buy_fish_game game7 Clownfish 10
 
-(*
-let array = shark_dinner (get_tank game7)
+let shark7 = 
+  let prey7 = get_eaten_prey game7 in 
+  (prey7.clownfish = 1
+  && prey7.anemone = 0
+  && prey7.goldfish = 0
+  && prey7.turtle = 0)
+  && get_health game7 Shark = 100.
 
-(* if the shark eats, their health increases *)
-let fish_eaten = array.(2) > 0
-let shark_health = get_health game7 Shark > 10.
-*)
 
 (* Game 8: Only sharks; lose health for three rounds *)
 let game8 = start_game 4
@@ -101,7 +102,7 @@ let _ =
   end_of_round game8; 
   end_of_round game8  
 
-(* Game 9: Buy one of every fish *)
+(* Game 9: Buy one of every fish; shark successively eats *)
 let game9 = start_game 3 
 
 let _ = 
@@ -120,6 +121,21 @@ let shark9 =
     || prey9.clownfish = 1 
     || prey9.turtle = 1)
     && (sum_prey_eaten prey9 = 1)
+
+(* Game 10: 2 sharks eat 2 goldfish *)
+let game10 = start_game 3 
+
+let _ = 
+  set_game game10; 
+  buy_fish_game game10 Shark 2;
+  buy_fish_game game10 Goldfish 2
+
+let shark10 = 
+  let prey10 = get_eaten_prey game10 in 
+  (prey10.goldfish = 2 
+  && prey10.anemone = 0
+  && prey10.clownfish = 0 
+  && prey10.turtle = 0)
 
 (* Functions related to money, earning, buying *)
 let money_tests = [
@@ -178,8 +194,9 @@ let health_tests = [
       assert_equal 100. (get_health game3 Anemone) );
 
   (* shark eat tests *)
-  (* ( "Shark_dinner" >:: fun _ -> assert_equal fish_eaten shark_health ); *)
+  ( "Shark eat game7" >:: fun _ -> assert_equal true shark7 );
   ( "Shark eat game9" >:: fun _ -> assert_equal true shark9 );
+  ( "Shark eat game10" >:: fun _ -> assert_equal true shark10 );
 ]
 
 (* Tests to do with population numbers: extinct, growth *)
@@ -194,9 +211,9 @@ let population_tests = [
 
   (* population number tests *)
   ( "Growth sick clownfish game6" >:: fun _ ->
-    assert_equal 1 (get_species_population game6 Clownfish) );
+    assert_equal 1 (get_species_num game6 Clownfish) );
   ( "Growth healthy goldfish game6" >:: fun _ ->
-    assert_equal 3 (get_species_population game6 Goldfish) );
+    assert_equal 3 (get_species_num game6 Goldfish) );
   ]
 
 

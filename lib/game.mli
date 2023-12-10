@@ -118,8 +118,8 @@ val predator_species : game_state -> fish_species -> bool
 (** Helper function to check if species s in game g is a predator. *)
 
 val get_eaten_prey : game_state -> prey_record
-(* Each shark eats one fish, otherwise shark health decreases.
-    Returns array tracking the number of each species eaten. *)
+(** Given a game_state, performs end of round shark update
+    and returns record of number of each prey eaten *)
 
 val plural_species : fish_species -> string
 (** Helper formatting function to return the correct plural name for a given fish species s *)
@@ -153,7 +153,7 @@ val get_health : game_state -> fish_species -> float
 val get_tank : game_state -> tank
 (** Given a game_state, returns the tank*)
 
-val get_species_population : game_state -> fish_species -> int
+val get_species_num : game_state -> fish_species -> int
 (** Given a game_state and fish species, returns the current population*)
 
 (* Deprecated Functions *)
