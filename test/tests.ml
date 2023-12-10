@@ -82,7 +82,7 @@ let _ =
   buy_fish_game game6 Goldfish 2;
   growth_tank (get_tank game6)
 
-(* Game 7: Sharks and clownfish *)
+(* Game 7: 1 shark and 10 clownfish *)
 let game7 = start_game 4
 
 let _ =
@@ -99,7 +99,7 @@ let shark7 =
   && get_health game7 Shark = 100.
 
 
-(* Game 8: Only sharks; lose health for three rounds *)
+(* Game 8: Only sharks; lose health for three rounds; add goldfish *)
 let game8 = start_game 4
 
 let _ =
@@ -152,7 +152,21 @@ let _ =
 let shark10 = 
   let prey10 = get_eaten_prey game10 in 
   and_prey_eaten prey10 2 0 0 0
+  && get_health game10 Shark = 100.
 
+let shark10' = 
+  let prey10' = get_eaten_prey game10 in 
+  and_prey_eaten prey10' 0 0 0 0 
+  && get_health game10 Shark = 90.
+
+(* Game 11: Game with 3 rounds; force game to end *)
+let game11 = start_game 3 
+
+let _ = 
+  set_game game11; 
+  end_of_round game11; 
+  end_of_round game11; 
+  end_of_round game11
 
 (* Functions related to money, earning, buying *)
 let money_tests = [
@@ -215,7 +229,8 @@ let health_tests = [
   ( "Shark eat game8 hungry" >:: fun _ -> assert_equal true shark8 );  
   ( "Shark eat game8 2 goldfish" >:: fun _ -> assert_equal true shark8' ); 
   ( "Shark eat game9" >:: fun _ -> assert_equal true shark9 );
-  ( "Shark eat game10" >:: fun _ -> assert_equal true shark10 );
+  ( "Shark eat game10 2 goldfish" >:: fun _ -> assert_equal true shark10 );
+  ( "Shark eat game10 hungry" >:: fun _ -> assert_equal true shark10' );
 ]
 
 (* Tests to do with population numbers: extinct, growth *)
@@ -250,7 +265,7 @@ let fish_tests = [
 let game_tests = [
   ( "Number of remorae" >:: fun _ -> assert_equal 10 (get_num remora));
 
-  (* Round tests *)
+  (* Max round tests *)
   ( "10 round maximum" >:: fun _ -> assert_equal 10 (get_max_rounds game1));
   ( "5 round maximum" >:: fun _ -> assert_equal 5 (get_max_rounds game2));
 
@@ -259,6 +274,39 @@ let game_tests = [
     assert_equal true (end_score game2 > 0) );
   ( "End score calculation" >:: fun _ ->
     assert_equal 1000 (end_score game1) );
+
+  (* game_ended *)
+  ( "Game ended game11" >:: fun _ ->
+    assert_equal true (game_ended game11) );
+  ]
+
+let string_tests = [
+  ( "String of Goldfish" >:: fun _ ->
+    assert_equal "Goldfish" (string_of_species Goldfish) );
+  ( "String of Anemone" >:: fun _ ->
+    assert_equal "Anemone" (string_of_species Anemone) );
+  ( "String of Clownfish" >:: fun _ ->
+    assert_equal "Clownfish" (string_of_species Clownfish) );
+  ( "String of Turtle" >:: fun _ ->
+    assert_equal "Turtle" (string_of_species Turtle) );
+  ( "String of Remora" >:: fun _ ->
+    assert_equal "Remora" (string_of_species Remora) );
+  ( "String of Shark" >:: fun _ ->
+    assert_equal "Shark" (string_of_species Shark) );
+  ("Exception Huh" >:: fun _ -> assert_equal "Huh" (string_of_species Huh));
+
+  ( "Plural of Goldfish" >:: fun _ ->
+    assert_equal "Goldfish" (plural_species Goldfish) );
+  ( "Plural of Anemone" >:: fun _ ->
+    assert_equal "Anemones" (plural_species Anemone) );
+  ( "Plural of Clownfish" >:: fun _ ->
+    assert_equal "Clownfish" (plural_species Clownfish) );
+  ( "Plural of Turtle" >:: fun _ ->
+    assert_equal "Turtles" (plural_species Turtle) );
+  ( "Plural of Remora" >:: fun _ ->
+    assert_equal "Remorae" (plural_species Remora) );
+  ("Plural of Shark" >:: fun _ -> assert_equal "Sharks" (plural_species Shark));
+  ("Exception Huh" >:: fun _ -> assert_equal "Huh" (plural_species Huh));
   ]
 
 (* USER INPUT TESTS *)
@@ -392,34 +440,6 @@ let user_input_tests = [
     assert_equal (Huh, 0) (parse_species_int "hello 2") ); 
   ]
 
-let string_tests = [
-  ( "String of Goldfish" >:: fun _ ->
-    assert_equal "Goldfish" (string_of_species Goldfish) );
-  ( "String of Anemone" >:: fun _ ->
-    assert_equal "Anemone" (string_of_species Anemone) );
-  ( "String of Clownfish" >:: fun _ ->
-    assert_equal "Clownfish" (string_of_species Clownfish) );
-  ( "String of Turtle" >:: fun _ ->
-    assert_equal "Turtle" (string_of_species Turtle) );
-  ( "String of Remora" >:: fun _ ->
-    assert_equal "Remora" (string_of_species Remora) );
-  ( "String of Shark" >:: fun _ ->
-    assert_equal "Shark" (string_of_species Shark) );
-  ("Exception Huh" >:: fun _ -> assert_equal "Huh" (string_of_species Huh));
-
-  ( "Plural of Goldfish" >:: fun _ ->
-    assert_equal "Goldfish" (plural_species Goldfish) );
-  ( "Plural of Anemone" >:: fun _ ->
-    assert_equal "Anemones" (plural_species Anemone) );
-  ( "Plural of Clownfish" >:: fun _ ->
-    assert_equal "Clownfish" (plural_species Clownfish) );
-  ( "Plural of Turtle" >:: fun _ ->
-    assert_equal "Turtles" (plural_species Turtle) );
-  ( "Plural of Remora" >:: fun _ ->
-    assert_equal "Remorae" (plural_species Remora) );
-  ("Plural of Shark" >:: fun _ -> assert_equal "Sharks" (plural_species Shark));
-  ("Exception Huh" >:: fun _ -> assert_equal "Huh" (plural_species Huh));
-  ]
 
 let suite =
   "test suite"
