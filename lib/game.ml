@@ -223,7 +223,7 @@ let shark_dinner (t : tank) : int array =
   done;
   track
 
-(* Helper for shark_news. Converts int array into string list. *)
+(** Converts int array into string list. *)
 let shark_news (track : int array) : string =
   let lst = ref "" in
   for pos = 3 downto 0 do
@@ -243,7 +243,8 @@ let shark_news (track : int array) : string =
 
 (** Feeds shark in tank at end of round and prints message with
     the fish eaten. *)
-let shark_update (t : tank) : unit =
+let shark_update (g : game_state) : unit =
+  let t = g.tank in
   let track = shark_dinner t in
   if Array.find_opt (fun x -> x > 0) track <> None then
     print_string (shark_news track)
@@ -302,12 +303,12 @@ let predator_species (g : game_state) (s : fish_species) : bool =
 
 (** Computes daily earnings. *)
 let earnings (g : game_state) : float =
-  (float_of_int g.tank.(fish_pos Goldfish).num *. 0.5)
-  +. (float_of_int g.tank.(fish_pos Anemone).num *. 0.5)
-  +. (float_of_int g.tank.(fish_pos Clownfish).num *. 1.)
-  +. (float_of_int g.tank.(fish_pos Turtle).num *. 2.)
-  +. (float_of_int g.tank.(fish_pos Remora).num *. 2.5)
-  +. (float_of_int g.tank.(fish_pos Shark).num *. 4.)
+  (float_of_int g.tank.(fish_pos Goldfish).num *. 1.)
+  +. (float_of_int g.tank.(fish_pos Anemone).num *. 2.)
+  +. (float_of_int g.tank.(fish_pos Clownfish).num *. 3.)
+  +. (float_of_int g.tank.(fish_pos Turtle).num *. 6.)
+  +. (float_of_int g.tank.(fish_pos Remora).num *. 1.)
+  +. (float_of_int g.tank.(fish_pos Shark).num *. 8.)
 
 (** Returns end of game score *)
 let end_score (g : game_state) : int =
@@ -404,7 +405,7 @@ let game_ended (g : game_state) : bool = g.ended
 
 (** Updates game state g's round, fish population ages by one round. *)
 let end_of_round (g : game_state) : unit =
-  if not (extinct g.tank.(5)) then shark_update g.tank;
+  if not (extinct g.tank.(5)) then shark_update g;
   randomly_lose_money g;
   g.money <- g.money +. earnings g;
   print_endline ("\n  Earnings for this round: $" ^ string_of_float (earnings g));
