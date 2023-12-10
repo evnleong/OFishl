@@ -139,7 +139,11 @@ and manual (num_actions : int) (g : Game.game_state) : unit =
     \  6. At the end of a round, you will earn an amount of money that depends \
      on the\n\
     \     number of each species in your tank.\n\
-    \  7. At the end of the game, you will receive a score that depends on the\n\
+     7. Keep an eye out for random events and announcements that can occur in \
+     between rounds! \n\
+    \     \n\
+    \      8. At the end of the game, you will receive a score that depends on \
+     the\n\
     \     cumulative ages of the species in your tank.\n";
   action num_actions g
 
