@@ -1,8 +1,8 @@
 (** Test Plan: Our test suite is made up of OUnit tests, designed using black 
     box based on our function specifications and glass box testing to test 
     exceptions. The majority of our functions rely on mutability and therefore 
-    only return units. To test these functions, we make a couple of different 
-    game states relying on different features of the game. In this test file we 
+    only return units. To test these functions, we made several instances of 
+    game states, each involving different features of the game. In this test file we 
     include tests for our Game module and Userinput module. We measure our 
     test coverage using bisect and turn coverage off for functions involved in
     printing -- these were tested manually in the terminal.
@@ -317,14 +317,12 @@ let money_tests =
 (* Functions and actions that manipulate health: medicine, food, shark eating, symbiosis *)
 let health_tests =
   [
-    (* check health tests *)
+    (* health tests *)
     ( "Health goldfish game1" >:: fun _ ->
       assert_equal 100. (get_health game1 Goldfish) );
     ("Health shark game2" >:: fun _ -> assert_equal 20. health2_s);
     ( "Health turtle game4" >:: fun _ ->
       assert_equal 70. (get_health game4 Turtle) );
-    (* feed tests *)
-
     (* symbiosis tests *)
     ( "Symbiosis game2 sharks" >:: fun _ ->
       assert_equal true (get_health game2 Shark > health2_s) );
