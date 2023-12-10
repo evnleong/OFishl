@@ -110,11 +110,11 @@ let _ =
 
 let shark7 = 
   let prey7 = get_eaten_prey game7 in 
-  (prey7.clownfish = 1
-  && prey7.anemone = 0
-  && prey7.goldfish = 0
-  && prey7.turtle = 0)
-  && get_health game7 Shark = 100.
+    (prey7.clownfish = 1
+    && prey7.anemone = 0
+    && prey7.goldfish = 0
+    && prey7.turtle = 0)
+    && get_health game7 Shark = 100.
 
 
 (* Game 8: Sharks lose health for three rounds then eat goldfish *)
@@ -128,16 +128,16 @@ let shark8 =
   let _ = get_eaten_prey game8 in 
   let _ = get_eaten_prey game8 in 
   let prey8 = get_eaten_prey game8 in 
-  and_prey_eaten prey8 0 0 0 0
-  && get_health game8 Shark = 40.
+    and_prey_eaten prey8 0 0 0 0
+    && get_health game8 Shark = 40.
 
 let _ = 
   buy_fish_game game8 Goldfish 2
 
 let shark8' = 
   let prey8 = get_eaten_prey game8 in 
-  and_prey_eaten prey8 2 0 0 0 
-  && get_health game8 Shark = 30.
+    and_prey_eaten prey8 2 0 0 0 
+    && get_health game8 Shark = 30.
 
 (* Game 9: One of every fish. Shark successively eats *)
 let game9 = start_game 3 
@@ -164,10 +164,10 @@ let shark9' =
   let prey9'' = get_eaten_prey game9 in 
   let prey9''' = get_eaten_prey game9 in 
   let prey9'''' = get_eaten_prey game9 in 
-  sum_prey_eaten prey9' = 1
-  && sum_prey_eaten prey9'' = 1
-  && sum_prey_eaten prey9''' = 1 
-  && sum_prey_eaten prey9'''' = 0 
+    sum_prey_eaten prey9' = 1
+    && sum_prey_eaten prey9'' = 1
+    && sum_prey_eaten prey9''' = 1 
+    && sum_prey_eaten prey9'''' = 0 
 
 (* Game 10: 2 sharks eat 2 goldfish, then go hungry *)
 let game10 = start_game 3 
@@ -179,13 +179,13 @@ let _ =
 
 let shark10 = 
   let prey10 = get_eaten_prey game10 in 
-  and_prey_eaten prey10 2 0 0 0
-  && get_health game10 Shark = 100.
+    and_prey_eaten prey10 2 0 0 0
+    && get_health game10 Shark = 100.
 
 let shark10' = 
   let prey10' = get_eaten_prey game10 in 
-  and_prey_eaten prey10' 0 0 0 0 
-  && get_health game10 Shark = 90.
+    and_prey_eaten prey10' 0 0 0 0 
+    && get_health game10 Shark = 90.
 
 (* Game 11: Game with 3 rounds; force game to end *)
 let game11 = start_game 3 
@@ -259,7 +259,6 @@ let _ =
   health_tank_species (get_tank game15) Turtle  (-70.);
   health_tank_species (get_tank game15) Remora  (-5.);
   growth_tank (get_tank game15)
-
 
 (* Functions related to money, earning, buying *)
 let money_tests = [
@@ -361,9 +360,9 @@ let population_tests = [
 let fish_tests = [
   ("Make empty goldfish" >:: fun _ -> assert_equal 0 (get_age goldfish)); 
   ( "Predator goldfish false" >:: fun _ ->
-  assert_equal false (predator_species game1 Goldfish) );
+    assert_equal false (predator_species game1 Goldfish) );
   ( "Predator shark true" >:: fun _ ->
-  assert_equal true (predator_species game1 Shark) );
+    assert_equal true (predator_species game1 Shark) );
   ( "Age of remorae" >:: fun _ -> assert_equal 0 (get_age remora) );
   ]
 
