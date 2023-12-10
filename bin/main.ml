@@ -157,6 +157,8 @@ let () =
     [ ANSITerminal.Bold; ANSITerminal.magenta ]
     "Build Your Own Aquarium!\n";
   ANSITerminal.print_string [ ANSITerminal.magenta ]
+    "===============================================================";
+  ANSITerminal.print_string [ ANSITerminal.magenta ]
     "\n\
      Start the game with $100, use it to buy and feed fish.\n\
      Each round simulates one day and the game ends after 5 rounds.\n\n\
@@ -176,18 +178,34 @@ let () =
     ("\n  END OF GAME. YOU SCORED "
     ^ string_of_int (Game.end_score game)
     ^ " POINTS.\n");
-  if Game.end_score game > 2000 then
+  if Game.end_score game > 2000 then (
     ANSITerminal.print_string [ ANSITerminal.yellow ]
-      "Acheivement Unlocked: Aquarium Master "
-  else if Game.end_score game > 1500 then
+      "=================================";
     ANSITerminal.print_string [ ANSITerminal.yellow ]
-      "Acheivement Unlocked: Shark Swimmer "
-  else if Game.end_score game > 1000 then
+      " Acheivement Unlocked: Aquarium Master ";
     ANSITerminal.print_string [ ANSITerminal.yellow ]
-      "Acheivement Unlocked: Fish Feeder"
-  else
+      "=================================")
+  else if Game.end_score game > 1500 then (
     ANSITerminal.print_string [ ANSITerminal.yellow ]
-      "Acheivement Unlocked: Kept Typing Pass";
+      "=================================";
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      " Acheivement Unlocked: Shark Swimmer ";
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "=================================")
+  else if Game.end_score game > 1000 then (
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "=================================";
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      " Acheivement Unlocked: Fish Feeder ";
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "=================================")
+  else (
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "=================================";
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      " Acheivement Unlocked: Kept Typing Pass ";
+    ANSITerminal.print_string [ ANSITerminal.yellow ]
+      "=================================");
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n  Thanks for playing! Here's your game summary: \n";
   Game.print_fish game
